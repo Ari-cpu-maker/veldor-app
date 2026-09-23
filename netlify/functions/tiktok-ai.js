@@ -8,7 +8,7 @@
 //   GEMINI_API_KEY  (wajib - samakan dengan nama yang dipakai function color-grade)
 //   GEMINI_MODEL    (opsional - samakan dengan model di function color-grade)
 
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
 const AI_TIMEOUT_MS = 8000;
 
 function json(statusCode, obj) {
