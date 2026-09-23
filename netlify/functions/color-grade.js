@@ -86,4 +86,45 @@ exports.handler = async (event) => {
   const parts = [
     {
       text:
-        `Ini ${
+        `Ini ${images.length} frame yang diambil merata sepanjang satu video` +
+        (metaLine ? ` (${metaLine})` : '') +
+        '. Analisa pencahayaan & warnanya, lalu beri saran color grading CapCut sesuai instruksi sistem.',
+    },
+    ...images.map((img) => ({
+      inlineData: { mimeType: img.mimeType || 'image/jpeg', data: img.data },
+    })),
+  ];
+
+  const body = {
+    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    contents: [{ role: 'user', parts }],
+    generationConfig: { temperature: 0.4, maxOutputTokens: 1024 },
+  };
+
+  let resp;
+  try {
+    resp = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+      body: JSON.stringify(body),
+    });
+  } catch (e) {
+    return json(502, { error: 'Gagal menghubungi Gemini API: ' + (e && e.message ? e.message : String(e)) });
+  }
+
+  const data = await resp.json().catch(() => null);
+  if (!resp.ok) {
+    const msg = (data && data.error && data.error.message) || `Gemini API error (${resp.status})`;
+    return json(502, { error: msg });
+  }
+
+  const text = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts
+    ? data.candidates[0].content.parts.map((p) => p.text || '').join('\n').trim()
+    : '';
+
+  if (!text) {
+    return json(502, { error: 'Gemini tidak mengembalikan teks saran (kemungkinan diblokir filter keamanan internal Gemini).' });
+  }
+
+  return json(200, { suggestion: text });
+};
