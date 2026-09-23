@@ -98,7 +98,7 @@ exports.handler = async (event) => {
   const body = {
     systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
     contents: [{ role: 'user', parts }],
-    generationConfig: { temperature: 0.4, maxOutputTokens: 1024 },
+    generationConfig: { temperature: 0.4, maxOutputTokens: 4096 },
   };
 
   let resp;
