@@ -9,7 +9,7 @@
 //   GEMINI_MODEL    (opsional - samakan dengan model di function color-grade)
 
 const MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash';
-const AI_TIMEOUT_MS = 8000;
+const AI_TIMEOUT_MS = 9500;
 
 function json(statusCode, obj) {
   return { statusCode, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj) };
@@ -85,7 +85,7 @@ exports.handler = async (event) => {
     return json(200, { ai, model: MODEL, ms: Date.now() - t0 });
   } catch (e) {
     const timeout = e && (e.name === 'TimeoutError' || e.name === 'AbortError');
-    return json(502, { error: timeout ? 'Gemini terlalu lama menjawab (lebih dari 8 detik).' : 'Gagal memproses jawaban Gemini: ' + (e && e.message ? e.message : e) });
+    return json(502, { error: timeout ? 'Gemini terlalu lama menjawab (lebih dari 9.5 detik).' : 'Gagal memproses jawaban Gemini: ' + (e && e.message ? e.message : e) });
   }
 };
 
