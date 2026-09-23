@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TikTok Checker</title>
+<style>
+:root{color-scheme:dark;--bg:#141414;--card:#1d1d1d;--card2:#262626;--line:#333333;--txt:#f5f4f2;--mut:#a3a09b;--pri:#f5f4f2;--pri-ink:#1a1a1a;--info:#3b82f6;--ok:#4ade80;--bad:#ff6b6b;--warn:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;padding-bottom:env(safe-area-inset-bottom,0)}
+main{max-width:520px;margin:0 auto;padding:24px 16px calc(40px + env(safe-area-inset-bottom))}
+h1{font-size:22px;margin:0 0 4px}
+p.sub{color:var(--mut);margin:0 0 20px;font-size:14px}
+form{display:flex;gap:8px;margin-bottom:20px}
+input[type=url]{flex:1;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px 14px;font-size:15px;min-width:0}
+button{background:var(--pri);color:var(--pri-ink);border:0;border-radius:12px;padding:12px 18px;font-weight:600;font-size:15px}
+button:disabled{opacity:.5}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.item{background:var(--card2);border-radius:12px;padding:10px 12px}
+.label{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.val{font-size:16px;font-weight:600}
+.status{font-size:14px;margin:10px 0}
+.status.bad{color:var(--bad)}
+.status.ok{color:var(--ok)}
+.desc{color:var(--mut);font-size:14px;margin-top:4px;white-space:pre-wrap}
+.note{color:var(--mut);font-size:12px;margin-top:18px}
+a{color:var(--info)}
+</style>
+</head>
+<body>
+<main>
+  <h1>TikTok Checker</h1>
+  <p class="sub">Tempel link video TikTok untuk lihat info teknis & performanya.</p>
+  <form id="f">
+    <input type="url" id="url" placeholder="https://www.tiktok.com/@user/video/..." required>
+    <button type="submit" id="btn">Cek</button>
+  </form>
+  <div id="status" class="status"></div>
+  <div id="result"></div>
+  <p class="note">Data diambil dari halaman publik TikTok, bukan API resmi — kadang bisa gagal kalau videonya private/dihapus, atau TikTok mengubah tampilan halamannya.</p>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+const fmtNum = n => n == null ? '-' : n.toLocaleString('id-ID');
+const fmtBytes = n => n == null ? '-' : (n / 1e6).toFixed(1) + ' MB';
+const fmtBitrate = n => n == null ? '-' : (n / 1e6).toFixed(1) + ' Mbps';
+
+$('#f').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const url = $('#url').value.trim();
+  const btn = $('#btn'), status = $('#status'), result = $('#result');
+  result.innerHTML = ''; status.className = 'status'; status.textContent = 'Mengambil data…';
+  btn.disabled = true;
+  try {
+    const resp = await fetch('/.netlify/functions/tiktok-check', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url })
+    });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok || !data || data.error) throw new Error((data && data.error) || 'Gagal mengambil data.');
+    status.className = 'status ok'; status.textContent = '✓ Data ditemukan';
+    const v = data.video;
+    const hdrText = v.hdr === null ? 'Tidak dicek' : (v.hdr ? 'Ya' : 'Tidak');
+    result.innerHTML = `
+      <div class="card">
+        <div class="label">Akun</div>
+        <div class="val">@${data.username}</div>
+        ${data.desc ? `<div class="desc">${data.desc.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))}</div>` : ''}
+      </div>
+      <div class="card">
+        <div class="label" style="margin-bottom:10px">Performa</div>
+        <div class="grid">
+          <div class="item"><div class="label">Views</div><div class="val">${fmtNum(data.stats.views)}</div></div>
+          <div class="item"><div class="label">Likes</div><div class="val">${fmtNum(data.stats.likes)}</div></div>
+          <div class="item"><div class="label">Komentar</div><div class="val">${fmtNum(data.stats.comments)}</div></div>
+          <div class="item"><div class="label">Share</div><div class="val">${fmtNum(data.stats.shares)}</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="label" style="margin-bottom:10px">Teknis Video</div>
+        <div class="grid">
+          <div class="item"><div class="label">Resolusi</div><div class="val">${v.width}×${v.height}</div></div>
+          <div class="item"><div class="label">Durasi</div><div class="val">${v.duration}s</div></div>
+          <div class="item"><div class="label">Codec</div><div class="val">${v.codec}</div></div>
+          <div class="item"><div class="label">HDR</div><div class="val">${hdrText}</div></div>
+          <div class="item"><div class="label">Bitrate</div><div class="val">${fmtBitrate(v.bitrateBps)}</div></div>
+          <div class="item"><div class="label">Ukuran</div><div class="val">${fmtBytes(v.sizeBytes)}</div></div>
+        </div>
+      </div>`;
+  } catch (err) {
+    status.className = 'status bad'; status.textContent = '✗ ' + err.message;
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
