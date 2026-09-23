@@ -25,6 +25,7 @@ function json(statusCode, obj) {
   return { statusCode, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj) };
 }
 
+const UA_DESKTOP = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
 const UA = 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36';
 
 const HEAD_BYTES = 256 * 1024;          // sampel awal (cukup untuk moov video pendek)
@@ -34,8 +35,11 @@ const TOTAL_BUDGET_MS = 9000;           // batas total SELURUH proses (Netlify m
 
 async function resolveShortLink(url) {
   try {
-    const resp = await fetch(url, { method: 'GET', redirect: 'follow', headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(3000) });
-    return resp.url || url;
+    const resp = await fetch(url, { method: 'GET', redirect: 'follow', headers: { 'User-Agent': UA_DESKTOP }, signal: AbortSignal.timeout(3000) });
+    try { await resp.body.cancel(); } catch (e) {}
+    let out = resp.url || url;
+    try { const u = new URL(out); if (/tiktok\.com$/i.test(u.hostname) && /\/video\/\d+/.test(u.pathname)) { u.search = ''; out = u.toString(); } } catch (e) {}
+    return out;
   } catch (e) {
     return url;
   }
@@ -356,12 +360,12 @@ function collectCandidates(video) {
   return list.slice(0, 4);
 }
 
-async function tryCandidate(c, cookie, ctrl) {
+async function tryCandidate(c, cookie, ctrl, ua) {
   const t0 = Date.now();
   const ctx = {
     bytes: 0,
     signal: ctrl.signal,
-    headers: { 'User-Agent': UA, Referer: 'https://www.tiktok.com/', ...(cookie ? { Cookie: cookie } : {}) },
+    headers: { 'User-Agent': ua || UA, Referer: 'https://www.tiktok.com/', ...(cookie ? { Cookie: cookie } : {}) },
   };
   const r = await analyzeRemote(c.url, ctx);
   if (!r.info) throw new Error('moov ditemukan tapi track video tidak terbaca');
@@ -371,7 +375,7 @@ async function tryCandidate(c, cookie, ctrl) {
 const errMsg = (e) => (e && (e.name === 'AbortError' || e.name === 'TimeoutError')) ? 'waktu habis' : (e && e.message ? e.message : String(e));
 
 // Coba alamat video 2 sekaligus (yang berhasil duluan dipakai, sisanya dibatalkan).
-async function fetchVideoTechInfo(video, cookie, deadlineAt) {
+async function fetchVideoTechInfo(video, cookie, deadlineAt, ua) {
   const cands = collectCandidates(video);
   if (!cands.length) return { error: 'TikTok tidak memberi alamat file video di halaman ini' };
   const errors = [];
@@ -382,7 +386,7 @@ async function fetchVideoTechInfo(video, cookie, deadlineAt) {
     const ctrls = group.map(() => new AbortController());
     const timer = setTimeout(() => ctrls.forEach(c => c.abort()), remaining);
     try {
-      const r = await Promise.any(group.map((c, k) => tryCandidate(c, cookie, ctrls[k])));
+      const r = await Promise.any(group.map((c, k) => tryCandidate(c, cookie, ctrls[k], ua)));
       ctrls.forEach(c => c.abort());   // hentikan yang kalah, hemat bandwidth
       return r;
     } catch (agg) {
@@ -392,6 +396,41 @@ async function fetchVideoTechInfo(video, cookie, deadlineAt) {
     }
   }
   return { error: [...new Set(errors)].slice(0, 3).join(' | ') };
+}
+
+function diagnose(status, finalUrl, html) {
+  const bits = ['HTTP ' + status];
+  try { const u = new URL(finalUrl); bits.push(u.hostname + u.pathname.slice(0, 40)); } catch (e) {}
+  bits.push(Math.round(html.length / 1024) + ' KB');
+  const m = html.match(/<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__"[^>]*>([\s\S]*?)<\/script>/);
+  if (m) {
+    try {
+      const vd = (JSON.parse(m[1]).__DEFAULT_SCOPE__ || {})['webapp.video-detail'];
+      bits.push(vd ? 'video-detail status ' + vd.statusCode + (vd.statusMsg ? ' "' + vd.statusMsg + '"' : '') : 'data ada tapi tanpa video-detail');
+    } catch (e) { bits.push('data tidak bisa dibaca'); }
+  } else if (/SIGI_STATE/.test(html)) bits.push('SIGI_STATE tanpa item');
+  else bits.push('tanpa data video');
+  if (/captcha|access denied|are you a robot/i.test(html)) bits.push('kemungkinan captcha/blokir bot');
+  const t = html.match(/<title[^>]*>([^<]{0,60})/i);
+  if (t) bits.push('judul: ' + t[1].trim());
+  return bits.join(', ');
+}
+
+// Buka halaman TikTok dengan 1 jenis User-Agent; hasilnya item video atau diagnosa kegagalan.
+async function fetchPage(url, ua) {
+  try {
+    const resp = await fetch(url, {
+      redirect: 'follow',
+      headers: { 'User-Agent': ua, Accept: 'text/html,application/xhtml+xml', 'Accept-Language': 'id-ID,id;q=0.9,en;q=0.8' },
+      signal: AbortSignal.timeout(4000),
+    });
+    const cookie = buildCookie(resp);
+    const html = await resp.text();
+    const item = resp.ok ? extractItemStruct(html) : null;
+    return { ua, cookie, item, diag: item ? 'ok' : diagnose(resp.status, resp.url, html) };
+  } catch (e) {
+    return { ua, cookie: '', item: null, diag: 'gagal terhubung (' + errMsg(e) + ')' };
+  }
 }
 
 function buildCookie(resp) {
@@ -414,24 +453,19 @@ exports.handler = async (event) => {
 
   if (/vt\.tiktok\.com|vm\.tiktok\.com|\/t\//.test(url)) url = await resolveShortLink(url);
 
-  let html, cookie = '';
-  try {
-    const resp = await fetch(url, { headers: { 'User-Agent': UA, 'Accept-Language': 'id-ID,id;q=0.9,en;q=0.8' }, signal: AbortSignal.timeout(4000) });
-    if (!resp.ok) return json(502, { error: 'Gagal membuka halaman TikTok (kode ' + resp.status + '). Videonya mungkin sudah dihapus/private.' });
-    cookie = buildCookie(resp);
-    html = await resp.text();
-  } catch (e) {
-    return json(502, { error: 'Gagal menghubungi TikTok: ' + (e && e.message ? e.message : String(e)) });
+  // Coba 2 jenis browser sekaligus (desktop & HP); yang datanya terbaca duluan dipakai.
+  const pages = await Promise.all([UA_DESKTOP, UA].map(ua => fetchPage(url, ua)));
+  const page = pages.find(p => p.item);
+  if (!page) {
+    return json(502, { error: 'Tidak bisa membaca data video ini. Diagnosa -> desktop: ' + pages[0].diag + ' | HP: ' + pages[1].diag });
   }
-
-  const item = extractItemStruct(html);
-  if (!item) return json(502, { error: 'Tidak bisa membaca data video ini. Kemungkinan video private/dihapus, atau TikTok mengubah struktur halamannya (perlu diperbaiki di kode).' });
+  const item = page.item, cookie = page.cookie;
 
   const stats = item.stats || item.statsV2 || {};
   const video = item.video || {};
   const author = item.author || {};
 
-  const tech = await fetchVideoTechInfo(video, cookie, startedAt + TOTAL_BUDGET_MS);
+  const tech = await fetchVideoTechInfo(video, cookie, startedAt + TOTAL_BUDGET_MS, page.ua);
   const info = tech && tech.info;
 
   const width = (info && info.width) || video.width || 0;
