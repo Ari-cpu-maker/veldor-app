@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141414">
+<meta name="color-scheme" content="dark">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231a1a1a'/%3E%3Ccircle cx='32' cy='32' r='14' fill='none' stroke='%23f5f4f2' stroke-width='7'/%3E%3C/svg%3E">
+<title>veldor. Codex</title>
+<style>
+:root{color-scheme:dark;--bg:#141414;--card:#1d1d1d;--card2:#262626;--line:#333333;--txt:#f5f4f2;--mut:#a3a09b;--pri:#f5f4f2;--pri-ink:#1a1a1a;--info:#3b82f6;--ok:#4ade80;--bad:#ff6b6b;--warn:#fbbf24}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--txt);font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+main{max-width:640px;margin:0 auto;padding:20px 16px calc(60px + env(safe-area-inset-bottom))}
+:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+
+/* Tombol admin: kecil, transparan, pojok kanan atas */
+#adminBtn{position:fixed;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:50;width:34px;height:34px;min-height:0;padding:0;border-radius:50%;background:transparent;border:0;opacity:.14;transition:opacity .2s}
+#adminBtn:hover,#adminBtn:focus-visible{opacity:.7}
+#adminBtn svg{width:20px;height:20px;fill:#fff}
+
+/* Logo */
+.brand{text-align:center;padding:26px 0 6px}
+.logo{width:132px;height:132px;border-radius:50%;background:#fefefd;margin:0 auto;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px var(--line)}
+.logo img{width:100%;height:100%;object-fit:cover}
+h1{font-size:24px;margin:20px 0 6px;line-height:1.25;letter-spacing:-.2px}
+.sub{color:var(--mut);margin:0 auto 22px;max-width:30em;font-size:16px}
+
+/* Kuota / status akun */
+.quota{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:16px;font-size:15px}
+.quota b{color:var(--ok)}
+
+/* Langkah */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center;font-size:14px;color:var(--mut)}
+.steps li:before{content:counter(s);display:block;width:26px;height:26px;line-height:26px;margin:0 auto 4px;border-radius:50%;background:var(--card2);color:var(--txt);font-weight:700;font-size:14px}
+
+/* Area pilih video */
+.drop{display:block;border:2px dashed #4b4e63;border-radius:20px;background:var(--card);padding:34px 16px;text-align:center;cursor:pointer;transition:.15s}
+.drop:hover,.drop.over{border-color:var(--pri);background:var(--card2)}
+.drop .big{display:inline-flex;align-items:center;justify-content:center;min-height:58px;padding:0 28px;border-radius:14px;background:var(--pri);color:var(--pri-ink);font-size:19px;font-weight:800;margin-bottom:10px}
+.drop small{display:block;color:var(--mut);font-size:14px}
+
+/* Tombol umum */
+button,.btn{appearance:none;border:0;border-radius:12px;padding:12px 18px;min-height:50px;font:700 16px system-ui,sans-serif;color:var(--pri-ink);background:var(--pri);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button.ghost,.btn.ghost{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+button.blue,.btn.blue{background:var(--info);color:#fff}
+button.danger{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+button.small{min-height:40px;padding:6px 14px;font-size:14px}
+button:disabled{opacity:.5;cursor:default}
+
+/* Kartu hasil per video */
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:14px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.name{font-weight:700;word-break:break-all}
+.size{color:var(--mut);font-size:14px;white-space:nowrap}
+.info{color:var(--mut);font-size:14px;margin-top:2px;min-height:19px}
+.status{margin-top:8px;font-size:15px}
+.status.bad{color:var(--bad)} .status.ok{color:var(--ok);font-weight:700}
+.bar{height:8px;background:var(--card2);border-radius:99px;margin-top:8px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--pri);transition:width .25s}
+.bar.indet .fill{width:35%;animation:sl 1.1s infinite ease-in-out}
+@keyframes sl{0%{margin-left:-35%}100%{margin-left:100%}}
+@media (prefers-reduced-motion:reduce){.bar.indet .fill{animation:none;width:100%}.drop,#adminBtn{transition:none}}
+ul.checks{list-style:none;padding:0;margin:10px 0 0;font-size:14px}
+ul.checks li{padding:3px 0 3px 22px;position:relative;color:var(--mut)}
+ul.checks li:before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+ul.checks li.bad{color:var(--bad)} ul.checks li.bad:before{content:"✗";color:var(--bad)}
+ul.checks li i{color:var(--mut);font-style:normal;opacity:.8}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.actions>*{flex:1 1 150px}
+
+/* Bantuan */
+details{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:var(--mut);font-size:15px}
+summary{cursor:pointer;color:var(--txt);font-weight:700;min-height:32px}
+details p{margin:8px 0}
+code{background:var(--card2);padding:1px 6px;border-radius:6px;font-size:13px}
+.engine{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13px}
+
+[hidden]{display:none !important}
+/* Peringatan browser dalam-aplikasi (in-app browser) */
+#inappWarn{position:fixed;top:0;left:0;right:0;z-index:200;background:#241a12;border-bottom:1px solid #6b4a1f;padding:calc(10px + env(safe-area-inset-top)) 54px 10px 14px;font-size:14px;line-height:1.4;color:var(--txt)}
+#inappWarn b{color:var(--warn)}
+#inappClose{position:fixed;top:calc(6px + env(safe-area-inset-top));right:8px;z-index:201;background:transparent;border:0;color:var(--mut);min-height:0;padding:6px 10px;font-size:18px}
+#inappArrow{position:fixed;top:calc(6px + env(safe-area-inset-top));right:46px;z-index:201;font-size:26px;color:var(--warn);animation:inappBounce 1.1s infinite}
+@keyframes inappBounce{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,-5px)}}
+html.inapp #adminBtn{opacity:0}
+html.inapp main{padding-top:calc(90px + env(safe-area-inset-top))}
+@media (prefers-reduced-motion:reduce){#inappArrow{animation:none}}
+/* Akun & kuota */
+.gbtn{background:#fff;color:#1f1f1f;min-height:56px;font-size:18px;width:100%;max-width:340px}
+.gbtn svg{width:22px;height:22px}
+.loginBox{text-align:center;margin-bottom:18px}
+.loginBox small{display:block;margin-top:8px;color:var(--mut);font-size:14px}
+.userBar{display:flex;align-items:center;gap:10px}
+.userBar img{width:38px;height:38px;border-radius:50%;background:var(--card2)}
+.userBar .who{flex:1;min-width:0;font-size:14px;line-height:1.3}
+.userBar .who b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.userBar .who span{color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.quota{flex-direction:column;align-items:stretch}
+.quota .line{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;background:var(--card2);font-weight:700}
+.pill.full{background:#10261a;color:var(--ok)}
+.pill.zero{background:#2b1518;color:var(--bad)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal[hidden]{display:none}
+.modal .box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
+.modal h2{margin:0 0 8px;font-size:21px}
+.modal p{color:var(--mut);margin:8px 0}
+.modal .actions{margin-top:16px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--card2);color:var(--txt);border:1px solid var(--pri);padding:12px 18px;border-radius:12px;font-weight:600;z-index:120;max-width:90vw;text-align:center}
+.toast[hidden]{display:none}
+.price{margin:6px 0 12px}
+.price .now{font-size:30px;font-weight:800;color:var(--ok)}
+.price .old{text-decoration:line-through;color:var(--mut);margin-right:8px;font-size:17px}
+.muted{color:var(--mut);font-size:14px}
+.method{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;margin:8px 0 14px}
+.method .mname{font-weight:800;font-size:17px}
+.method .mnum{font-size:26px;font-weight:800;letter-spacing:.5px;margin:2px 0;word-break:break-all}
+.method button{margin-top:10px}
+.lbl{display:block;color:var(--txt);font-size:15px;font-weight:600}
+.lbl input{display:block;width:100%;margin-top:6px;min-height:50px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--txt);padding:0 14px;font:17px system-ui,sans-serif}
+.payinfo{background:var(--card2);border-radius:12px;padding:12px;margin-top:10px}
+.warnmsg{color:var(--warn) !important}
+.modal .actions{flex-direction:column}
+.modal .actions>*{flex:0 0 auto;width:100%}
+.picks{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.pick{flex:1 1 90px;background:var(--card2);color:var(--txt);border:2px solid var(--line)}
+.pick.on{border-color:var(--pri);background:var(--card2);color:var(--pri)}
+#modePicks .pick{flex-direction:column;gap:2px;min-height:64px;font-size:15px;line-height:1.3}
+#modePicks .pick small{font-size:12px;font-weight:400;opacity:.75}
+.admin{position:fixed;inset:0;background:var(--bg);z-index:90;overflow:auto;padding:0 0 60px}
+.admin .ahead{position:sticky;top:0;background:var(--bg);display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);z-index:2}
+.admin .ahead b{font-size:19px}
+.tabs{display:flex;gap:6px;padding:12px 16px 0;overflow-x:auto}
+.tabs button{flex:0 0 auto;min-height:42px;background:var(--card2);color:var(--txt);border:1px solid var(--line);font-size:14px}
+.tabs button.on{background:var(--pri);color:var(--pri-ink);border-color:var(--pri)}
+.abody{max-width:640px;margin:0 auto;padding:14px 16px}
+.acard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.acard .t{font-weight:700;word-break:break-word}
+.acard .actions{margin-top:12px}
+.acard label.lbl{margin-top:10px}
+.acard input[type=text],.acard input[type=number],.abody input.search{display:block;width:100%;margin-top:6px;min-height:46px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--txt);padding:0 12px;font:16px system-ui,sans-serif}
+.abody input.search{margin:0 0 12px}
+.chk{display:flex;align-items:center;gap:10px;margin-top:10px;font-weight:600}
+.chk input{width:22px;height:22px}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--card2);font-size:13px;font-weight:700}
+.badge.pro{background:#10261a;color:var(--ok)}
+#tiktokBox{margin-top:16px}
+#tiktokBox .t{font-weight:800;font-size:18px;margin-bottom:8px}
+#tiktokBox .big{width:100%;min-height:56px;font-size:17px}
+#tiktokBox input{display:block;width:100%;margin:6px 0 10px;min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--txt);padding:0 14px;font:17px system-ui,sans-serif}
+#tiktokBox hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+#tiktokBox .row2{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.badge.n{background:var(--bad);color:#000;margin-left:4px}
+</style>
+</head>
+<body>
+<script>
+(function(){
+  var ua = navigator.userAgent || '';
+  if (/TikTok|BytedanceWebview|musical_ly|FBAN|FBAV|Instagram|Line\//i.test(ua) && !sessionStorage.getItem('inappDismissed')) {
+    document.documentElement.classList.add('inapp');
+    document.addEventListener('DOMContentLoaded', function(){
+      var w = document.getElementById('inappWarn'), a = document.getElementById('inappArrow'), c = document.getElementById('inappClose');
+      w.hidden = false; a.hidden = false; c.hidden = false;
+      c.onclick = function(){
+        w.hidden = true; a.hidden = true; c.hidden = true;
+        document.documentElement.classList.remove('inapp');
+        try { sessionStorage.setItem('inappDismissed', '1'); } catch (e) {}
+      };
+    });
+  }
+})();
+</script>
+<div id="inappWarn" hidden>Kamu membuka halaman ini di dalam aplikasi (TikTok/Instagram, dll). Supaya login &amp; download video lancar, ketuk <b>titik tiga (⋮)</b> di pojok kanan atas, lalu pilih <b>"Buka di Browser"</b>.</div>
+<div id="inappArrow" hidden>↗</div>
+<button id="inappClose" type="button" aria-label="Tutup peringatan" hidden>✕</button>
+<button id="adminBtn" type="button" aria-label="Menu admin" title="">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>
+</button>
+<main>
+  <div class="brand">
+    <div class="logo" role="img" aria-label="Veldor Codex">
+      <img src="data:image/png;base64,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a9aLL77w00/7//Ofb5OTx2GjEwQH3DB0o8MZM2ZMmjSpQ4eOCQl3XL78++uvv/700wtbt27tbICwLKsocrt27e+4447775+6YMECo9HwzTcbKyurxo1LoQuIu13qxcXFly5dJITs379//fr1q1atot2rbl/AbrefOXPm0qVLkuRgGMZkCmjZskX1xtTy5curqqruv3/qkCFDHnhgWkxMTOfOtxCCbo7mXNvFU5XmXungOP78+XMffPBhRUWFTqebNGkS7e/443WuqirDcfzKlSuysrJUlWnXrt2sWY8FBQVXe6rCFRUVL1jwlFarU1ViMBgeeeQfXbt2dXtD2i/76aefbdu2LSIighDFbLb0798/PX0mIf9X06E9suXl11566eVnn30mKCiY5/kNGzbk5+enp6fjqQqCA258dvzxPq/UPhaLq/OV1QdoESLXOGqr+j9WH0Li/HqqSlz/jhOH4IAbjBBCmxL0fz3cyenIUWflorZ8obUGuoOJhzekD0dYlqUbnji3fa7x3eh/cv07IDgA4C8EjUwAQHAAAIIDABAcAIDgAAAEBwAAggMAEBwAgOAAAAQHACA4AAAQHACA4AAABAcAIDgAAMEBAIDgAAAEBwAgOAAAwQEACA4AQHAAACA4AADBAQAIDgBAcAAAggMAAMEBAAgOAEBwAACCAwAQHAAACA4AQHAAAIIDABAcAIDgAABAcAAAggMAEBwAgOAAAAQHACA4AAAQHACA4AAABAcAIDgAAMEBAIDgAAAEBwAgOAAAwQEACA4AAAQHACA4AADBAQAIDgBAcAAAIDgAAMEBAAgOAEBwAACCAwAQHAAACA4AQHAAAIIDABAcAIDgAABAcAAAggMAEBwAgOAAAAQHAACCAwAQHACA4AAABAcAIDgAABAcAIDgAAAEBwAgOAAAwQEACA4AAAQHACA4AADBAQAIDgBAcAAAIDgAAMEBAAgOAEBwAACCAwAAwQEACA4AQHAAAIIDABAcAIDgAABAcAAAggMAEBwAgOAAAAQHAACCAwAQHACA4AAABAcAIDgAABAcAIDgAAAEBwAgOAAAwQEAgOAAAAQHACA4AADBAQAIDgBAcAAAIDgAAMEBAAgOAEBwAACCAwAAwQEACA4AQHAAAIIDABAcAAAIDgBAcAAAggMAEBwAgOAAAEBwAACCAwAQHACA4AAABAcAIDgAABAcANB4/j+anQTTueTlvAAAAABJRU5ErkJggg==" alt="" width="132" height="132">
+    </div>
+    <h1>Siapkan videomu untuk TikTok</h1>
+    <p class="sub">Pilih video dari HP atau komputermu. Tunggu sebentar, lalu simpan hasilnya. Videomu tidak dikirim ke mana-mana.</p>
+  </div>
+
+
+  <div id="loginBox" class="loginBox" hidden>
+    <button id="loginBtn" class="gbtn" type="button">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.900 2.400 30.400 0 24 0 14.600 0 6.500 5.400 2.600 13.200l7.900 6.100C12.400 13.600 17.700 9.500 24 9.500z"/><path fill="#4285F4" d="M46.500 24.500c0-1.600-.1-3.100-.4-4.500H24v9h12.700c-.6 3-2.300 5.500-4.800 7.200l7.500 5.800c4.400-4.100 7.100-10.100 7.100-17.500z"/><path fill="#FBBC05" d="M10.500 28.700c-.5-1.400-.8-3-.8-4.700s.3-3.200.8-4.700l-7.900-6.100C.9 16.400 0 20.100 0 24s.9 7.600 2.600 10.800l7.900-6.100z"/><path fill="#34A853" d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.500-5.800c-2.100 1.400-4.900 2.300-8.400 2.300-6.300 0-11.600-4.100-13.500-9.800l-7.900 6.100C6.500 42.600 14.600 48 24 48z"/></svg>
+      Masuk dengan Google
+    </button>
+    <small>Pengguna baru: gratis 3 kali coba</small>
+  </div>
+
+  <div id="quota" class="quota" hidden>
+    <div class="userBar">
+      <img id="uPhoto" alt="" referrerpolicy="no-referrer">
+      <div class="who"><b id="uName"></b><span id="uEmail"></span></div>
+      <button id="logoutBtn" class="ghost small" type="button">Keluar</button>
+    </div>
+    <div class="line"><span id="quotaText"></span><button id="upgradeBtn" class="blue small" type="button" hidden>Akses Penuh</button></div>
+  </div>
+
+  <ol class="steps">
+    <li>Pilih video</li>
+    <li>Tunggu proses</li>
+    <li>Simpan hasil</li>
+  </ol>
+
+  <div class="picks" id="modePicks">
+    <button type="button" class="pick on" id="modeRepack"><span>Repack HD</span><small>Ukuran asli, tanpa dikecilkan</small></button>
+    <button type="button" class="pick" id="modeColorGrade"><span>Color Grading</span><small>AI analisa video &amp; kasih saran pengaturan CapCut</small></button>
+  </div>
+
+  <label class="drop" id="drop">
+    <input type="file" id="file" accept="video/*,.mov,.mp4,.m4v" multiple hidden>
+    <span class="big">Pilih Video</span>
+    <small>Boleh pilih banyak video sekaligus. Diproses satu per satu.</small>
+  </label>
+
+  <div id="list"></div>
+
+  <details>
+    <summary>Bantuan &amp; catatan</summary>
+    <p>1. Mode <b>Repack HD</b>: kualitas gambar video dijaga tetap seperti aslinya (tidak diproses ulang, ukuran file sama), lalu bisa langsung diunduh & diupload ke TikTok. Mode <b>Color Grading</b>: video TIDAK diproses/diunduh — AI cuma menganalisa beberapa contoh frame lalu memberi saran pengaturan color grading di CapCut (Bahasa Indonesia) supaya kamu bisa terapkan sendiri di CapCut.</p>
+    <p>2. Video diproses lalu diperiksa otomatis. Kalau ada bagian yang belum sesuai, tombol simpan tidak akan muncul supaya hasilnya tetap terjamin.</p>
+    <p>Catatan jujur: hasilnya bergantung pada kebijakan TikTok yang bisa berubah sewaktu-waktu, jadi bisa saja suatu waktu berhenti bekerja. Coba satu video dulu sebelum dipakai untuk klien. Kalau videonya konten AI yang realistis, tetap aktifkan label konten AI di TikTok.</p>
+    <div class="engine">
+      <span id="engineStatus">Mesin video: belum dimuat (dimuat otomatis saat video pertama diproses, ±30 MB sekali saja)</span>
+      <button class="ghost small" id="engineBtn" type="button">Cek mesin</button>
+    </div>
+  </details>
+
+  <a id="waHelpBtn" class="btn ghost" style="width:100%;margin-top:14px" href="#" target="_blank" rel="noopener">Kesulitan? Konsultasi Admin (WA)</a>
+  <button id="tutorialBtn" class="btn ghost" type="button" style="width:100%;margin-top:10px">Tutorial Cara Upload Video HD</button>
+  <a class="btn ghost" style="width:100%;margin-top:10px;display:block;text-align:center" href="tiktok-check.html" target="_blank" rel="noopener">🔍 TikTok Checker (cek info video dari link)</a>
+</main>
+
+
+<div id="admin" class="admin" hidden>
+  <div class="ahead"><b>Menu Admin</b><button id="adminClose" class="ghost small" type="button">Tutup</button></div>
+  <div class="tabs" id="aTabs"></div>
+  <div class="abody" id="aBody"></div>
+</div>
+<div id="modal" class="modal" hidden role="dialog" aria-modal="true">
+  <div class="box"><h2 id="modalTitle"></h2><div id="modalBody"></div><div class="actions" id="modalActions"></div></div>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+// ==CORE-START==
+const Core = (() => {
+  'use strict';
+  const CONTAINERS = new Set(['moov', 'trak', 'mdia', 'minf', 'stbl', 'edts']);
+  const FILLER = Uint8Array.from([0, 0, 0, 4, 0, 0, 0, 0]); // 8 byte, sama dengan contoh Vague
+  const FILLER_MULT = 9;                                     // filler = 9 x jumlah sample audio asli
+  const TWO32 = 4294967296;
+  // ---------- veldor-metod: tiru pola Vague (bukan hapus total metadata, tapi beri tag baru + mdat "resmi" lebih kecil dari isi fisik) ----------
+  const VELDOR_METOD = {
+    artistTag: 'transcod-videohd-veldor.netlify.app', // tag pengenal tool sendiri (analog ©ART "transcode.vague-infinity.com" milik Vague)
+    hideFillerFromMdatSize: true,                       // ukuran box mdat yang ditulis TIDAK mencakup filler track ke-3 (filler tetap ada fisik, tapi di luar batas resmi mdat) — persis pola file Vague
+    unknownDuration: true                               // mvhd dikonversi ke versi 1 dengan duration = sentinel 64-bit 0xFFFFFFFFFFFFFFFF ("Unknown Duration").
+                                                         // Berbeda dari trik filler di atas: ini HANYA mengubah field metadata mvhd sendiri secara valid
+                                                         // sesuai spesifikasi MP4 (tidak ada kebohongan ukuran box apa pun) — diadaptasi dari teknik
+                                                         // file-level tool kompetitor lain yang menandai video seolah durasinya belum final/masih live,
+                                                         // supaya tidak diperlakukan sebagai file yang "sudah pasti selesai diproses".
+  };
+  const SENTINEL64 = Uint8Array.from([255, 255, 255, 255, 255, 255, 255, 255]);
+  function mvhdToUnknownDuration(payload) {
+    const ver = payload[0];
+    if (ver === 1) {
+      if (payload.length < 32) throw new Error('mvhd versi 1 tidak valid (terlalu pendek).');
+      const out = payload.slice();
+      out.set(SENTINEL64, 24);
+      return out;
+    }
+    if (ver !== 0) throw new Error('Versi mvhd tidak didukung: ' + ver);
+    if (payload.length < 100) throw new Error('mvhd versi 0 tidak valid (terlalu pendek).');
+    // Konversi mvhd versi 0 (100 byte) -> versi 1 (112 byte): creation_time & modification_time jadi 64-bit
+    // (nilai lama ditaruh di 32-bit rendah, tinggi = 0), timescale tetap, duration diisi sentinel 64-bit,
+    // sisanya (rate/volume/reserved/matrix/pre_defined/next_track_ID) disalin apa adanya di posisi baru.
+    const out = new Uint8Array(112);
+    out[0] = 1; out[1] = payload[1]; out[2] = payload[2]; out[3] = payload[3];
+    out.set(payload.subarray(4, 8), 8);
+    out.set(payload.subarray(8, 12), 16);
+    out.set(payload.subarray(12, 16), 20);
+    out.set(SENTINEL64, 24);
+    out.set(payload.subarray(20, 100), 32);
+    return out;
+  }
+  function isUnknownDuration(payload) {
+    if (!payload || payload.length < 32 || payload[0] !== 1) return false;
+    for (let i = 24; i < 32; i++) if (payload[i] !== 0xff) return false;
+    return true;
+  }
+
+  const u32 = (b, o) => ((b[o] << 24) | (b[o + 1] << 16) | (b[o + 2] << 8) | b[o + 3]) >>> 0;
+  const w32 = (b, o, v) => { b[o] = (v >>> 24) & 255; b[o + 1] = (v >>> 16) & 255; b[o + 2] = (v >>> 8) & 255; b[o + 3] = v & 255; };
+  const cc = (b, o) => String.fromCharCode(b[o], b[o + 1], b[o + 2], b[o + 3]);
+  const fcc = s => Uint8Array.from([s.charCodeAt(0), s.charCodeAt(1), s.charCodeAt(2), s.charCodeAt(3)]);
+
+  // ---------- baca / tulis atom ----------
+  function readHeader(buf, pos, end) {
+    if (end - pos < 8) return null;
+    let size = u32(buf, pos), hdr = 8;
+    const type = cc(buf, pos + 4);
+    if (size === 1) {
+      if (end - pos < 16) return null;
+      size = u32(buf, pos + 8) * TWO32 + u32(buf, pos + 12); hdr = 16;
+    } else if (size === 0) size = end - pos;
+    if (size < hdr || pos + size > end) return null;
+    return { type, size, hdr };
+  }
+  function topLevel(buf, tolerant) {
+    const out = []; let pos = 0;
+    while (pos < buf.length) {
+      const h = readHeader(buf, pos, buf.length);
+      if (!h) {
+        // tolerant=true dipakai khusus saat memverifikasi file OUTPUT kita sendiri: sengaja ada sisa byte
+        // filler track ke-3 di luar ukuran resmi mdat (lihat VELDOR_METOD.hideFillerFromMdatSize), jadi
+        // sisa byte yang tidak membentuk box valid di akhir file itu wajar, bukan tanda file rusak.
+        if (tolerant && out.some(b => b.type === 'mdat')) break;
+        if (buf.length - pos < 8) break;
+        throw new Error('File video ini terpotong/tidak lengkap (bukan masalah dari aplikasi ini) — biasanya karena file belum selesai diunduh sepenuhnya (misal video kiriman WhatsApp yang belum di-download tuntas) atau rusak saat disalin. Coba: buka dulu videonya sampai selesai diputar di galeri HP, atau simpan ulang/unduh ulang videonya, baru pilih lagi di sini.');
+      }
+      out.push({ type: h.type, start: pos, size: h.size, hdr: h.hdr });
+      pos += h.size;
+    }
+    return out;
+  }
+  function parseBoxes(buf, start, end) {
+    const out = []; let pos = start;
+    while (pos < end) {
+      const h = readHeader(buf, pos, end);
+      if (!h) { if (end - pos < 8) break; throw new Error('Struktur moov tidak valid'); }
+      const bs = pos + h.hdr, be = pos + h.size;
+      if (CONTAINERS.has(h.type)) out.push({ type: h.type, children: parseBoxes(buf, bs, be) });
+      else out.push({ type: h.type, payload: buf.subarray(bs, be) });
+      pos = be;
+    }
+    return out;
+  }
+  function sizeOf(b) {
+    if (b.children) { let s = 8; for (const c of b.children) s += sizeOf(c); return s; }
+    return 8 + b.payload.length;
+  }
+  function writeBox(b, out, pos) {
+    w32(out, pos, sizeOf(b)); out.set(fcc(b.type), pos + 4);
+    let p = pos + 8;
+    if (b.children) { for (const c of b.children) p = writeBox(c, out, p); }
+    else { out.set(b.payload, p); p += b.payload.length; }
+    return p;
+  }
+  const child = (b, t) => (b.children && b.children.find(c => c.type === t)) || null;
+  function path(b, ...ts) { for (const t of ts) { b = b ? child(b, t) : null; } return b || null; }
+  const clone = b => b.children ? { type: b.type, children: b.children.map(clone) } : { type: b.type, payload: b.payload.slice() };
+
+  function parseMoovOf(buf, tolerant) {
+    const tops = topLevel(buf, tolerant);
+    const m = tops.find(t => t.type === 'moov');
+    if (!m) throw new Error('Bukan file MP4/MOV yang valid (atom moov tidak ditemukan)');
+    return { tops, moov: { type: 'moov', children: parseBoxes(buf, m.start + m.hdr, m.start + m.size) } };
+  }
+
+  // ---------- tabel sample ----------
+  function rdStts(p) { const n = u32(p, 4), e = []; for (let i = 0; i < n; i++) e.push([u32(p, 8 + i * 8), u32(p, 12 + i * 8)]); return e; }
+  function wrStts(e) { const o = new Uint8Array(8 + e.length * 8); w32(o, 4, e.length); e.forEach(([c, d], i) => { w32(o, 8 + i * 8, c); w32(o, 12 + i * 8, d); }); return o; }
+  function rdStsc(p) { const n = u32(p, 4), e = []; for (let i = 0; i < n; i++) e.push([u32(p, 8 + i * 12), u32(p, 12 + i * 12), u32(p, 16 + i * 12)]); return e; }
+  function wrStsc(e) { const o = new Uint8Array(8 + e.length * 12); w32(o, 4, e.length); e.forEach(([a, b, c], i) => { w32(o, 8 + i * 12, a); w32(o, 12 + i * 12, b); w32(o, 16 + i * 12, c); }); return o; }
+  function rdStsz(p) {
+    const ss = u32(p, 4), n = u32(p, 8), r = new Uint32Array(n);
+    if (ss) r.fill(ss); else for (let i = 0; i < n; i++) r[i] = u32(p, 12 + i * 4);
+    return r;
+  }
+  function wrStsz(sizes) { const o = new Uint8Array(12 + sizes.length * 4); w32(o, 8, sizes.length); for (let i = 0; i < sizes.length; i++) w32(o, 12 + i * 4, sizes[i]); return o; }
+  function rdStco(p) { const n = u32(p, 4), r = new Array(n); for (let i = 0; i < n; i++) r[i] = u32(p, 8 + i * 4); return r; }
+  function wrStco(offs) {
+    const o = new Uint8Array(8 + offs.length * 4); w32(o, 4, offs.length);
+    for (let i = 0; i < offs.length; i++) { if (offs[i] < 0 || offs[i] >= TWO32) throw new Error('Offset chunk di luar jangkauan 32-bit (file terlalu besar)'); w32(o, 8 + i * 4, offs[i]); }
+    return o;
+  }
+  function rdOffsets(stbl) {
+    const co = child(stbl, 'stco');
+    if (co) return rdStco(co.payload);
+    const c64 = child(stbl, 'co64');
+    if (!c64) throw new Error('Tabel offset chunk (stco/co64) tidak ada');
+    const p = c64.payload, n = u32(p, 4), r = new Array(n);
+    for (let i = 0; i < n; i++) r[i] = u32(p, 8 + i * 8) * TWO32 + u32(p, 12 + i * 8);
+    return r;
+  }
+  function sampleRanges(trak) {
+    const stbl = path(trak, 'mdia', 'minf', 'stbl');
+    const sizes = rdStsz(child(stbl, 'stsz').payload);
+    const stsc = rdStsc(child(stbl, 'stsc').payload);
+    const offs = rdOffsets(stbl);
+    const so = new Float64Array(sizes.length), ss = new Uint32Array(sizes.length);
+    let si = 0, k = 0;
+    for (let c = 1; c <= offs.length; c++) {
+      while (k + 1 < stsc.length && stsc[k + 1][0] <= c) k++;
+      let off = offs[c - 1];
+      for (let j = 0; j < stsc[k][1] && si < sizes.length; j++) { so[si] = off; ss[si] = sizes[si]; off += sizes[si]; si++; }
+    }
+    if (si !== sizes.length) throw new Error('Tabel sample tidak konsisten (' + si + ' dari ' + sizes.length + ')');
+    return { offsets: so, sizes: ss, count: sizes.length };
+  }
+
+  // ---------- info track ----------
+  const handlerOf = t => { const h = path(t, 'mdia', 'hdlr'); return h ? cc(h.payload, 8) : ''; };
+  const trakId = t => { const p = child(t, 'tkhd').payload; return u32(p, p[0] === 0 ? 12 : 20); };
+  function mdhdInfo(t) {
+    const p = path(t, 'mdia', 'mdhd').payload;
+    if (p[0] === 0) return { timescale: u32(p, 12), duration: u32(p, 16) };
+    return { timescale: u32(p, 20), duration: u32(p, 24) * TWO32 + u32(p, 28) };
+  }
+  const sampleEntryType = t => { const s = path(t, 'mdia', 'minf', 'stbl', 'stsd'); return s ? cc(s.payload, 12) : ''; };
+
+  function inspectInput(buf) {
+    const { moov } = parseMoovOf(buf);
+    const traks = moov.children.filter(c => c.type === 'trak');
+    const v = traks.find(t => handlerOf(t) === 'vide'), a = traks.find(t => handlerOf(t) === 'soun');
+    if (!v) throw new Error('File ini tidak punya track video.');
+    if (!a) throw new Error('Video ini tidak punya track audio. Metode ini butuh audio (walau senyap).');
+    const vType = sampleEntryType(v);
+    const hevc = vType === 'hvc1' || vType === 'hev1';
+    const h264 = vType === 'avc1' || vType === 'avc3';
+    if (!hevc && !h264) throw new Error('Codec video "' + vType + '" belum didukung (baru HEVC dan H.264).');
+    const md = mdhdInfo(v), tk = child(v, 'tkhd').payload;
+    // warna: HDR = transfer PQ (16) / HLG (18) pada atom colr, atau ada konfigurasi Dolby Vision
+    const stsdP = path(v, 'mdia', 'minf', 'stbl', 'stsd').payload;
+    let hdr = false, trc = 0, prim = 0, bitDepth = 8;
+    const ci = indexOfBytes(stsdP, strBytes('colr'));
+    if (ci >= 0 && cc(stsdP, ci + 4) === 'nclx') { prim = (stsdP[ci + 8] << 8) | stsdP[ci + 9]; trc = (stsdP[ci + 10] << 8) | stsdP[ci + 11]; }
+    if (trc === 16 || trc === 18) hdr = true;
+    if (indexOfBytes(stsdP, strBytes('dvcC')) >= 0 || indexOfBytes(stsdP, strBytes('dvvC')) >= 0) hdr = true;
+    const hi = indexOfBytes(stsdP, strBytes('hvcC'));
+    if (hi >= 0 && hi + 4 + 17 < stsdP.length) bitDepth = (stsdP[hi + 4 + 17] & 7) + 8;
+    const vr = sampleRanges(v), ar = sampleRanges(a);
+    const duration = md.timescale ? md.duration / md.timescale : 0;
+    return {
+      codec: hevc ? 'hevc' : 'h264', hevc, hdr, trc, prim, bitDepth, w: u32(tk, tk.length - 8) >>> 16, h: u32(tk, tk.length - 4) >>> 16,
+      duration, fps: duration ? vr.count / duration : 0, videoSamples: vr.count, audioSamples: ar.count
+    };
+  }
+
+  // ---------- langkah utama: klon track audio + filler + faststart ----------
+  function cloneAudio(trak, newId, fillerOffsetOld) {
+    const t = clone(trak);
+    const tk = child(t, 'tkhd'); tk.payload[tk.payload[0] === 0 ? 12 : 20] = 0; // dibersihkan lalu diisi
+    w32(tk.payload, tk.payload[0] === 0 ? 12 : 20, newId);
+    t.children = t.children.filter(c => c.type !== 'edts');          // klon tanpa edit list
+    const stbl = path(t, 'mdia', 'minf', 'stbl');
+    const stts = child(stbl, 'stts'), stsc = child(stbl, 'stsc'), stsz = child(stbl, 'stsz'), stco = child(stbl, 'stco');
+    if (!stco) throw new Error('File dasar memakai co64 (>4 GB), tidak didukung.');
+    const sizes = rdStsz(stsz.payload), offs = rdStco(stco.payload);
+    const nFill = FILLER_MULT * sizes.length;
+    stts.payload = wrStts(rdStts(stts.payload).concat([[nFill, 1]]));
+    stsc.payload = wrStsc(rdStsc(stsc.payload).concat([[offs.length + 1, nFill, 1]]));
+    const ns = new Uint32Array(sizes.length + nFill); ns.set(sizes); ns.fill(FILLER.length, sizes.length);
+    stsz.payload = wrStsz(ns);
+    stco.payload = wrStco(offs.concat([fillerOffsetOld]));
+    return { trak: t, nFill };
+  }
+  function shiftOffsets(moov, delta) {
+    for (const t of moov.children.filter(c => c.type === 'trak')) {
+      const stco = path(t, 'mdia', 'minf', 'stbl', 'stco');
+      if (!stco) throw new Error('co64 tidak didukung');
+      stco.payload = wrStco(rdStco(stco.payload).map(o => o + delta));
+    }
+  }
+  function postprocess(buf) {
+    const tops = topLevel(buf);
+    const ftyp = tops.find(t => t.type === 'ftyp'), moovT = tops.find(t => t.type === 'moov');
+    const mdats = tops.filter(t => t.type === 'mdat');
+    if (!ftyp || !moovT || mdats.length !== 1) throw new Error('File dasar dari ffmpeg tidak sesuai harapan (ftyp/moov/mdat).');
+    const mdat = mdats[0];
+    if (mdat.hdr !== 8) throw new Error('mdat 64-bit tidak didukung.');
+    const moov = { type: 'moov', children: parseBoxes(buf, moovT.start + moovT.hdr, moovT.start + moovT.size) };
+    const traks = moov.children.filter(c => c.type === 'trak');
+    const audio = traks.filter(t => handlerOf(t) === 'soun');
+    if (audio.length !== 1 || traks.filter(t => handlerOf(t) === 'vide').length !== 1 || traks.length !== 2)
+      throw new Error('File dasar harus berisi tepat 1 track video dan 1 track audio.');
+    const newId = Math.max(...traks.map(trakId)) + 1;
+    const oldMdatEnd = mdat.start + mdat.size;
+    const { trak: clonedTrak, nFill } = cloneAudio(audio[0], newId, oldMdatEnd);
+    const lastIdx = Math.max(...moov.children.map((c, i) => c.type === 'trak' ? i : -1));
+    moov.children.splice(lastIdx + 1, 0, clonedTrak);
+    const mvhd = child(moov, 'mvhd');
+    mvhd.payload = VELDOR_METOD.unknownDuration ? mvhdToUnknownDuration(mvhd.payload) : mvhd.payload.slice();
+    w32(mvhd.payload, mvhd.payload.length - 4, newId + 1);
+
+    const ftypBytes = buf.subarray(ftyp.start, ftyp.start + ftyp.size);
+    const moovSize = sizeOf(moov);
+    const newMdatStart = ftypBytes.length + moovSize;
+    shiftOffsets(moov, newMdatStart - mdat.start);
+
+    const payloadLen = mdat.size - 8, fillerLen = nFill * FILLER.length;
+    if (8 + payloadLen + fillerLen >= TWO32) throw new Error('mdat terlalu besar untuk header 32-bit.');
+    const out = new Uint8Array(ftypBytes.length + moovSize + 8 + payloadLen + fillerLen);
+    out.set(ftypBytes, 0);
+    writeBox(moov, out, ftypBytes.length);
+    let p = newMdatStart;
+    // ukuran resmi mdat sengaja TIDAK menghitung filler (VELDOR_METOD.hideFillerFromMdatSize) — filler tetap fisik ada di file,
+    // hanya tidak "terdaftar" di header box, persis struktur yang ditemukan di file contoh Vague
+    const declaredMdatSize = VELDOR_METOD.hideFillerFromMdatSize ? (8 + payloadLen) : (8 + payloadLen + fillerLen);
+    w32(out, p, declaredMdatSize); out.set(fcc('mdat'), p + 4); p += 8;
+    out.set(buf.subarray(mdat.start + 8, mdat.start + mdat.size), p); p += payloadLen;
+    for (let i = 0; i < nFill; i++) { out.set(FILLER, p); p += FILLER.length; }
+    return out;
+  }
+
+  // ---------- verifikasi hasil ----------
+  function indexOfBytes(hay, needle) {
+    outer: for (let i = 0; i <= hay.length - needle.length; i++) {
+      for (let j = 0; j < needle.length; j++) if (hay[i + j] !== needle[j]) continue outer;
+      return i;
+    }
+    return -1;
+  }
+  const strBytes = s => Uint8Array.from([...s].map(c => c.charCodeAt(0)));
+
+  function verify(inp, out, opts) {
+    const skipIdentical = !!(opts && opts.skipIdentical);
+    const checks = [];
+    const add = (ok, label, detail) => checks.push({ ok: !!ok, label, detail: detail || '' });
+    let tops, moov;
+    try { ({ tops, moov } = parseMoovOf(out, VELDOR_METOD.hideFillerFromMdatSize)); } catch (e) { add(false, 'Struktur file hasil bisa dibaca', e.message); return checks; }
+    const moovT = tops.find(t => t.type === 'moov'), mdatT = tops.find(t => t.type === 'mdat');
+    add(tops.map(t => t.type).join(',') === 'ftyp,moov,mdat', 'Header di depan (faststart)', tops.map(t => t.type).join(' > '));
+
+    const traks = moov.children.filter(c => c.type === 'trak');
+    const hs = traks.map(handlerOf);
+    const okTracks = hs.join(',') === 'vide,soun,soun' && new Set(traks.map(trakId)).size === 3;
+    add(okTracks, 'Tiga track: 1 video + 2 audio', hs.join(', '));
+    if (!okTracks) return checks;
+    const mvhd = child(moov, 'mvhd').payload;
+    add(u32(mvhd, mvhd.length - 4) === Math.max(...traks.map(trakId)) + 1, 'ID track konsisten');
+    if (VELDOR_METOD.unknownDuration) {
+      add(isUnknownDuration(mvhd), 'Duration mvhd di-set Unknown (sentinel 64-bit)', isUnknownDuration(mvhd) ? 'mvhd versi ' + mvhd[0] : 'sentinel tidak ditemukan');
+    }
+
+    let vr, a2, a3;
+    try { vr = sampleRanges(traks[0]); a2 = sampleRanges(traks[1]); a3 = sampleRanges(traks[2]); }
+    catch (e) { add(false, 'Tabel sample bisa dibaca', e.message); return checks; }
+
+    // offset valid — kalau VELDOR_METOD.hideFillerFromMdatSize aktif, sample filler track ke-3 memang
+    // sengaja diletakkan fisik di luar ukuran resmi mdat, jadi batas atas dilonggarkan sampai akhir file
+    const lo = mdatT.start + mdatT.hdr, hi = VELDOR_METOD.hideFillerFromMdatSize ? out.length : (mdatT.start + mdatT.size);
+    let bad = 0;
+    for (const r of [vr, a2, a3]) for (let i = 0; i < r.count; i++) if (r.offsets[i] < lo || r.offsets[i] + r.sizes[i] > hi) bad++;
+    add(bad === 0, 'Semua sample berada di dalam mdat', bad ? bad + ' sample keluar batas' : '');
+
+    // struktur track 3
+    const n = a2.count, nFill = a3.count - n;
+    add(a3.count === 10 * n && n > 0, 'Track audio ke-3 = 10× sample track ke-2', a3.count + ' vs ' + n + ' × 10');
+    let shared = a3.count >= n;
+    for (let i = 0; shared && i < n; i++) if (a3.offsets[i] !== a2.offsets[i] || a3.sizes[i] !== a2.sizes[i]) shared = false;
+    add(shared, 'Data audio dipakai bersama (tanpa duplikasi)');
+    let fillOk = nFill === FILLER_MULT * n;
+    for (let i = n; fillOk && i < a3.count; i++) {
+      if (a3.sizes[i] !== FILLER.length) { fillOk = false; break; }
+      const o = a3.offsets[i]; for (let j = 0; j < FILLER.length; j++) if (out[o + j] !== FILLER[j]) { fillOk = false; break; }
+    }
+    add(fillOk, 'Filler 8-byte utuh (' + nFill + ' sample)');
+
+    // video identik dengan input (dilewati kalau mode kompres, karena video sengaja diproses ulang)
+    if (skipIdentical) {
+      add(vr.count > 0, 'Video berisi sample (mode kompres: video diproses ulang, bukan disalin)', vr.count + ' frame');
+    } else try {
+      const { moov: im } = parseMoovOf(inp);
+      const iv = im.children.filter(c => c.type === 'trak').find(t => handlerOf(t) === 'vide');
+      const ir = sampleRanges(iv);
+      let same = ir.count === vr.count, firstDiff = -1;
+      for (let i = 0; same && i < ir.count; i++) {
+        if (ir.sizes[i] !== vr.sizes[i]) { same = false; firstDiff = i; break; }
+        const a = ir.offsets[i], b = vr.offsets[i], len = ir.sizes[i];
+        for (let j = 0; j < len; j++) if (inp[a + j] !== out[b + j]) { same = false; firstDiff = i; break; }
+      }
+      add(same, 'Video identik byte demi byte dengan aslinya', same ? ir.count + ' frame' : (ir.count !== vr.count ? 'jumlah frame beda: ' + ir.count + ' vs ' + vr.count : 'beda di frame ' + firstDiff));
+    } catch (e) { add(false, 'Video identik dengan aslinya', e.message); }
+
+    // metadata: bersih dari jejak file ASLI (device/app sumber), tapi sekarang SENGAJA diberi tag baru
+    // bergaya tool transcode (veldor-metod, meniru pola ©ART/©too milik Vague) — bukan dikosongkan total.
+    const mb = out.subarray(moovT.start, moovT.start + moovT.size);
+    const dirty = ['keys', 'te_is_reencode', 'aweme', 'Dreamina', 'com.apple.quicktime'].filter(s => indexOfBytes(mb, strBytes(s)) >= 0);
+    add(dirty.length === 0, 'Bersih dari jejak metadata file asli', dirty.join(', '));
+    const hasOwnTag = indexOfBytes(mb, strBytes(VELDOR_METOD.artistTag)) >= 0;
+    add(hasOwnTag, 'Tag veldor-metod terpasang (©ART/©too)', hasOwnTag ? VELDOR_METOD.artistTag : 'tag tidak ditemukan');
+
+    // durasi selaras
+    const dv = mdhdInfo(traks[0]), da = mdhdInfo(traks[1]);
+    const diff = Math.abs(dv.duration / dv.timescale - da.duration / da.timescale);
+    add(diff < 0.5, 'Durasi video dan audio selaras', 'selisih ' + diff.toFixed(3) + ' dtk');
+    return checks;
+  }
+
+  return { inspectInput, postprocess, verify, _internal: { topLevel, parseMoovOf, sampleRanges } };
+})();
+// ==CORE-END==
+
+</script>
+
+<script>
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+  const fmtSize = n => n >= 1e9 ? (n / 1e9).toFixed(2) + ' GB' : n >= 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB';
+  const tick = () => new Promise(r => setTimeout(r, 30));
+
+  // ---------- mesin ffmpeg.wasm (satu-satunya bagian yang butuh jaringan, sekali saja) ----------
+  const FFMPEG_VER = '0.12.10', CORE_VER = '0.12.6';
+  const LIB_SOURCES = [
+    './vendor/ffmpeg.js',
+    'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@' + FFMPEG_VER + '/dist/umd/ffmpeg.js',
+    'https://unpkg.com/@ffmpeg/ffmpeg@' + FFMPEG_VER + '/dist/umd/ffmpeg.js'
+  ];
+  const CORE_BASES = [
+    './vendor',
+    'https://cdn.jsdelivr.net/npm/@ffmpeg/core@' + CORE_VER + '/dist/umd',
+    'https://unpkg.com/@ffmpeg/core@' + CORE_VER + '/dist/umd'
+  ];
+  let engine = null, libBase = '', currentUI = null, engineLoading = null, colorGradeMode = false;
+  const logBuf = [];
+  const blobCache = new Map();
+
+  const loadScript = src => new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src;
+    s.onload = () => res(); s.onerror = () => rej(new Error('gagal memuat ' + src));
+    document.head.appendChild(s);
+  });
+  async function toBlobURL(url, mime) {
+    if (blobCache.has(url)) return blobCache.get(url);
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' untuk ' + url);
+    const u = URL.createObjectURL(new Blob([await r.blob()], { type: mime }));
+    blobCache.set(url, u); return u;
+  }
+  const setEngine = t => { $('#engineStatus').textContent = 'Mesin video: ' + t; };
+
+  // ==SHIM-START==
+  // Browser melarang membuat Worker dari skrip di CDN (lintas-origin). Pustaka ffmpeg.wasm versi UMD
+  // membuat worker dari alamat CDN itu, jadi kita bungkus dengan worker blob (satu origin dengan halaman)
+  // yang memuat skrip CDN lewat importScripts, yang memang diizinkan.
+  function installWorkerShim() {
+    if (window.__workerShim) return; window.__workerShim = true;
+    const Native = window.Worker;
+    const Shim = function (url, opts) {
+      let u; try { u = new URL(url, location.href); } catch (e) { return new Native(url, opts); }
+      if (u.protocol.indexOf('http') === 0 && u.origin !== location.origin) {
+        const code = (opts && opts.type === 'module') ? 'import ' + JSON.stringify(u.href) + ';' : 'importScripts(' + JSON.stringify(u.href) + ');';
+        return new Native(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })), opts);
+      }
+      return new Native(url, opts);
+    };
+    Shim.prototype = Native.prototype;
+    window.Worker = Shim;
+  }
+  // ==SHIM-END==
+  const shortErr = e => String((e && e.message) || e).replace(/https?:\/\/[^\s'"]+/g, m => { try { return new URL(m).host; } catch (x) { return m; } }).slice(0, 160);
+
+  async function loadEngineOnce(setStatus) {
+    const errors = [];
+    installWorkerShim();
+    if (!window.FFmpegWASM) {
+      for (const src of LIB_SOURCES) {
+        try { setStatus('Memuat mesin…'); await loadScript(src); if (window.FFmpegWASM) { libBase = src.replace(/\/[^\/]*$/, ''); break; } }
+        catch (e) { errors.push(shortErr(e)); }
+      }
+      if (!window.FFmpegWASM) throw new Error('Mesin ffmpeg tidak bisa dimuat (cek koneksi internet). ' + errors.join(' | '));
+    }
+    const { FFmpeg } = window.FFmpegWASM;
+    for (const base of CORE_BASES) {
+      try {
+        setStatus('Memuat mesin… (±30 MB, sekali saja)');
+        const ff = new FFmpeg();
+        ff.on('log', ({ message }) => { logBuf.push(message); if (logBuf.length > 80) logBuf.shift(); });
+        ff.on('progress', ({ progress }) => { if (currentUI && progress >= 0 && progress <= 1) currentUI.progress(progress); });
+        await ff.load({
+          coreURL: await toBlobURL(base + '/ffmpeg-core.js', 'text/javascript'),
+          wasmURL: await toBlobURL(base + '/ffmpeg-core.wasm', 'application/wasm')
+        });
+        engine = ff; setEngine('siap');
+        return ff;
+      } catch (e) { errors.push((base.charAt(0) === '.' ? 'vendor' : new URL(base).host) + ': ' + shortErr(e)); }
+    }
+    throw new Error('Mesin ffmpeg gagal dijalankan. ' + errors.slice(-3).join(' | '));
+  }
+  function loadEngine(setStatus) {
+    if (engine) return Promise.resolve(engine);
+    if (!engineLoading) engineLoading = loadEngineOnce(setStatus).finally(() => { engineLoading = null; });
+    return engineLoading;
+  }
+
+  async function defaultRunBase(input, info, ui) {
+    const ff = await loadEngine(ui.status);
+    currentUI = ui; logBuf.length = 0;
+    const inName = 'in.' + info.ext, outName = 'out.mp4';
+    info.reencoded = false;
+    ui.status('Memproses: video disalin, audio dibuat ulang…'); ui.progress(0);
+    await ff.writeFile(inName, input.slice()); // salinan: writeFile memindahkan buffer
+    const tail = ['-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-ac', '2',
+      '-map_metadata', '-1', '-map_metadata:s:v', '-1', '-map_metadata:s:a', '-1', '-map_chapters', '-1',
+      '-metadata', 'artist=' + VELDOR_METOD.artistTag, outName];
+    const copyArgs = ['-y', '-i', inName, '-map', '0:v:0', '-map', '0:a:0', '-c:v', 'copy'].concat(info.hevc ? ['-tag:v', 'hvc1'] : []).concat(tail);
+    let code;
+    try { code = await ff.exec(copyArgs); } catch (e) { code = -1; }
+    if (typeof code === 'number' && code !== 0) throw new Error('ffmpeg gagal (kode ' + code + '): ' + logBuf.slice(-5).join(' / '));
+    let data;
+    try { data = await ff.readFile(outName); } catch (e) { throw new Error('Hasil ffmpeg tidak ditemukan: ' + logBuf.slice(-5).join(' / ')); }
+    try { await ff.deleteFile(inName); await ff.deleteFile(outName); } catch (e) { /* abaikan */ }
+    currentUI = null;
+    return data;
+  }
+
+  // ---------- fitur Color Grading: ambil beberapa frame lewat <video>+<canvas>, kirim ke AI ----------
+  const CG_FRAME_COUNT = 5, CG_FRAME_MAX_W = 640, CG_JPEG_QUALITY = 0.7;
+  function cgGrabFrames(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const video = document.createElement('video');
+      video.muted = true; video.playsInline = true; video.preload = 'auto'; video.src = url;
+      const canvas = document.createElement('canvas');
+      const frames = [];
+      let idx = 0, times = [];
+      const cleanup = () => { URL.revokeObjectURL(url); video.removeAttribute('src'); video.load(); };
+      const seekNext = () => {
+        if (idx >= times.length) { cleanup(); resolve({ frames, w: video.videoWidth, h: video.videoHeight, duration: video.duration }); return; }
+        video.currentTime = times[idx];
+      };
+      video.addEventListener('error', () => { cleanup(); reject(new Error('Video tidak bisa dibaca untuk diambil frame-nya')); });
+      video.addEventListener('loadedmetadata', () => {
+        const d = video.duration && isFinite(video.duration) ? video.duration : 1;
+        times = Array.from({ length: CG_FRAME_COUNT }, (_, i) => Math.min(d * ((i + 1) / (CG_FRAME_COUNT + 1)), Math.max(0, d - 0.05)));
+        const scale = video.videoWidth > CG_FRAME_MAX_W ? CG_FRAME_MAX_W / video.videoWidth : 1;
+        canvas.width = Math.round(video.videoWidth * scale) || 640;
+        canvas.height = Math.round(video.videoHeight * scale) || 360;
+        seekNext();
+      });
+      video.addEventListener('seeked', () => {
+        try {
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL('image/jpeg', CG_JPEG_QUALITY);
+          frames.push({ mimeType: 'image/jpeg', data: dataUrl.split(',')[1] });
+        } catch (e) { /* lewati frame ini kalau gagal digambar */ }
+        idx++; seekNext();
+      });
+    });
+  }
+  async function processColorGrade(file, ui, info) {
+    ui.status('Mengambil sampel frame dari video…'); ui.indeterminate();
+    const { frames } = await cgGrabFrames(file);
+    if (!frames.length) throw new Error('Gagal mengambil frame dari video ini.');
+    ui.status('AI sedang menganalisa pencahayaan & warna…');
+    const resp = await fetch('/.netlify/functions/color-grade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ images: frames, meta: { codec: info.codec, w: info.w, h: info.h, fps: info.fps, duration: info.duration } })
+    });
+    const data = await resp.json().catch(() => null);
+    if (!resp.ok || !data || !data.suggestion) throw new Error((data && data.error) || 'AI gagal memberi saran, coba lagi.');
+    return data.suggestion;
+  }
+
+  // ---------- UI per file ----------
+  function makeItem(file) {
+    const card = el('div', 'card'), row = el('div', 'row');
+    row.append(el('div', 'name', file.name), el('div', 'size', fmtSize(file.size)));
+    const info = el('div', 'info'), status = el('div', 'status', 'Menunggu giliran…');
+    const bar = el('div', 'bar'), fill = el('div', 'fill'); bar.append(fill);
+    const checks = el('ul', 'checks'), actions = el('div', 'actions');
+    card.append(row, info, status, bar, checks, actions);
+    $('#list').prepend(card);
+    let url = null;
+    return {
+      info: t => { info.textContent = t; },
+      status: (t, cls) => { status.textContent = t; status.className = 'status ' + (cls || ''); },
+      progress: p => { bar.classList.remove('indet'); fill.style.width = Math.round(p * 100) + '%'; },
+      indeterminate: () => { fill.style.width = ''; bar.classList.add('indet'); },
+      checks: list => {
+        checks.textContent = '';
+        if (list.length && !list.every(c => c.ok)) {
+          for (const c of list.filter(c => !c.ok)) checks.append(el('li', 'bad', c.label + (c.detail ? ' — ' + c.detail : '')));
+        }
+      },
+      fail: msg => { bar.classList.remove('indet'); fill.style.width = '100%'; fill.style.background = 'var(--bad)'; status.textContent = '✗ ' + msg; status.className = 'status bad'; },
+      done: (out, name) => {
+        bar.classList.remove('indet'); fill.style.width = '100%';
+        status.textContent = '✓ Proses selesai! Silakan download, lalu upload videonya di TikTok web.'; status.className = 'status ok';
+        const blob = new Blob([out], { type: 'video/mp4' });
+        url = URL.createObjectURL(blob);
+        const a = el('a', 'btn', 'Simpan Video'); a.href = url; a.download = name;
+        actions.append(a);
+        const f = new File([blob], name, { type: 'video/mp4' });
+        if (navigator.canShare && navigator.canShare({ files: [f] })) {
+          const s = el('button', 'ghost', 'Bagikan / ke Galeri');
+          s.onclick = () => navigator.share({ files: [f] }).catch(() => {});
+          actions.append(s);
+        }
+        const t = el('button', 'blue', 'Upload ke TikTok'); t.onclick = () => window.TikTok.open(); actions.append(t);
+        const x = el('button', 'danger', 'Hapus');
+        x.onclick = () => { if (url) URL.revokeObjectURL(url); card.remove(); };
+        actions.append(x);
+        card.append(el('div', 'muted', 'Upload harus lewat TikTok Web di browser (bukan aplikasi TikTok) supaya kualitas video tetap terjaga.'));
+      },
+      suggestion: text => {
+        bar.classList.remove('indet'); fill.style.width = '100%';
+        status.textContent = '✓ Analisa selesai'; status.className = 'status ok';
+        const box = el('div', 'muted'); box.style.whiteSpace = 'pre-wrap'; box.style.marginTop = '8px'; box.style.lineHeight = '1.5'; box.textContent = text;
+        card.append(box);
+        const c = el('button', 'ghost', 'Salin Saran');
+        c.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(text).then(() => { c.textContent = 'Tersalin!'; setTimeout(() => c.textContent = 'Salin Saran', 1500); }); };
+        const x = el('button', 'danger', 'Hapus');
+        x.onclick = () => card.remove();
+        actions.append(c, x);
+      }
+    };
+  }
+
+  async function processFile(file, ui) {
+    try {
+      ui.status('Membaca file…'); ui.progress(0); await tick();
+      if (!window.Gate) throw new Error('Sistem akun belum siap. Periksa internet lalu muat ulang halaman.');
+      if (!(await window.Gate.canProcess())) throw new Error('Tidak bisa diproses: masuk dulu atau percobaan gratis sudah habis.');
+      const input = new Uint8Array(await file.arrayBuffer());
+      const info = Core.inspectInput(input);
+      info.ext = ((file.name.split('.').pop() || 'mov').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5)) || 'mov';
+      info.summary = info.codec.toUpperCase() + ' · ' + info.w + '×' + info.h + ' · ' + Math.round(info.fps) + ' fps · ' + info.duration.toFixed(1) + ' dtk';
+      ui.info(info.summary);
+      if (colorGradeMode) {
+        const suggestion = await processColorGrade(file, ui, info);
+        await window.Gate.consume();
+        ui.suggestion(suggestion);
+        return;
+      }
+      const base = await (window.__TEST_RUN_BASE__ || defaultRunBase)(input, info, ui);
+      ui.status('Menyusun struktur track…'); ui.indeterminate(); await tick();
+      const out = Core.postprocess(base);
+      ui.status('Verifikasi hasil…'); await tick();
+      const checks = Core.verify(input, out, { skipIdentical: info.reencoded !== undefined ? info.reencoded : false });
+      ui.checks(checks);
+      if (checks.some(c => !c.ok)) throw new Error('Video ini belum lolos pemeriksaan otomatis (lihat rincian di bawah status), jadi file TIDAK disediakan supaya hasilnya tetap terjamin. Coba proses ulang; kalau tetap gagal, screenshot rincian pemeriksaannya dan kirim ke Claude.');
+      await window.Gate.consume();
+      ui.done(out, file.name.replace(/\.[^.]+$/, '') + '_repack.mp4');
+    } catch (e) {
+      currentUI = null;
+      ui.fail((e && e.message) || String(e));
+    }
+  }
+
+  const queue = []; let running = false;
+  async function pump() {
+    if (running) return; running = true;
+    while (queue.length) { const { file, ui } = queue.shift(); await processFile(file, ui); await tick(); }
+    running = false;
+  }
+  function addFiles(files) {
+    for (const f of files) {
+      const ui = makeItem(f);
+      if (f.size > 700e6) ui.info('File besar: di HP bisa gagal karena memori browser');
+      queue.push({ file: f, ui });
+    }
+    pump();
+  }
+
+  const drop = $('#drop'), input = $('#file');
+  input.addEventListener('change', () => { addFiles([...input.files]); input.value = ''; });
+  const modeRepackBtn = document.getElementById('modeRepack'), modeColorGradeBtn = document.getElementById('modeColorGrade');
+  modeRepackBtn.addEventListener('click', () => { colorGradeMode = false; modeRepackBtn.classList.add('on'); modeColorGradeBtn.classList.remove('on'); });
+  modeColorGradeBtn.addEventListener('click', () => { colorGradeMode = true; modeColorGradeBtn.classList.add('on'); modeRepackBtn.classList.remove('on'); });
+  ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => addFiles([...e.dataTransfer.files]));
+
+  $('#engineBtn').addEventListener('click', async () => {
+    const btn = $('#engineBtn'); btn.disabled = true;
+    try {
+      const ff = await loadEngine(t => setEngine(t));
+      logBuf.length = 0; await ff.exec(['-version']);
+      const v = logBuf.find(l => /ffmpeg version/i.test(l)) || 'siap';
+      setEngine('siap (' + v.replace(/Copyright.*/, '').trim() + ')');
+    } catch (e) { setEngine('GAGAL: ' + ((e && e.message) || e)); }
+    btn.disabled = false;
+  });
+})();
+</script>
+
+<script type="module">
+/* ============ ISI BAGIAN INI (Firebase Console > Project settings > Your apps > Web app) ============ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBPm4MaZVY204BbRblI5J1U_SqX09T-h2k",
+  authDomain: "video-hd-73fc4.firebaseapp.com",
+  databaseURL: "https://video-hd-73fc4-default-rtdb.firebaseio.com",
+  projectId: "video-hd-73fc4",
+  storageBucket: "video-hd-73fc4.firebasestorage.app",
+  messagingSenderId: "369595881314",
+  appId: "1:369595881314:web:08f9b5e7c13a535b273e3b"
+};
+const ADMIN_EMAIL = "dwil33140@gmail.com";
+const FREE_LIMIT = 3;
+/* ====================================================================================================== */
+
+const $ = s => document.querySelector(s);
+const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+const configured = !!FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('ISI');
+let toastT;
+const toast = t => { const e = $('#toast'); e.textContent = t; e.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => e.hidden = true, 3500); };
+
+let pwOpen = false, pwSig = '';
+const modal = {
+  show(title, bodyHTML, buttons) {
+    $('#modalTitle').textContent = title; const mb = $('#modalBody'); mb.textContent = ''; if (typeof bodyHTML === 'string') mb.innerHTML = bodyHTML; else mb.append(bodyHTML);
+    const a = $('#modalActions'); a.textContent = '';
+    for (const b of buttons) { const x = document.createElement('button'); x.type = 'button'; x.className = b.cls || ''; x.textContent = b.label; x.onclick = b.fn; a.append(x); }
+    $('#modal').hidden = false;
+  },
+  hide() { $('#modal').hidden = true; pwOpen = false; }
+};
+window.Modal = modal;
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') modal.hide(); });
+
+let auth, db, fb, user = null, data = { used: 0, premium: false, payReq: null, tiktok: null }, loaded = false, unsub = null, unsubSet = null;
+const DEFAULT_SETTINGS = {
+  price: 50000, discountPrice: null,
+  methods: {
+    bca: { name: 'BCA', number: '2251213358', holder: 'Linda Dwi Rahayu', enabled: true },
+    dana: { name: 'Dana', number: '081554038819', holder: 'Linda Dwi Rahayu', enabled: true },
+    seabank: { name: 'SeaBank', number: '901188807845', holder: 'Linda Dwi Rahayu', enabled: true }
+  },
+  tutorial: { tiktok: '', gdrive: '' }
+};
+let settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+const rp = n => 'Rp' + Number(n).toLocaleString('id-ID');
+const effPrice = () => { const d = settings.discountPrice; return (typeof d === 'number' && d > 0 && d < settings.price) ? d : settings.price; };
+const isAdmin = () => !!user && user.email === ADMIN_EMAIL;
+const left = () => Math.max(0, FREE_LIMIT - (data.used || 0));
+
+function render() { renderMain(); renderTikTok(); }
+function renderMain() {
+  const login = $('#loginBox'), box = $('#quota');
+  if (!configured) { login.hidden = true; box.hidden = false; $('.userBar').hidden = true; $('#quotaText').innerHTML = '<span class="pill">Mode demo</span> Firebase belum diisi'; $('#upgradeBtn').hidden = true; return; }
+  login.hidden = !!user; box.hidden = !user;
+  if (!user) return;
+  $('#uPhoto').src = user.photoURL || ''; $('#uName').textContent = user.displayName || 'Pengguna'; $('#uEmail').textContent = user.email || '';
+  const q = $('#quotaText'), up = $('#upgradeBtn');
+  if (data.premium) { q.innerHTML = '<span class="pill full">Akses penuh aktif</span> Tanpa batas'; up.hidden = true; }
+  else {
+    const pend = data.payReq && data.payReq.status === 'pending';
+    q.innerHTML = left() > 0 ? 'Sisa coba gratis: <span class="pill">' + left() + ' dari ' + FREE_LIMIT + '</span>' : '<span class="pill zero">Coba gratis habis</span>';
+    if (pend) q.innerHTML += ' <span class="pill">Menunggu admin</span>';
+    up.hidden = false; up.textContent = pend ? 'Lihat status' : 'Akses Penuh';
+  }
+  drawPaywall(false);
+  window.dispatchEvent(new CustomEvent('gate-change'));
+}
+
+function copyText(t) {
+  const fallback = () => { const i = document.createElement('input'); i.value = t; document.body.append(i); i.select(); try { document.execCommand('copy'); toast('Nomor disalin'); } catch (e) { toast('Salin manual ya'); } i.remove(); };
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => toast('Nomor disalin'), fallback); else fallback();
+}
+/* ================= TIKTOK ================= */
+const isDesktop = !/Android|iPhone|iPad|iPod|Mobile|Windows Phone/i.test(navigator.userAgent);
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const TT_URL = 'https://www.tiktok.com/tiktokstudio/upload';
+function openTikTok() {
+  if (isIOS) { showTikTokIOSHelp(); return; }
+  if (!isDesktop) toast('Saat login TikTok nanti, disarankan aktifkan mode Desktop dulu di browser (menu ⋮ → centang "Situs desktop") supaya lebih lancar.');
+  window.open(TT_URL, '_blank', 'noopener');
+}
+function showTikTokIOSHelp() {
+  const root = el('div');
+  root.append(el('p', '', 'Di iPhone, tombol ini kadang malah diarahkan ke App Store kalau dibuka langsung. Cara paling aman: salin link di bawah, lalu tempel manual di kolom alamat Safari (jangan tap link).'));
+  const box = el('div', 'method'); box.append(el('div', 'mnum', TT_URL));
+  const cp = el('button', 'ghost small', 'Salin link'); cp.type = 'button'; cp.onclick = () => copyText(TT_URL); box.append(cp);
+  root.append(box);
+  modal.show('Buka TikTok di iPhone', root, [
+    { label: 'Coba buka otomatis', fn: () => { window.open(TT_URL, '_blank', 'noopener'); modal.hide(); } },
+    { label: 'Tutup', cls: 'ghost', fn: modal.hide }
+  ]);
+}
+window.TikTok = { open: openTikTok };
+function renderTikTok() { /* fitur sambungkan akun TikTok sudah dihapus; tombol upload ada di kartu tiap video */ }
+
+let pwSel = null, pwName = '';
+const enabledMethods = () => Object.entries(settings.methods).filter(([, m]) => m.enabled !== false && m.number);
+function paywall() { pwOpen = true; drawPaywall(true); }
+function drawPaywall(force) {
+  if (!pwOpen) return;
+  const pr = data.payReq, price = effPrice(), ems = enabledMethods();
+  if (!ems.some(([k]) => k === pwSel)) pwSel = ems[0] ? ems[0][0] : null;
+  const m = pwSel ? settings.methods[pwSel] : null;
+  const sig = [data.premium, pr && pr.status, price, settings.price, ems.map(([k, x]) => k + x.number + x.holder).join(','), pwSel, left() === 0].join('|');
+  if (!force && sig === pwSig) return; pwSig = sig;
+  const root = el('div');
+  if (data.premium) {
+    root.append(el('p', '', 'Akses penuh sudah aktif. Selamat memakai tanpa batas!'));
+    modal.show('Akses penuh aktif ✓', root, [{ label: 'Mulai pakai', fn: modal.hide }]); return;
+  }
+  if (pr && pr.status === 'pending') {
+    root.append(el('p', '', 'Terima kasih! Pembayaranmu sedang diperiksa admin. Halaman ini akan aktif otomatis setelah dikonfirmasi.'));
+    const box = el('div', 'payinfo'); box.append(el('div', '', pr.method + ' · ' + rp(pr.amount)), el('div', 'muted', 'Pengirim: ' + (pr.senderName || '-')));
+    root.append(box);
+    modal.show('Menunggu konfirmasi', root, [{ label: 'Tutup', cls: 'ghost', fn: modal.hide }]); return;
+  }
+  if (pr && pr.status === 'rejected') root.append(el('p', 'warnmsg', 'Pembayaran sebelumnya belum ditemukan admin. Pastikan jumlah dan nama pengirim benar, lalu kirim lagi.'));
+  if (left() === 0) root.append(el('p', '', 'Percobaan gratismu sudah habis. Aktifkan akses penuh supaya bisa memakai sepuasnya.'));
+  const pc = el('div', 'price');
+  if (price < settings.price) pc.append(el('span', 'old', rp(settings.price)));
+  pc.append(el('span', 'now', rp(price)), el('div', 'muted', 'Sekali bayar, tanpa batas'));
+  root.append(pc);
+  if (!m) {
+    root.append(el('p', '', 'Metode pembayaran belum tersedia. Silakan hubungi admin.'));
+    modal.show('Aktifkan Akses Penuh', root, [{ label: 'Tutup', cls: 'ghost', fn: modal.hide }]); return;
+  }
+  root.append(el('p', '', 'Pilih cara bayar:'));
+  const picks = el('div', 'picks');
+  for (const [k, x] of ems) { const b = el('button', 'pick' + (k === pwSel ? ' on' : ''), x.name); b.type = 'button'; b.onclick = () => { pwSel = k; drawPaywall(true); }; picks.append(b); }
+  root.append(picks, el('p', '', 'Transfer tepat ' + rp(price) + ' ke:'));
+  const mc = el('div', 'method');
+  mc.append(el('div', 'mname', m.name), el('div', 'mnum', m.number), el('div', 'muted', 'a/n ' + m.holder));
+  const cp = el('button', 'ghost small', 'Salin nomor'); cp.type = 'button'; cp.onclick = () => copyText(m.number); mc.append(cp);
+  root.append(mc);
+  const lab = el('label', 'lbl', 'Nama pengirim (nama di rekening/akun kamu)'); const inp = el('input'); inp.type = 'text'; inp.maxLength = 60; inp.placeholder = 'Contoh: Budi Santoso'; inp.value = pwName; inp.oninput = () => { pwName = inp.value; }; lab.append(inp);
+  root.append(lab);
+  root.append(el('p', 'muted', 'Sudah transfer? Kirim juga bukti bayar (screenshot) ke WA admin supaya lebih cepat diproses.'));
+  const send = async () => {
+    const name = inp.value.trim();
+    if (name.length < 2) { toast('Isi nama pengirim dulu ya'); inp.focus(); return; }
+    try {
+      await fb.db.set(fb.db.ref(db, 'users/' + user.uid + '/payReq'), { status: 'pending', method: m.name, amount: price, senderName: name, at: Date.now() });
+      toast('Terkirim. Menunggu konfirmasi admin.');
+      waProofPrompt(name, m.name, price);
+    }
+    catch (e) { toast('Gagal mengirim. Coba lagi.'); }
+  };
+  modal.show('Aktifkan Akses Penuh', root, [{ label: 'Saya Sudah Bayar', fn: send }, { label: 'Konsultasi Admin (WA)', cls: 'ghost', fn: () => openWA('Halo admin, saya mau tanya soal ' + APP_NAME + '.') }, { label: 'Nanti saja', cls: 'ghost', fn: modal.hide }]);
+}
+
+/* ================= WHATSAPP ADMIN ================= */
+const APP_NAME = 'veldor. Codex';
+const WA_ADMIN = '6285737444357';
+function openWA(text) { window.open('https://wa.me/' + WA_ADMIN + (text ? '?text=' + encodeURIComponent(text) : ''), '_blank', 'noopener'); }
+const waHelpBtn = $('#waHelpBtn');
+if (waHelpBtn) { waHelpBtn.href = 'https://wa.me/' + WA_ADMIN; waHelpBtn.onclick = e => { e.preventDefault(); openWA('Halo admin, saya butuh bantuan pakai ' + APP_NAME + '.'); }; }
+
+/* ================= TUTORIAL ================= */
+function showTutorial() {
+  const root = el('div');
+  root.append(el('p', '', 'Tonton salah satu video tutorial di bawah ini untuk cara upload video HD ke TikTok:'));
+  const tk = settings.tutorial && settings.tutorial.tiktok, gd = settings.tutorial && settings.tutorial.gdrive;
+  const btns = el('div', 'actions');
+  const bt = el('button', tk ? '' : 'ghost', 'Tonton di TikTok'); bt.type = 'button'; bt.disabled = !tk;
+  bt.onclick = () => window.open(tk, '_blank', 'noopener'); btns.append(bt);
+  const bg = el('button', gd ? 'blue' : 'ghost', 'Tonton di Google Drive'); bg.type = 'button'; bg.disabled = !gd;
+  bg.onclick = () => window.open(gd, '_blank', 'noopener'); btns.append(bg);
+  root.append(btns);
+  if (!tk && !gd) root.append(el('p', 'muted', 'Link tutorial belum diisi admin.'));
+  modal.show('Tutorial Upload Video HD', root, [{ label: 'Tutup', cls: 'ghost', fn: modal.hide }]);
+}
+const tutorialBtn = $('#tutorialBtn');
+if (tutorialBtn) tutorialBtn.onclick = showTutorial;
+function waProofPrompt(name, method, price) {
+  const root = el('div');
+  root.append(el('p', '', 'Buka WhatsApp admin, lalu kirim foto/tangkapan layar bukti transfernya di sana.'));
+  const box = el('div', 'payinfo'); box.append(el('div', '', method + ' · ' + rp(price)), el('div', 'muted', 'Nama pengirim: ' + name));
+  root.append(box);
+  modal.show('Kirim Bukti Bayar ke WA', root, [
+    { label: 'Buka WhatsApp Admin', fn: () => { openWA('Halo admin, saya sudah transfer ' + rp(price) + ' via ' + method + ' a/n ' + name + '. Ini bukti bayarnya:'); modal.hide(); } },
+    { label: 'Nanti saja', cls: 'ghost', fn: modal.hide }
+  ]);
+}
+
+/* ================= MENU ADMIN ================= */
+const ADMIN_HASH = '4430af27367a4ace441558424db87449b0e642cf3d331bdd945b11f2a7a96ff7';
+let adminOK = false, wantAdmin = false, adminUnsub = null, allUsers = {}, adminTab = 'pay', fails = 0, lockUntil = 0, userQuery = '';
+const sha256 = async t => { if (!(window.crypto && crypto.subtle)) throw new Error('nocrypto'); const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); };
+const fmtTime = t => t ? new Date(t).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
+
+function askPassword() {
+  if (adminOK) return openAdmin();
+  const root = el('div'); const lab = el('label', 'lbl', 'Sandi admin'); const inp = el('input'); inp.type = 'password'; inp.autocomplete = 'off'; lab.append(inp); root.append(lab);
+  const go = async () => {
+    if (Date.now() < lockUntil) { toast('Terlalu banyak salah. Coba lagi 1 menit.'); return; }
+    try {
+      const h = await sha256(inp.value);
+      if (h === ADMIN_HASH) { adminOK = true; fails = 0; modal.hide(); openAdmin(); }
+      else { if (++fails >= 5) { lockUntil = Date.now() + 60000; fails = 0; } toast('Sandi salah'); inp.value = ''; }
+    } catch (e) { toast('Buka website lewat alamat https ya'); }
+  };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  modal.show('Menu Admin', root, [{ label: 'Masuk', fn: go }, { label: 'Batal', cls: 'ghost', fn: modal.hide }]);
+  setTimeout(() => inp.focus(), 50);
+}
+function openAdmin() {
+  if (!configured) { toast('Firebase belum diisi'); return; }
+  if (!user) {
+    wantAdmin = true;
+    modal.show('Masuk sebagai admin', '<p>Masuk dulu dengan akun Google admin.</p>', [{ label: 'Masuk dengan Google', fn: () => { modal.hide(); login(); } }, { label: 'Batal', cls: 'ghost', fn: () => { wantAdmin = false; modal.hide(); } }]);
+    return;
+  }
+  wantAdmin = false;
+  if (!isAdmin()) { toast('Akun ini bukan akun admin'); return; }
+  $('#admin').hidden = false; document.body.style.overflow = 'hidden';
+  if (!adminUnsub) adminUnsub = fb.db.onValue(fb.db.ref(db, 'users'), snap => { allUsers = snap.val() || {}; drawAdmin(false); }, () => toast('Gagal membaca data. Pastikan aturan database versi terbaru sudah dipasang.'));
+  drawAdmin(true);
+}
+function closeAdmin() { $('#admin').hidden = true; document.body.style.overflow = ''; if (adminUnsub) { adminUnsub(); adminUnsub = null; } }
+$('#adminClose').onclick = closeAdmin;
+$('#adminBtn').onclick = askPassword;
+
+function askYes(title, msg, yesLabel, fn, danger) {
+  modal.show(title, '<p>' + msg + '</p>', [{ label: yesLabel, cls: danger ? 'danger' : '', fn: () => { modal.hide(); fn(); } }, { label: 'Batal', cls: 'ghost', fn: modal.hide }]);
+}
+async function adminUpdate(paths, okMsg) {
+  try { await fb.db.update(fb.db.ref(db), paths); toast(okMsg); }
+  catch (e) { toast('Gagal: ' + (e.code || e.message) + '. Pasang aturan database terbaru.'); }
+}
+const pendingList = () => Object.entries(allUsers).filter(([, u]) => u.payReq && u.payReq.status === 'pending').sort((a, b) => (a[1].payReq.at || 0) - (b[1].payReq.at || 0));
+const who = u => (u.profile && (u.profile.name || u.profile.email)) || 'Tanpa nama';
+const mail = u => (u.profile && u.profile.email) || '';
+
+function drawAdmin(force) {
+  const tabs = [['pay', 'Pembayaran'], ['price', 'Harga'], ['methods', 'Metode'], ['tutorial', 'Tutorial'], ['users', 'Pengguna']];
+  const tb = $('#aTabs'); tb.textContent = '';
+  for (const [k, label] of tabs) {
+    const b = el('button', k === adminTab ? 'on' : '', label); b.type = 'button';
+    if (k === 'pay' && pendingList().length) b.append(el('span', 'badge n', String(pendingList().length)));
+    b.onclick = () => { adminTab = k; drawAdmin(true); }; tb.append(b);
+  }
+  if (!force && (adminTab === 'price' || adminTab === 'methods' || adminTab === 'tutorial')) return;
+  const body = $('#aBody'); body.textContent = '';
+  if (adminTab === 'pay') adminPay(body); else if (adminTab === 'price') adminPrice(body); else if (adminTab === 'methods') adminMethods(body); else if (adminTab === 'tutorial') adminTutorial(body); else adminUsers(body);
+}
+function adminPay(body) {
+  const list = pendingList();
+  if (!list.length) { body.append(el('p', 'muted', 'Belum ada permintaan pembayaran yang menunggu.')); return; }
+  for (const [uid, u] of list) {
+    const r = u.payReq, c = el('div', 'acard');
+    c.append(el('div', 't', who(u)), el('div', 'muted', mail(u)), el('div', 't', rp(r.amount) + ' · ' + r.method), el('div', 'muted', 'Pengirim: ' + (r.senderName || '-') + ' · ' + fmtTime(r.at)));
+    const act = el('div', 'actions');
+    const ok = el('button', '', 'Konfirmasi sudah bayar'); ok.type = 'button';
+    ok.onclick = () => askYes('Konfirmasi pembayaran?', 'Aktifkan akses penuh untuk <b>' + who(u).replace(/</g, '&lt;') + '</b> (' + rp(r.amount) + ')?', 'Ya, aktifkan', () => adminUpdate({ ['users/' + uid + '/premium']: true, ['users/' + uid + '/premiumAt']: Date.now(), ['users/' + uid + '/payReq/status']: 'confirmed' }, 'Akses penuh diaktifkan'));
+    const no = el('button', 'danger', 'Tolak'); no.type = 'button';
+    no.onclick = () => askYes('Tolak pembayaran?', 'Pelanggan akan diminta mengirim ulang.', 'Ya, tolak', () => adminUpdate({ ['users/' + uid + '/payReq/status']: 'rejected' }, 'Ditolak'), true);
+    act.append(ok, no); c.append(act); body.append(c);
+  }
+}
+function adminPrice(body) {
+  const c = el('div', 'acard');
+  const l1 = el('label', 'lbl', 'Harga normal (Rp)'), i1 = el('input'); i1.type = 'number'; i1.inputMode = 'numeric'; i1.value = settings.price; l1.append(i1);
+  const l2 = el('label', 'lbl', 'Harga diskon (Rp), kosongkan kalau tidak ada diskon'), i2 = el('input'); i2.type = 'number'; i2.inputMode = 'numeric'; i2.value = settings.discountPrice || ''; l2.append(i2);
+  const prev = el('p', 'muted'); const upd = () => { const pr = parseInt(i1.value, 10), d = parseInt(i2.value, 10); prev.textContent = (d > 0 && d < pr) ? 'Pelanggan bayar ' + rp(d) + ' (coret ' + rp(pr) + ')' : 'Pelanggan bayar ' + rp(pr || 0); };
+  i1.oninput = i2.oninput = upd; upd();
+  const act = el('div', 'actions'), save = el('button', '', 'Simpan harga'); save.type = 'button';
+  save.onclick = () => {
+    const pr = parseInt(i1.value, 10), d = i2.value.trim() === '' ? null : parseInt(i2.value, 10);
+    if (!(pr >= 1000)) return toast('Harga minimal Rp1.000');
+    if (d !== null && !(d > 0 && d < pr)) return toast('Diskon harus lebih kecil dari harga normal');
+    adminUpdate({ 'settings/price': pr, 'settings/discountPrice': d }, 'Harga disimpan');
+  };
+  act.append(save); c.append(l1, l2, prev, act); body.append(c);
+}
+function adminMethods(body) {
+  body.append(el('p', 'muted', 'Centang metode yang boleh dipilih pelanggan. Nomor bisa diganti kapan saja.'));
+  const fields = {};
+  for (const [k, m] of Object.entries(settings.methods)) {
+    const c = el('div', 'acard'); c.append(el('div', 't', m.name));
+    const ck = el('label', 'chk'), cb = el('input'); cb.type = 'checkbox'; cb.checked = m.enabled !== false; ck.append(cb, el('span', '', 'Tampilkan ke pelanggan'));
+    const l1 = el('label', 'lbl', 'Nomor rekening / HP'), n = el('input'); n.type = 'text'; n.inputMode = 'numeric'; n.value = m.number; l1.append(n);
+    const l2 = el('label', 'lbl', 'Atas nama'), h = el('input'); h.type = 'text'; h.value = m.holder; l2.append(h);
+    c.append(ck, l1, l2); body.append(c); fields[k] = { m, cb, n, h };
+  }
+  const save = el('button', '', 'Simpan metode pembayaran'); save.type = 'button';
+  save.onclick = () => {
+    const paths = {}; let active = 0;
+    for (const [k, f] of Object.entries(fields)) {
+      const num = f.n.value.trim().replace(/\s+/g, ''), hol = f.h.value.trim();
+      if (f.cb.checked) { active++; if (!num || !hol) return toast('Isi nomor dan nama untuk ' + f.m.name); }
+      paths['settings/methods/' + k] = { name: f.m.name, number: num, holder: hol, enabled: f.cb.checked };
+    }
+    if (!active) return toast('Aktifkan minimal satu metode');
+    adminUpdate(paths, 'Metode pembayaran disimpan');
+  };
+  body.append(save);
+}
+function adminTutorial(body) {
+  body.append(el('p', 'muted', 'Isi link video tutorial cara upload video HD. Boleh isi salah satu saja, atau keduanya.'));
+  const c = el('div', 'acard');
+  const l1 = el('label', 'lbl', 'Link video tutorial di TikTok'), i1 = el('input'); i1.type = 'text'; i1.placeholder = 'https://www.tiktok.com/@...'; i1.value = (settings.tutorial && settings.tutorial.tiktok) || ''; l1.append(i1);
+  const l2 = el('label', 'lbl', 'Link video tutorial di Google Drive'), i2 = el('input'); i2.type = 'text'; i2.placeholder = 'https://drive.google.com/...'; i2.value = (settings.tutorial && settings.tutorial.gdrive) || ''; l2.append(i2);
+  const act = el('div', 'actions'), save2 = el('button', '', 'Simpan link tutorial'); save2.type = 'button';
+  save2.onclick = () => adminUpdate({ 'settings/tutorial/tiktok': i1.value.trim(), 'settings/tutorial/gdrive': i2.value.trim() }, 'Link tutorial disimpan');
+  act.append(save2); c.append(l1, l2, act); body.append(c);
+}
+function adminUsers(body) {
+  const all = Object.entries(allUsers), pro = all.filter(([, u]) => u.premium === true).length;
+  body.append(el('p', 'muted', all.length + ' pengguna · ' + pro + ' akses penuh'));
+  const q = el('input', 'search'); q.type = 'text'; q.placeholder = 'Cari nama atau email'; q.value = userQuery; body.append(q);
+  const box = el('div'); body.append(box);
+  const draw = () => {
+    box.textContent = ''; userQuery = q.value; const t = q.value.trim().toLowerCase();
+    const rows = all.filter(([, u]) => !t || (who(u) + ' ' + mail(u)).toLowerCase().includes(t)).sort((a, b) => ((b[1].profile || {}).lastLogin || 0) - ((a[1].profile || {}).lastLogin || 0)).slice(0, 100);
+    if (!rows.length) box.append(el('p', 'muted', 'Tidak ada pengguna.'));
+    for (const [uid, u] of rows) {
+      const c = el('div', 'acard'); c.append(el('div', 't', who(u)), el('div', 'muted', mail(u)));
+      const st = el('div'); st.style.marginTop = '8px';
+      st.append(u.premium === true ? el('span', 'badge pro', 'Akses penuh') : el('span', 'badge', 'Coba gratis: ' + Math.min(u.used || 0, FREE_LIMIT) + '/' + FREE_LIMIT)); c.append(st);
+      const act = el('div', 'actions'), b = el('button', u.premium === true ? 'danger small' : 'blue small', u.premium === true ? 'Cabut akses' : 'Aktifkan manual'); b.type = 'button';
+      b.onclick = () => u.premium === true
+        ? askYes('Cabut akses penuh?', who(u).replace(/</g, '&lt;') + ' akan kembali ke batas coba gratis.', 'Ya, cabut', () => adminUpdate({ ['users/' + uid + '/premium']: false }, 'Akses dicabut'), true)
+        : askYes('Aktifkan akses penuh?', 'Untuk ' + who(u).replace(/</g, '&lt;') + ' tanpa permintaan pembayaran.', 'Ya, aktifkan', () => adminUpdate({ ['users/' + uid + '/premium']: true, ['users/' + uid + '/premiumAt']: Date.now() }, 'Akses diaktifkan'));
+      act.append(b); c.append(act); box.append(c);
+    }
+  };
+  q.oninput = draw; draw();
+}
+
+async function login() {
+  const { GoogleAuthProvider, signInWithPopup, signInWithRedirect } = fb.auth;
+  const prov = new GoogleAuthProvider();
+  try { await signInWithPopup(auth, prov); }
+  catch (e) {
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') { await signInWithRedirect(auth, prov); return; }
+    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
+    if (e.code === 'auth/unauthorized-domain') toast('Domain website belum didaftarkan di Firebase (Authorized domains).');
+    else toast('Gagal masuk: ' + (e.code || e.message));
+  }
+}
+
+window.Gate = {
+  isAdmin, get user() { return user; }, get data() { return data; }, paywall, toast,
+  async canProcess() {
+    if (!configured) return true;
+    if (!user) { toast('Masuk dengan Google dulu ya'); $('#loginBox').scrollIntoView({ behavior: 'smooth' }); return false; }
+    for (let i = 0; i < 50 && !loaded; i++) await new Promise(r => setTimeout(r, 100));
+    if (!loaded) { toast('Data akun belum termuat. Coba lagi.'); return false; }
+    if (data.premium) return true;
+    if (left() > 0) return true;
+    paywall(); return false;
+  },
+  async consume() {
+    if (!configured || data.premium) return;
+    const { ref, runTransaction } = fb.db;
+    const r = await runTransaction(ref(db, 'users/' + user.uid + '/used'), cur => { const c = cur || 0; return c >= FREE_LIMIT ? undefined : c + 1; });
+    if (!r.committed) throw new Error('Jatah coba gratis sudah habis.');
+  }
+};
+
+// Blokir dialog pilih file kalau belum boleh
+$('#drop').addEventListener('click', e => {
+  if (!configured) return;
+  if (!user) { e.preventDefault(); e.stopPropagation(); toast('Masuk dengan Google dulu ya'); $('#loginBox').scrollIntoView({ behavior: 'smooth' }); }
+  else if (loaded && !data.premium && left() === 0) { e.preventDefault(); e.stopPropagation(); paywall(); }
+}, true);
+$('#loginBtn').onclick = () => login();
+$('#upgradeBtn').onclick = () => paywall();
+$('#logoutBtn').onclick = () => fb.auth.signOut(auth);
+
+render();
+if (configured) {
+  try {
+    const V = '10.12.2', B = 'https://www.gstatic.com/firebasejs/' + V + '/';
+    const [app, au, dbm] = await Promise.all([import(B + 'firebase-app.js'), import(B + 'firebase-auth.js'), import(B + 'firebase-database.js')]);
+    fb = { auth: au, db: dbm };
+    const a = app.initializeApp(FIREBASE_CONFIG); auth = au.getAuth(a); db = dbm.getDatabase(a);
+    au.getRedirectResult(auth).catch(e => toast('Gagal masuk: ' + (e.code || e.message)));
+    au.onAuthStateChanged(auth, async u => {
+      if (unsub) { unsub(); unsub = null; }
+      if (unsubSet) { unsubSet(); unsubSet = null; }
+      user = u; loaded = false; data = { used: 0, premium: false, payReq: null, tiktok: null }; settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+      if (!u) { adminOK = false; closeAdmin(); } else if (wantAdmin && adminOK) openAdmin();
+      render();
+      if (!u) return;
+      const { ref, set, onValue } = dbm;
+      try { await set(ref(db, 'users/' + u.uid + '/profile'), { name: u.displayName || '', email: u.email || '', photo: u.photoURL || '', lastLogin: Date.now() }); } catch (e) { console.warn(e); }
+      unsubSet = onValue(ref(db, 'settings'), snap => {
+        const v = snap.val() || {};
+        const mm = {}; for (const k of Object.keys(DEFAULT_SETTINGS.methods)) mm[k] = { ...DEFAULT_SETTINGS.methods[k], ...((v.methods || {})[k] || {}) };
+        const tt = { ...DEFAULT_SETTINGS.tutorial, ...(v.tutorial || {}) };
+        settings = { ...DEFAULT_SETTINGS, ...v, methods: mm, tutorial: tt };
+        render(); if (!$('#admin').hidden && adminTab === 'price') { /* form harga dibiarkan */ }
+      }, () => {});
+      unsub = onValue(ref(db, 'users/' + u.uid), snap => {
+        const v = snap.val() || {}; data = { used: v.used || 0, premium: v.premium === true, payReq: v.payReq || null, tiktok: v.tiktok || null }; loaded = true; render();
+      }, e => { toast(e.code === 'PERMISSION_DENIED' || /permission/i.test(e.message) ? 'Aturan database belum dipasang. Lihat panduan.' : 'Gagal membaca data akun.'); });
+    });
+  } catch (e) { console.error(e); toast('Gagal memuat Firebase. Periksa internet.'); }
+}
+</script>
+</body>
+</html>
