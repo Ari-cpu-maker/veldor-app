@@ -18,6 +18,7 @@ async function getItem(url) {
 // Baca file mp4 secara akurat: ambil bagian awal besar (6 MB) + cari box 'moov' persis (di awal/akhir file),
 // lalu parse struktur track video: codec, profile, bit depth, HDR (colr), FPS (stts/mdhd), jumlah frame.
 const HEAD = 6 * 1024 * 1024;
+const txt = (b, s, e) => b.toString('utf8', s, e).replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
 function* boxes(b, s, e) {
   while (s + 8 <= e) {
     let size = b.readUInt32BE(s), hl = 8; const type = b.toString('latin1', s + 4, s + 8);
@@ -53,11 +54,15 @@ async function probe(mediaUrl, cookie, duration) {
   }
   const res = { hdr: null, hdrType: null, bitDepth: null, profile: null, fps: null, frames: null, bytesRead: downloaded, totalBytes: total, codecTag: null };
   if (!moov) return res;
+  let done = false;
   for (const trak of boxes(moov, 8, moov.length)) {
     if (trak.type !== 'trak') continue;
     const mdia = find(moov, trak.s, trak.e, 'mdia'); if (!mdia) continue;
     const hdlr = find(moov, mdia.s, mdia.e, 'hdlr');
-    if (!hdlr || moov.toString('latin1', hdlr.s + 8, hdlr.s + 12) !== 'vide') continue;
+    const ht = hdlr && moov.toString('latin1', hdlr.s + 8, hdlr.s + 12);
+    if (hdlr && (ht === 'vide' || ht === 'soun')) { const nm = txt(moov, hdlr.s + 24, hdlr.e); if (ht === 'vide' && !res.handlerVideo) res.handlerVideo = nm; if (ht === 'soun') res.handlerAudio = nm; }
+    if (ht !== 'vide' || done) continue;
+    done = true;
     const mdhd = find(moov, mdia.s, mdia.e, 'mdhd');
     const v1 = moov[mdhd.s] === 1;
     const ts = moov.readUInt32BE(mdhd.s + (v1 ? 20 : 12));
@@ -80,8 +85,19 @@ async function probe(mediaUrl, cookie, duration) {
     const stsz = find(moov, stbl.s, stbl.e, 'stsz');
     if (stsz) res.frames = moov.readUInt32BE(stsz.s + 8);
     if (res.frames && dur && ts) res.fps = Math.round(res.frames / (dur / ts) * 100) / 100;
-    break;
   }
+  // tag metadata (udta/meta/ilst): encoder (©too), software, komentar, dll.
+  res.tags = {};
+  const readIlst = (b, s, e) => { for (const it of boxes(b, s, e)) { const d = find(b, it.s, it.e, 'data'); if (d) { const v = txt(b, d.s + 8, d.e); if (v) res.tags[it.type.replace(/\xa9/g, '©')] = v; } } };
+  for (const u of boxes(moov, 8, moov.length)) if (u.type === 'udta') {
+    for (const c of boxes(moov, u.s, u.e)) {
+      if (c.type === 'meta') { const il = find(moov, c.s + 4, c.e, 'ilst'); if (il) readIlst(moov, il.s, il.e); }
+      else if (c.type.charCodeAt(0) === 0xa9 && c.e - c.s > 4) { const v = txt(moov, c.s + 4, c.e); if (v) res.tags[c.type.replace(/\xa9/g, '©')] = v; }
+    }
+  }
+  // encoder yang tertanam di stream video (SEI x264/x265/Lavc)
+  const m = head.toString('latin1').match(/(x264 - core[ -~]{0,160}|x265 \(build[ -~]{0,120}|Lavc[ -~]{3,40})/);
+  if (m) res.encoderSei = m[1].replace(/\s+/g, ' ').trim();
   return res;
 }
 
@@ -106,7 +122,7 @@ exports.handler = async (ev) => {
       video: {
         width, height, duration, fps: tech?.fps ?? null, sizeBytes: Number(pa.DataSize) || null,
         codec: /265|hevc|hvc/i.test(codecRaw) ? 'hevc' : /264|avc/i.test(codecRaw) ? 'h264' : codecRaw || '-',
-        bitrateBps: (Number(pa.DataSize) && duration) ? Math.round(Number(pa.DataSize) * 8 / duration) : (best?.Bitrate || v.bitrate || null), totalFrames: tech?.frames ?? null, codecTag: tech?.codecTag ?? null, format: pa.Format || v.format || null, vqScore: v.VQScore || null,
+        bitrateBps: (Number(pa.DataSize) && duration) ? Math.round(Number(pa.DataSize) * 8 / duration) : (best?.Bitrate || v.bitrate || null), totalFrames: tech?.frames ?? null, codecTag: tech?.codecTag ?? null, handlerVideo: tech?.handlerVideo || null, handlerAudio: tech?.handlerAudio || null, fileTags: tech?.tags || {}, encoderSei: tech?.encoderSei || null, format: pa.Format || v.format || null, vqScore: v.VQScore || null,
         quality: best?.GearName || v.videoQuality || null, hdr: tech ? tech.hdr : null, hdrType: tech?.hdrType, bitDepth: tech?.bitDepth, codecProfile: tech?.profile,
         techSource: tech ? 'file' : 'tiktok', techNote, sampleBytes: tech?.bytesRead, fileBytes: tech?.totalBytes, mediaUrl,
         allQualities: (v.bitrateInfo || []).map(b => ({ w: b.PlayAddr?.Width, h: b.PlayAddr?.Height, bitrate: b.Bitrate, codec: b.CodecType, size: b.PlayAddr?.DataSize }))
