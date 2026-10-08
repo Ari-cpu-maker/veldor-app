@@ -110,19 +110,28 @@ exports.handler = async (ev) => {
     const n = (x, y) => Number(x ?? y ?? 0);
     const best = (v.bitrateInfo || []).slice().sort((p, q) => (q.PlayAddr?.Width * q.PlayAddr?.Height || 0) - (p.PlayAddr?.Width * p.PlayAddr?.Height || 0) || q.Bitrate - p.Bitrate)[0];
     const pa = best?.PlayAddr || {};
-    const mediaUrl = pa.UrlList?.[0] || v.playAddr || v.downloadAddr;
+    const mediaUrl = (pa.UrlList || []).find(Boolean) || v.playAddr || v.downloadAddr;
     const width = pa.Width || v.width, height = pa.Height || v.height, duration = v.duration;
     let tech = null, techNote = null;
     try { tech = mediaUrl ? await probe(mediaUrl, cookie, duration) : null; } catch (e) { techNote = e.message; }
+    // ukuran file: dari TikTok, kalau kosong dari header file asli (Content-Range)
+    let sizeBytes = Number(pa.DataSize) || tech?.totalBytes || null;
+    if (!sizeBytes && mediaUrl) {
+      try {
+        const r = await fetch(mediaUrl, { headers: { 'User-Agent': UA, Referer: 'https://www.tiktok.com/', Cookie: cookie, Range: 'bytes=0-0' } });
+        const cr = r.headers.get('content-range');
+        sizeBytes = cr ? Number(cr.split('/')[1]) : (Number(r.headers.get('content-length')) > 1 ? Number(r.headers.get('content-length')) : null);
+      } catch (e) { /* abaikan */ }
+    }
     const codecRaw = best?.CodecType || v.codecType || '';
     const privateItem = !!it.privateItem, indexEnabled = it.indexEnabled !== false;
     return out(200, {
       id: it.id, url, username: a.uniqueId, nickname: a.nickname, desc: it.desc, cover: v.cover || v.originCover,
       stats: { views: n(s.playCount, s1.playCount), likes: n(s.diggCount, s1.diggCount), comments: n(s.commentCount, s1.commentCount), shares: n(s.shareCount, s1.shareCount), favorites: n(s.collectCount, s1.collectCount) },
       video: {
-        width, height, duration, fps: tech?.fps ?? null, sizeBytes: Number(pa.DataSize) || null,
+        width, height, duration, fps: tech?.fps ?? null, sizeBytes,
         codec: /265|hevc|hvc/i.test(codecRaw) ? 'hevc' : /264|avc/i.test(codecRaw) ? 'h264' : codecRaw || '-',
-        bitrateBps: (Number(pa.DataSize) && duration) ? Math.round(Number(pa.DataSize) * 8 / duration) : (best?.Bitrate || v.bitrate || null), totalFrames: tech?.frames ?? null, codecTag: tech?.codecTag ?? null, handlerVideo: tech?.handlerVideo || null, handlerAudio: tech?.handlerAudio || null, fileTags: tech?.tags || {}, encoderSei: tech?.encoderSei || null, format: pa.Format || v.format || null, vqScore: v.VQScore || null,
+        bitrateBps: (sizeBytes && duration) ? Math.round(sizeBytes * 8 / duration) : (best?.Bitrate || v.bitrate || null), totalFrames: tech?.frames ?? null, codecTag: tech?.codecTag ?? null, handlerVideo: tech?.handlerVideo || null, handlerAudio: tech?.handlerAudio || null, fileTags: tech?.tags || {}, encoderSei: tech?.encoderSei || null, format: pa.Format || v.format || null, vqScore: v.VQScore || null,
         quality: best?.GearName || v.videoQuality || null, hdr: tech ? tech.hdr : null, hdrType: tech?.hdrType, bitDepth: tech?.bitDepth, codecProfile: tech?.profile,
         techSource: tech ? 'file' : 'tiktok', techNote, sampleBytes: tech?.bytesRead, fileBytes: tech?.totalBytes, mediaUrl,
         allQualities: (v.bitrateInfo || []).map(b => ({ w: b.PlayAddr?.Width, h: b.PlayAddr?.Height, bitrate: b.Bitrate, codec: b.CodecType, size: b.PlayAddr?.DataSize }))
