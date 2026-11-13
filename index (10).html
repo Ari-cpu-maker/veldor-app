@@ -1,0 +1,2711 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141414">
+<meta name="color-scheme" content="dark">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fff'/%3E%3Cstop offset='1' stop-color='%23c9c7c2'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Cpath d='M22 19l14 13-14 13M39 46h8' fill='none' stroke='%23141414' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<title>Codex Repack</title>
+<style>
+:root{color-scheme:dark;--bg:#141414;--card:#1d1d1d;--card2:#262626;--line:#333333;--txt:#f5f4f2;--mut:#a3a09b;--pri:#f5f4f2;--pri-ink:#1a1a1a;--info:#3b82f6;--ok:#4ade80;--bad:#ff6b6b;--warn:#fbbf24}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--txt);font:17px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+main{max-width:640px;margin:0 auto;padding:20px 16px calc(60px + env(safe-area-inset-bottom))}
+:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+
+/* Tombol admin: kecil, transparan, pojok kanan atas */
+#adminBtn{position:fixed;top:calc(8px + env(safe-area-inset-top));right:8px;z-index:50;width:34px;height:34px;min-height:0;padding:0;border-radius:50%;background:transparent;border:0;opacity:.14;transition:opacity .2s}
+#adminBtn:hover,#adminBtn:focus-visible{opacity:.7}
+#adminBtn svg{width:20px;height:20px;fill:#fff}
+
+/* Brand: Codex Repack */
+.brand{position:relative;text-align:center;padding:40px 0 30px;isolation:isolate}
+.brand:before{content:"";position:absolute;left:50%;top:50%;width:420px;max-width:120%;height:220px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(255,255,255,.16),rgba(255,255,255,0));filter:blur(8px);z-index:-1;pointer-events:none}
+.lockup{display:inline-flex;align-items:center;gap:16px}
+.mark{position:relative;width:64px;height:64px;border-radius:20px;background:linear-gradient(145deg,#ffffff 0%,#e9e8e5 55%,#c9c7c2 100%);display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);box-shadow:0 10px 30px rgba(255,255,255,.14),inset 0 1px 0 #fff,inset 0 -3px 6px rgba(0,0,0,.12)}
+.mark:after{content:"";position:absolute;right:-5px;top:-5px;width:14px;height:14px;border-radius:4px;background:var(--pri);transform:rotate(18deg);box-shadow:0 0 0 3px var(--bg)}
+.mark svg{width:36px;height:36px;display:block}
+.word{text-align:left;line-height:1}
+.word b{display:block;font-size:44px;font-weight:800;letter-spacing:-2px;background:linear-gradient(180deg,#ffffff 30%,#b9b6b0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.word .tag{display:inline-block;margin-top:8px;padding:4px 10px 4px 11px;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:var(--txt);font-size:11px;font-weight:800;letter-spacing:.32em;text-transform:uppercase}
+@media (max-width:360px){.word b{font-size:36px}.mark{width:54px;height:54px;border-radius:17px}}
+
+/* Kuota / status akun */
+.quota{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:16px;font-size:15px}
+.quota b{color:var(--ok)}
+
+/* Langkah */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px;padding:0;list-style:none;counter-reset:s}
+.steps li{counter-increment:s;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center;font-size:14px;color:var(--mut)}
+.steps li:before{content:counter(s);display:block;width:26px;height:26px;line-height:26px;margin:0 auto 4px;border-radius:8px;background:var(--card2);color:var(--txt);font-weight:700;font-size:14px}
+
+/* Area pilih video */
+.drop{display:block;border:2px dashed #4b4e63;border-radius:20px;background:var(--card);padding:34px 16px;text-align:center;cursor:pointer;transition:.15s}
+.drop:hover,.drop.over{border-color:var(--pri);background:var(--card2)}
+.drop .big{display:inline-flex;align-items:center;justify-content:center;min-height:58px;padding:0 28px;border-radius:14px;background:var(--pri);color:var(--pri-ink);font-size:19px;font-weight:800;margin-bottom:10px}
+.drop small{display:block;color:var(--mut);font-size:14px}
+
+/* Tombol umum */
+button,.btn{appearance:none;border:0;border-radius:12px;padding:12px 18px;min-height:50px;font:700 16px system-ui,sans-serif;color:var(--pri-ink);background:var(--pri);cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button.ghost,.btn.ghost{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+button.blue,.btn.blue{background:var(--info);color:#fff}
+button.danger{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+button.small{min-height:40px;padding:6px 14px;font-size:14px}
+button:disabled{opacity:.5;cursor:default}
+
+/* Kartu hasil per video */
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:14px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.name{font-weight:700;word-break:break-all}
+.size{color:var(--mut);font-size:14px;white-space:nowrap}
+.info{color:var(--mut);font-size:14px;margin-top:2px;min-height:19px}
+.status{margin-top:8px;font-size:15px}
+.status.bad{color:var(--bad)} .status.ok{color:var(--ok);font-weight:700}
+.bar{height:8px;background:var(--card2);border-radius:99px;margin-top:8px;overflow:hidden}
+.fill{height:100%;width:0;background:var(--pri);transition:width .25s}
+.bar.indet .fill{width:35%;animation:sl 1.1s infinite ease-in-out}
+@keyframes sl{0%{margin-left:-35%}100%{margin-left:100%}}
+@media (prefers-reduced-motion:reduce){.bar.indet .fill{animation:none;width:100%}.drop,#adminBtn{transition:none}}
+ul.checks{list-style:none;padding:0;margin:10px 0 0;font-size:14px}
+ul.checks li{padding:3px 0 3px 22px;position:relative;color:var(--mut)}
+ul.checks li:before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+ul.checks li.bad{color:var(--bad)} ul.checks li.bad:before{content:"✗";color:var(--bad)}
+ul.checks li i{color:var(--mut);font-style:normal;opacity:.8}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.actions>*{flex:1 1 150px}
+
+/* Bantuan */
+details{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:var(--mut);font-size:15px}
+summary{cursor:pointer;color:var(--txt);font-weight:700;min-height:32px}
+details p{margin:8px 0}
+code{background:var(--card2);padding:1px 6px;border-radius:6px;font-size:13px}
+.engine{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13px}
+
+[hidden]{display:none !important}
+/* Peringatan browser dalam-aplikasi (in-app browser) */
+#inappWarn{position:fixed;top:0;left:0;right:0;z-index:200;background:#241a12;border-bottom:1px solid #6b4a1f;padding:calc(10px + env(safe-area-inset-top)) 54px 10px 14px;font-size:14px;line-height:1.4;color:var(--txt)}
+#inappWarn b{color:var(--warn)}
+#inappClose{position:fixed;top:calc(6px + env(safe-area-inset-top));right:8px;z-index:201;background:transparent;border:0;color:var(--mut);min-height:0;padding:6px 10px;font-size:18px}
+#inappArrow{position:fixed;top:calc(6px + env(safe-area-inset-top));right:46px;z-index:201;font-size:26px;color:var(--warn);animation:inappBounce 1.1s infinite}
+@keyframes inappBounce{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,-5px)}}
+html.inapp #adminBtn{opacity:0}
+html.inapp main{padding-top:calc(90px + env(safe-area-inset-top))}
+@media (prefers-reduced-motion:reduce){#inappArrow{animation:none}}
+/* Akun & kuota */
+.gbtn{background:#fff;color:#1f1f1f;min-height:56px;font-size:18px;width:100%;max-width:340px}
+.gbtn svg{width:22px;height:22px}
+.loginBox{text-align:center;margin-bottom:18px}
+.loginBox small{display:block;margin-top:8px;color:var(--mut);font-size:14px}
+.userBar{display:flex;align-items:center;gap:10px}
+.userBar img{width:38px;height:38px;border-radius:50%;background:var(--card2)}
+.userBar .who{flex:1;min-width:0;font-size:14px;line-height:1.3}
+.userBar .who b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.userBar .who span{color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.quota{flex-direction:column;align-items:stretch}
+.quota .line{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.pill{display:inline-block;padding:3px 10px;border-radius:99px;background:var(--card2);font-weight:700}
+.pill.full{background:#10261a;color:var(--ok)}
+.pill.zero{background:#2b1518;color:var(--bad)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal[hidden]{display:none}
+.modal .box{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;max-width:420px;width:100%;max-height:90vh;overflow:auto}
+.modal h2{margin:0 0 8px;font-size:21px}
+.modal p{color:var(--mut);margin:8px 0}
+.modal .actions{margin-top:16px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--card2);color:var(--txt);border:1px solid var(--pri);padding:12px 18px;border-radius:12px;font-weight:600;z-index:120;max-width:90vw;text-align:center}
+.toast[hidden]{display:none}
+.price{margin:6px 0 12px}
+.price .now{font-size:30px;font-weight:800;color:var(--ok)}
+.price .old{text-decoration:line-through;color:var(--mut);margin-right:8px;font-size:17px}
+.muted{color:var(--mut);font-size:14px}
+.method{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:14px;margin:8px 0 14px}
+.method .mname{font-weight:800;font-size:17px}
+.method .mnum{font-size:26px;font-weight:800;letter-spacing:.5px;margin:2px 0;word-break:break-all}
+.method button{margin-top:10px}
+.lbl{display:block;color:var(--txt);font-size:15px;font-weight:600}
+.lbl input{display:block;width:100%;margin-top:6px;min-height:50px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--txt);padding:0 14px;font:17px system-ui,sans-serif}
+.payinfo{background:var(--card2);border-radius:12px;padding:12px;margin-top:10px}
+.warnmsg{color:var(--warn) !important}
+.modal .actions{flex-direction:column}
+.modal .actions>*{flex:0 0 auto;width:100%}
+.picks{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.pick{flex:1 1 90px;background:var(--card2);color:var(--txt);border:2px solid var(--line)}
+.pick.on{border-color:var(--pri);background:var(--card2);color:var(--pri)}
+#modePicks .pick{flex-direction:column;gap:2px;min-height:64px;font-size:15px;line-height:1.3}
+#modePicks .pick small{font-size:12px;font-weight:400;opacity:.75}
+.admin{position:fixed;inset:0;background:var(--bg);z-index:90;overflow:auto;padding:0 0 60px}
+.admin .ahead{position:sticky;top:0;background:var(--bg);display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);z-index:2}
+.admin .ahead b{font-size:19px}
+.tabs{display:flex;gap:6px;padding:12px 16px 0;overflow-x:auto}
+.tabs button{flex:0 0 auto;min-height:42px;background:var(--card2);color:var(--txt);border:1px solid var(--line);font-size:14px}
+.tabs button.on{background:var(--pri);color:var(--pri-ink);border-color:var(--pri)}
+.abody{max-width:640px;margin:0 auto;padding:14px 16px}
+.acard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.admin h3{font-size:15px;margin:18px 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em}
+.acard .t{font-weight:700;word-break:break-word}
+.acard .actions{margin-top:12px}
+.acard label.lbl{margin-top:10px}
+.acard input[type=text],.acard input[type=number],.abody input.search{display:block;width:100%;margin-top:6px;min-height:46px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--txt);padding:0 12px;font:16px system-ui,sans-serif}
+.abody input.search{margin:0 0 12px}
+.chk{display:flex;align-items:center;gap:10px;margin-top:10px;font-weight:600}
+.chk input{width:22px;height:22px}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--card2);font-size:13px;font-weight:700}
+.badge.pro{background:#10261a;color:var(--ok)}
+#tiktokBox{margin-top:16px}
+#tiktokBox .t{font-weight:800;font-size:18px;margin-bottom:8px}
+#tiktokBox .big{width:100%;min-height:56px;font-size:17px}
+#tiktokBox input{display:block;width:100%;margin:6px 0 10px;min-height:48px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--txt);padding:0 14px;font:17px system-ui,sans-serif}
+#tiktokBox hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+#tiktokBox .row2{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.badge.n{background:var(--bad);color:#000;margin-left:4px}
+
+/* ===== Codex Repack theme ===== */
+:root{--font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--glass:rgba(255,255,255,.05);--glass2:rgba(255,255,255,.09);--edge:rgba(255,255,255,.12);--glow:rgba(255,255,255,.18)}
+body{font-family:var(--font);background-color:var(--bg);background-image:radial-gradient(900px 420px at 50% -140px,rgba(255,255,255,.09),transparent 70%),radial-gradient(rgba(255,255,255,.055) 1px,transparent 1.2px);background-size:auto,22px 22px;background-repeat:no-repeat,repeat}
+button,.btn{font-family:var(--font);font-weight:700;border-radius:14px;transition:transform .15s,box-shadow .2s,background .2s,border-color .2s}
+button:active,.btn:active{transform:scale(.97)}
+button.ghost,.btn.ghost{background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(6px)}
+button.ghost:hover,.btn.ghost:hover{background:var(--glass2)}
+.lbl input{font-family:var(--font)}
+
+/* Logo beranimasi */
+.lockup{animation:pop .9s cubic-bezier(.2,1.3,.4,1) both}
+.mark{animation:float 5.5s ease-in-out .9s infinite;transform:rotate(-6deg);overflow:visible}
+.mark .shine{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
+.mark .shine:before{content:"";position:absolute;top:-20%;bottom:-20%;left:-60%;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.95),transparent);transform:skewX(-18deg);animation:shine 3.8s ease-in-out 1.2s infinite}
+.mark .cur{animation:blink 1.1s steps(1) infinite}
+.mark .chev{stroke-dasharray:40;stroke-dashoffset:40;animation:draw .7s ease-out .5s forwards}
+.mark:after{animation:tick 4s ease-in-out infinite}
+.brand:before{animation:breathe 5s ease-in-out infinite}
+.word b{background-image:linear-gradient(100deg,#a9a6a0 20%,#fff 42%,#fff 58%,#a9a6a0 80%);background-size:260% 100%;-webkit-background-clip:text;background-clip:text;animation:sheen 5s linear infinite}
+.word .tag{position:relative;overflow:hidden}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.86)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-7px) rotate(-1deg)}}
+@keyframes shine{0%,55%{left:-60%}100%{left:130%}}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes tick{0%,100%{transform:rotate(18deg) scale(1)}50%{transform:rotate(63deg) scale(1.18)}}
+@keyframes breathe{0%,100%{opacity:.75;transform:translate(-50%,-50%) scale(.92)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}}
+@keyframes sheen{from{background-position:130% 0}to{background-position:-130% 0}}
+
+/* Kartu & kuota */
+.quota,.card,details{background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--edge);border-radius:20px}
+.quota{padding:14px 16px}
+.userBar img{border:2px solid var(--edge)}
+.pill{border-radius:10px}
+
+/* Langkah */
+.steps{gap:10px;margin:0 0 18px}
+.steps li{background:var(--glass);border:1px solid var(--edge);border-radius:16px;padding:12px 6px;font-weight:600;color:var(--txt)}
+.steps li:before{width:28px;height:28px;line-height:28px;border-radius:9px;background:var(--pri);color:var(--pri-ink);font-weight:800;margin-bottom:6px}
+
+/* Pilih fitur: ringkas, tiga ubin sejajar */
+.picks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
+.pick{border:1px solid var(--edge);background:var(--glass);color:var(--txt)}
+#modePicks .pick{flex-direction:column;justify-content:center;gap:10px;min-height:104px;padding:14px 6px;border-radius:18px;font-size:14px;line-height:1.2;text-align:center;text-wrap:balance}
+#modePicks .pick .ico{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:13px;background:var(--glass2);transition:background .2s,transform .2s}
+#modePicks .pick .ico svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#modePicks .pick:hover{border-color:rgba(255,255,255,.35)}
+#modePicks .pick.on{background:linear-gradient(150deg,#fff,#dcdad6);color:var(--pri-ink);border-color:#fff;box-shadow:0 10px 28px rgba(255,255,255,.16)}
+#modePicks .pick.on .ico{background:rgba(20,20,20,.1);transform:rotate(-6deg) scale(1.05)}
+
+/* Area pilih video */
+.drop{border:1.5px dashed rgba(255,255,255,.28);border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,.08),rgba(255,255,255,.015));padding:30px 16px 26px}
+.drop:hover,.drop.over{border-color:#fff;background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.03));box-shadow:0 0 0 6px rgba(255,255,255,.05)}
+.drop .up{display:flex;align-items:center;justify-content:center;width:58px;height:58px;margin:0 auto 14px;border-radius:18px;background:var(--glass2);border:1px solid var(--edge);color:var(--txt);transform:rotate(-5deg);transition:transform .2s}
+.drop .up svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.drop:hover .up{transform:rotate(0) translateY(-3px)}
+.drop .big{border-radius:16px;background:linear-gradient(145deg,#fff,#d9d7d2);box-shadow:0 10px 30px rgba(255,255,255,.18);font-size:18px;padding:0 34px;margin-bottom:12px}
+.drop small{font-size:13px}
+
+/* Bawah */
+details{padding:14px 16px}
+.fill{background:linear-gradient(90deg,#fff,#bdbab4)}
+.bar{border-radius:99px}
+
+/* Tombol bahasa & admin */
+#langBtn{width:auto!important;height:32px!important;padding:0 9px!important;border-radius:10px!important;background:var(--glass)!important;border:1px solid var(--edge)!important;white-space:nowrap;letter-spacing:3px;font-size:13px!important;display:flex;align-items:center;opacity:.9}
+#adminBtn{border-radius:10px}
+
+@media (prefers-reduced-motion:reduce){
+  .lockup,.mark,.mark .shine:before,.mark .cur,.mark .chev,.mark:after,.brand:before,.word b{animation:none!important}
+  .mark .chev{stroke-dashoffset:0}
+  .word b{background-position:50% 0}
+  button,.btn,.drop .up,#modePicks .pick .ico{transition:none}
+}
+
+/* ===== Before / After ===== */
+.cmp{margin:0 0 20px}
+.cmpHead{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 0 14px;font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#d6d4cf}
+.cmpHead:before,.cmpHead:after{content:"";width:7px;height:7px;border-radius:2px;background:#fff;transform:rotate(45deg);opacity:.8}
+.cmpBox{--p:50%;position:relative;width:min(100%,300px);margin:0 auto;aspect-ratio:4/5;border-radius:28px;overflow:hidden;background:#0b0b0b;border:1px solid var(--edge);box-shadow:0 22px 60px rgba(0,0,0,.55),0 0 0 7px rgba(255,255,255,.04);touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:ew-resize;isolation:isolate}
+.cmpBox .cv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 55%;pointer-events:none;background:#0b0b0b}
+.cmpBox .cv.before{clip-path:inset(0 calc(100% - var(--p)) 0 0);filter:saturate(.96)}
+.cmpBox .lab{position:absolute;top:14px;z-index:3;padding:7px 12px;border-radius:11px;background:rgba(10,10,10,.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--edge);font-size:11px;font-weight:800;letter-spacing:.05em;color:#fff;transition:opacity .25s,transform .25s;pointer-events:none}
+.cmpBox .lab.l{left:14px}
+.cmpBox .lab.r{right:14px;background:linear-gradient(145deg,#fff,#dcdad6);color:#141414;border-color:#fff}
+.cmpBox.hideL .lab.l{opacity:0;transform:translateX(-8px)}
+.cmpBox.hideR .lab.r{opacity:0;transform:translateX(8px)}
+.cmpBox .divider{position:absolute;z-index:4;top:0;bottom:0;left:var(--p);width:2px;margin-left:-1px;background:#fff;box-shadow:0 0 22px rgba(255,255,255,.75);outline:none}
+.cmpBox .knob{position:absolute;top:50%;left:50%;width:44px;height:44px;border-radius:15px;transform:translate(-50%,-50%) rotate(-6deg);background:linear-gradient(145deg,#fff,#d9d7d2);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 28px rgba(0,0,0,.5),inset 0 -3px 6px rgba(0,0,0,.1);transition:transform .2s}
+.cmpBox .knob svg{width:26px;height:26px;fill:none;stroke:#141414;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cmpBox.drag .knob{transform:translate(-50%,-50%) rotate(0) scale(1.1)}
+.cmpBox .divider:focus-visible .knob{box-shadow:0 0 0 4px rgba(255,255,255,.45),0 10px 28px rgba(0,0,0,.5)}
+.cmpBox .hint{position:absolute;z-index:3;left:calc(50% - 22px);bottom:18px;transform:translateX(-50%);padding:7px 11px;border-radius:11px;background:rgba(10,10,10,.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--edge);font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#fff;white-space:nowrap;pointer-events:none;transition:opacity .4s,transform .4s;animation:hintPulse 2.4s ease-in-out infinite}
+.cmpBox.touched .hint{opacity:0;transform:translateX(-50%) translateY(8px);animation:none}
+.cmpBox .pp{position:absolute;z-index:5;right:12px;bottom:12px;width:38px;height:38px;min-height:0;padding:0;border-radius:12px;background:rgba(10,10,10,.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--edge);color:#fff;display:flex;align-items:center;justify-content:center}
+.cmpBox .pp svg{width:16px;height:16px;fill:#fff}
+.cmpBox .pp .i-play{display:none}
+.cmpBox.paused .pp .i-play{display:block}
+.cmpBox.paused .pp .i-pause{display:none}
+@keyframes hintPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.25)}50%{box-shadow:0 0 0 7px rgba(255,255,255,0)}}
+@media (prefers-reduced-motion:reduce){.cmpBox .hint{animation:none}.cmpBox .knob,.cmpBox .lab{transition:none}}
+.r2{position:relative;display:inline-flex;align-items:center;gap:8px;margin:0 0 12px;padding:2px 0;cursor:pointer;font-size:13px;color:var(--mut);user-select:none;-webkit-tap-highlight-color:transparent}
+.r2 input{position:absolute;opacity:0;pointer-events:none}
+.r2 .sw{flex:none;width:30px;height:17px;border-radius:99px;background:var(--card2);border:1px solid var(--line);position:relative;transition:.15s}
+.r2 .sw:after{content:"";position:absolute;top:2px;left:2px;width:11px;height:11px;border-radius:50%;background:var(--mut);transition:.15s}
+.r2 input:checked+.sw{background:var(--ok);border-color:var(--ok)}
+.r2 input:checked+.sw:after{left:15px;background:#0b2e17}
+.r2 input:checked~.tx{color:var(--txt)}
+.r2 input:focus-visible+.sw{outline:2px solid var(--info);outline-offset:2px}
+
+
+/* ===== Codex Studio / restrained professional interface ===== */
+:root{
+  --bg:#101215;--card:#171b20;--card2:#20262d;--line:#303943;
+  --txt:#edf1f5;--mut:#929eaa;--pri:#dce4eb;--pri-ink:#10151a;
+  --info:#8aa8c2;--ok:#83b69a;--bad:#e18a8a;--warn:#d7b978;
+  --glass:#171b20;--glass2:#222a32;--edge:#303943;--glow:transparent;
+}
+html{background:var(--bg)}
+body{
+  background:var(--bg)!important;background-image:none!important;
+  color:var(--txt);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px;line-height:1.5;letter-spacing:0;
+}
+main{max-width:760px;padding:22px 20px calc(52px + env(safe-area-inset-bottom))}
+.brand{padding:18px 0 20px;text-align:left;isolation:auto}
+.brand:before{display:none}
+.lockup{gap:11px;animation:none}
+.mark{width:42px;height:42px;border-radius:11px;transform:none;animation:none;background:#dce4eb;box-shadow:none;overflow:hidden}
+.mark:after,.mark .shine,.mark .cur{display:none}
+.mark svg{width:25px;height:25px}
+.mark .chev{stroke-dasharray:none;stroke-dashoffset:0;animation:none}
+.word{line-height:1.05}
+.word b{font-size:25px;letter-spacing:-1.1px;color:var(--txt);background:none;animation:none;-webkit-text-fill-color:currentColor}
+.word .tag{margin-top:4px;padding:0;border:0;border-radius:0;background:none;color:var(--mut);font-size:10px;letter-spacing:.2em;font-weight:700}
+.studioIntro{padding:15px 0 23px;border-bottom:1px solid var(--line);margin-bottom:21px}
+.studioEyebrow{display:flex;align-items:center;gap:8px;color:#9eabb7;font-size:10px;font-weight:750;letter-spacing:.14em}
+.liveDot{width:7px;height:7px;border-radius:50%;background:#83b69a;box-shadow:0 0 0 3px rgba(131,182,154,.12)}
+.studioVersion{margin-left:auto;color:#73808c;font-size:9px;letter-spacing:.12em}
+.studioIntro h1{font-size:clamp(25px,5vw,32px);letter-spacing:-.045em;line-height:1.15;margin:12px 0 6px;font-weight:700;color:#f1f4f7}
+.studioIntro p{margin:0;color:var(--mut);font-size:13px;max-width:520px}
+/* Hide the decorative comparison demo; it is not part of the processing workflow. */
+#cmp{display:none!important}
+.sectionHead{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+.sectionHead>span{display:grid;place-items:center;width:27px;height:27px;border:1px solid #46515d;border-radius:7px;color:#aebbc7;font-size:10px;font-weight:750;font-variant-numeric:tabular-nums}
+.sectionHead>div{display:flex;flex-direction:column;gap:1px}
+.sectionHead b{font-size:13px;font-weight:700;color:#e5ebf0}
+.sectionHead small{font-size:11px;color:var(--mut)}
+.steps{gap:8px;margin:0 0 20px}
+.steps li{background:#15191e;border:1px solid #2b333c;border-radius:9px;padding:9px 5px;color:#9ca8b3;font-size:11px;font-weight:550}
+.steps li:before{width:22px;height:22px;line-height:22px;margin-bottom:5px;border-radius:6px;background:#252d35;color:#dce4eb;font-size:11px}
+.picks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 21px}
+#modePicks .pick{min-height:82px;padding:12px 7px;gap:8px;border:1px solid #303943;border-radius:10px;background:#171c22;color:#c5ced6;font-size:12px;font-weight:650;box-shadow:none;backdrop-filter:none}
+#modePicks .pick .ico{width:30px;height:30px;border-radius:8px;background:#242c34;color:#aebbc7}
+#modePicks .pick .ico svg{width:17px;height:17px}
+#modePicks .pick:hover{border-color:#647382;background:#1b2229}
+#modePicks .pick.on{background:#dce4eb;color:#111820;border-color:#dce4eb;box-shadow:none}
+#modePicks .pick.on .ico{background:rgba(16,24,32,.09);color:#17212a;transform:none}
+.uploadHead{margin-top:1px}
+.drop{border:1px dashed #53616e;border-radius:11px;background:#151a20;padding:27px 16px;text-align:center;transition:border-color .16s,background .16s}
+.drop:hover,.drop.over{border-color:#aebdca;background:#1a2128}
+.drop .up{display:flex;align-items:center;justify-content:center;width:39px;height:39px;margin:0 auto 11px;border:1px solid #3a4651;border-radius:9px;background:#202831;color:#c1ccd6}
+.drop .up svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.drop .big{min-height:0;margin:0;padding:0;border-radius:0;background:none;color:#edf1f5;font-size:14px;font-weight:700}
+.drop small{margin-top:5px;font-size:11px;color:#8f9ba7}
+button,.btn{font-family:inherit;border-radius:9px;min-height:43px;padding:10px 15px;font-size:13px;font-weight:650;box-shadow:none;transition:background .15s,border-color .15s,color .15s}
+button:active,.btn:active{transform:translateY(1px)}
+button.ghost,.btn.ghost{background:#1a2026;border:1px solid #35404b;color:#d7dfe6;backdrop-filter:none}
+button.ghost:hover,.btn.ghost:hover{background:#242d36}
+button.blue,.btn.blue{background:#8aa8c2;color:#101820}
+.card,.quota,details{background:#171c22;border:1px solid #303943;border-radius:11px;box-shadow:none}
+.card{padding:14px;margin-top:12px}
+.quota{padding:13px 14px}
+.userBar img{border:1px solid #3a4651}
+.pill{border-radius:6px}
+.pill.full{background:#1d3027;color:#9bc9ae}
+.pill.zero{background:#321f22;color:#e5a0a0}
+.name{font-size:13px;font-weight:650}
+.size,.info{font-size:11px;color:#9aa6b1}
+.status{font-size:12px}
+.bar{height:5px;background:#29313a;border-radius:4px}
+.fill{background:#aebdca}
+ul.checks{font-size:11px}
+.actions{gap:8px}
+.actions>*{flex:1 1 135px}
+details{margin-top:20px;padding:13px 14px;font-size:12px;color:#a0abb5}
+summary{font-size:12px;font-weight:650}
+details p{line-height:1.65}
+.engine{font-size:11px}
+#waHelpBtn,#tutorialBtn,#tiktokCheckerLink{min-height:42px;font-size:12px}
+#adminBtn{opacity:.32;width:32px;height:32px;border-radius:8px;background:#1a2026;border:1px solid #303943}
+#adminBtn:hover,#adminBtn:focus-visible{opacity:1}
+#adminBtn svg{fill:#aebbc7}
+#langBtn{opacity:.75!important;filter:grayscale(1);font-size:10px!important}
+.modal{background:rgba(5,8,11,.78);backdrop-filter:blur(5px)}
+.modal .box{background:#171c22;border:1px solid #3a4651;border-radius:13px;box-shadow:0 22px 70px rgba(0,0,0,.45)}
+.modal h2{font-size:18px}
+.toast{background:#202831;border:1px solid #53616e;border-radius:9px;font-size:12px;box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.admin{background:#10151a}
+.admin .ahead{background:#10151a;border-bottom-color:#303943}
+.admin .ahead b{font-size:16px}
+.tabs button{border-radius:8px;background:#1a2026;border-color:#303943;font-size:12px}
+.tabs button.on{background:#dce4eb;color:#111820;border-color:#dce4eb}
+.acard{background:#171c22;border:1px solid #303943;border-radius:10px}
+.admin h3{font-size:11px;letter-spacing:.1em}
+.acard .t{font-size:13px}
+#inappWarn{background:#27241e;border-bottom-color:#514631;font-size:12px}
+@media(max-width:480px){
+  main{padding:14px 14px calc(42px + env(safe-area-inset-bottom))}
+  .brand{padding:12px 0 15px}
+  .studioIntro{padding:12px 0 18px;margin-bottom:17px}
+  #modePicks .pick{min-height:76px;font-size:11px}
+  .steps li{font-size:10px}
+  .drop{padding:24px 12px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important;transition:none!important}}
+
+
+/* Codex Agent Spider — lightweight SVG/CSS animation */
+.agent-stage{position:relative;overflow:hidden;margin:2px 0 20px;border:1px solid #303943;border-radius:14px;background:radial-gradient(ellipse at 50% 48%,rgba(113,55,150,.16),transparent 48%),linear-gradient(145deg,#0c1016,#111720 58%,#0b0f15);box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+.agent-topline,.agent-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;color:#82909d;font:600 9px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.13em}
+.agent-topline{border-bottom:1px solid rgba(148,163,184,.12)}
+.agent-live{display:flex;align-items:center;gap:8px;color:#c6d0da}
+.agent-live i,.agent-foot .agent-dot{width:6px;height:6px;border-radius:50%;background:#a855f7;box-shadow:0 0 10px #a855f7;display:inline-block}
+.agent-state{color:#9b8bb4}
+.agent-scene{position:relative;height:220px;overflow:hidden}
+.agent-web{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.web-lines path{stroke-dasharray:5 8;animation:webFlow 5s linear infinite}
+.data-nodes g rect{fill:#111923;stroke:#4b3c61;stroke-width:1}
+.data-nodes g circle{fill:#e879f9;filter:drop-shadow(0 0 4px #d946ef)}
+.data-nodes g path{stroke:#788697;stroke-width:1.2;stroke-linecap:round}
+.data-nodes g{animation:nodeBreathe 3.8s ease-in-out infinite}
+.data-nodes g:nth-child(2n){animation-delay:-1.7s}
+.signal-points circle{fill:#e879f9;filter:drop-shadow(0 0 5px #d946ef);animation:signalPulse 1.8s ease-in-out infinite}
+.signal-points circle:nth-child(2n){animation-delay:.7s}
+.spider{transform-box:fill-box;transform-origin:center;filter:drop-shadow(0 0 7px rgba(217,70,239,.38))}
+.spider-route{animation:routeGlow 2s ease-in-out infinite}
+.agent-stage[data-state="working"] .spider-route{animation-duration:.7s}
+.agent-stage[data-state="working"] .spider{filter:drop-shadow(0 0 12px rgba(217,70,239,.85))}
+.legs{fill:none;stroke:#d8b4fe;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;animation:legWork .65s ease-in-out infinite alternate}
+.leg-joints circle{fill:#f0abfc;stroke:#17101e;stroke-width:1}
+.spider-body{fill:#a855f7;stroke:#f0abfc;stroke-width:1.5;filter:drop-shadow(0 0 9px rgba(217,70,239,.7))}
+.spider-head{fill:#e879f9;stroke:#f5d0fe;stroke-width:1.4}
+.spider-eye{fill:#111827}
+.spider-core{fill:none;stroke:#24102e;stroke-width:2;stroke-linecap:round}
+.spider-halo{animation:haloPulse 3s ease-in-out infinite}
+.scan-ring{fill:none;stroke:#a855f7;stroke-width:1;stroke-dasharray:3 7;transform-origin:320px 122px;animation:ringSpin 14s linear infinite;opacity:.65}
+.agent-caption{position:absolute;left:0;right:0;bottom:10px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;pointer-events:none}
+.agent-caption b{font-size:12px;letter-spacing:.02em;color:#f0e7fa}
+.agent-caption span{font-size:10px;color:#8995a3}
+.agent-chip{position:absolute;top:45%;padding:6px 8px;border:1px solid rgba(168,85,247,.26);border-radius:5px;background:rgba(10,14,22,.82);color:#9ca9b8;font:600 8px ui-monospace,monospace;letter-spacing:.08em}
+.agent-chip i{display:inline-block;width:5px;height:5px;margin-right:5px;border-radius:50%;background:#38bdf8;box-shadow:0 0 6px #38bdf8}
+.chip-left{left:12px}.chip-right{right:12px}
+.agent-foot{border-top:1px solid rgba(148,163,184,.12);letter-spacing:.04em;text-transform:none;font-size:9px}
+.agent-foot>span:first-child{display:flex;align-items:center;gap:7px}
+.agent-foot .agent-dot{background:#38bdf8;box-shadow:0 0 8px #38bdf8}
+.agent-stage[data-state="working"] .agent-state{color:#e879f9}
+.agent-stage[data-state="working"] .agent-live i{animation:signalPulse .8s infinite}
+.agent-stage[data-state="working"] .spider{animation-duration:1.15s}
+.agent-stage[data-state="working"] .legs{animation-duration:.28s}
+.agent-stage[data-state="working"] .web-lines path{animation-duration:1.6s}
+@keyframes routeGlow{0%,100%{opacity:.8}50%{opacity:1}}
+.spider-route{will-change:transform}
+.agent-stage[data-state="done"] .agent-state,.agent-stage[data-state="done"] .agent-live i{color:#86efac;background:#4ade80;box-shadow:0 0 9px #4ade80}
+.agent-stage[data-state="error"] .agent-state{color:#fca5a5}
+@keyframes webFlow{to{stroke-dashoffset:-52}}
+@keyframes nodeBreathe{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes signalPulse{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+@keyframes spiderFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
+@keyframes legWork{from{stroke-dashoffset:0;opacity:.75}to{stroke-dashoffset:2;opacity:1}}
+@keyframes haloPulse{0%,100%{opacity:.35;transform:scale(.88)}50%{opacity:.8;transform:scale(1.12)}}
+@keyframes ringSpin{to{transform:rotate(360deg)}}
+@media(max-width:420px){.agent-scene{height:190px}.agent-chip{font-size:7px;padding:5px 6px}.chip-left{left:6px}.chip-right{right:6px}.agent-caption b{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.agent-stage *{animation:none!important}}
+
+
+/* Full-viewport spider patrol: independent articulated legs + return-to-work docking */
+#spiderPatrol{position:fixed;left:0;top:0;width:76px;height:76px;z-index:9998;pointer-events:none;opacity:.96;will-change:transform;filter:drop-shadow(0 5px 12px rgba(168,85,247,.32));}
+.patrol-spider{width:100%;height:100%;overflow:visible}
+.patrol-body{transform-origin:60px 58px;animation:bodyBob .52s ease-in-out infinite alternate}
+.patrol-body ellipse{fill:#8b5cf6;stroke:#e9d5ff;stroke-width:2}
+.patrol-body circle{fill:#d946ef;stroke:#f5d0fe;stroke-width:1.8}
+.patrol-eyes{fill:none;stroke:#1b1025;stroke-width:3.5;stroke-linecap:round}
+.patrol-mark{fill:none;stroke:#35134b;stroke-width:2.5;stroke-linecap:round}
+.patrol-legs{fill:none;stroke:#e9d5ff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.leg{transform-box:view-box;transform-origin:60px 60px}
+.leg path{stroke-dasharray:1;filter:drop-shadow(0 0 3px rgba(217,70,239,.7))}
+.leg-1{animation:legA .28s ease-in-out infinite alternate}.leg-2{animation:legB .28s ease-in-out infinite alternate-reverse}
+.leg-3{animation:legB .31s ease-in-out infinite alternate}.leg-4{animation:legA .31s ease-in-out infinite alternate-reverse}
+.leg-5{animation:legB .28s ease-in-out infinite alternate}.leg-6{animation:legA .28s ease-in-out infinite alternate-reverse}
+.leg-7{animation:legA .31s ease-in-out infinite alternate}.leg-8{animation:legB .31s ease-in-out infinite alternate-reverse}
+.patrol-aura{fill:none;stroke:#c084fc;stroke-width:1;stroke-dasharray:2 6;opacity:.55;transform-origin:60px 58px;animation:auraSpin 8s linear infinite}
+#spiderPatrol.docked{filter:drop-shadow(0 0 14px rgba(217,70,239,.7))}
+#spiderPatrol.docked .patrol-aura{opacity:.95}
+#spiderPatrol.docked .patrol-body{animation-duration:.34s}
+#spiderPatrol.paused .patrol-legs *{animation-play-state:paused}
+@keyframes legA{from{transform:rotate(-9deg)}to{transform:rotate(12deg)}}
+@keyframes legB{from{transform:rotate(10deg)}to{transform:rotate(-11deg)}}
+@keyframes bodyBob{from{transform:translateY(-1px) rotate(-2deg)}to{transform:translateY(2px) rotate(2deg)}}
+@keyframes auraSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#spiderPatrol *{animation:none!important}}
+
+
+/* === Refinement: tenang, datar, satu aksen === */
+.brand{padding:28px 0 22px}.brand:before{display:none}
+.mark{width:48px;height:48px;border-radius:10px;transform:none;background:#f1efec;box-shadow:none}
+.mark:after{display:none}.mark svg{width:28px;height:28px}
+.word b{font-size:38px;letter-spacing:-1.5px;background:none;color:var(--txt);-webkit-text-fill-color:var(--txt)}
+.word .tag{border-radius:3px;background:none;border-color:#3a3a3e;color:var(--mut);letter-spacing:.24em}
+.drop{border:1px dashed #3a3a3e;border-radius:10px;background:var(--card);box-shadow:none}
+.drop:hover,.drop.over{border-color:#8a8a90;background:var(--card);box-shadow:none}
+.drop .up{border-radius:8px;transform:none;background:transparent}.drop:hover .up{transform:none}
+.liveDot{background:#ff3d8b;box-shadow:none}
+.agent-stage{border-radius:10px;border-color:#26262b;background:#09090b;box-shadow:none}
+.agent-topline,.agent-foot{color:#6b6b75;letter-spacing:.1em}
+.agent-topline{border-bottom-color:#1c1c21}.agent-foot{border-top-color:#1c1c21}
+.agent-live i,.agent-foot .agent-dot{background:#ff3d8b;box-shadow:none}
+.agent-state,.agent-stage[data-state="working"] .agent-state{color:#ff6fa6}
+.agent-scene{height:268px}.agent-web{height:calc(100% - 38px)}
+.agent-caption b{color:#e8e8ec;font-weight:600}.agent-caption span{color:#6b6b75}
+@media(max-width:420px){.agent-scene{height:240px}}
+
+/* ===== Layout v2: ruang kerja dua kolom, laba-laba selalu terlihat ===== */
+main{max-width:1120px;padding-top:52px}
+.brand{padding:4px 0 6px}
+.studioIntro{padding:8px 0 18px;margin-bottom:20px}
+.workspace{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:26px;align-items:start}
+.stagePane{position:sticky;top:54px;z-index:20;min-width:0}
+.controlPane{min-width:0}
+.agent-stage{margin:0;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.agent-scene{height:clamp(300px,48vh,430px)}
+.agent-web{height:100%}
+.agent-caption{position:static;padding:11px 14px 13px;border-top:1px solid #1c1c21;pointer-events:none}
+.agent-caption span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.agent-progress{height:3px;background:#17171c;overflow:hidden}
+.agent-progress i{display:block;height:100%;width:0;background:#ff3d8b;transition:width .25s}
+.agent-progress.indet i{width:30%;animation:sl 1.1s infinite ease-in-out}
+.agent-foot{border-top:1px solid #1c1c21}
+.agent-stage[data-state="working"]{border-color:rgba(255,61,139,.45)}
+.steps{margin:0 0 18px}
+.steps li{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 6px}
+.steps li:before{margin:0;flex:none;width:20px;height:20px;line-height:20px;font-size:10px}
+
+@media(max-width:919px){
+  main{padding:0 14px calc(42px + env(safe-area-inset-bottom))}
+  html.inapp main{padding-top:calc(90px + env(safe-area-inset-top))}
+  .brand{display:flex;justify-content:center;align-items:center;height:50px;padding:0}
+  .lockup{gap:9px}
+  .mark{width:30px;height:30px;border-radius:8px}.mark svg{width:18px;height:18px}
+  .word b{font-size:19px;letter-spacing:-.8px}
+  .word .tag{margin-top:2px;font-size:8px}
+  .studioIntro{display:none}
+  .workspace{display:block}
+  /* Panel laba-laba menempel di atas layar: tetap terlihat saat mengisi video */
+  .stagePane{top:0;margin:0 -14px 14px;padding:6px 14px 10px;background:var(--bg);box-shadow:0 12px 16px -10px rgba(0,0,0,.75)}
+  .agent-stage{box-shadow:none}
+  .agent-topline{padding:9px 38px 9px 84px;font-size:8.5px;white-space:nowrap;overflow:hidden}
+  .agent-scene{height:clamp(130px,21vh,170px)}
+  .agent-caption{padding:7px 12px 9px;gap:1px}
+  .agent-caption b{font-size:11px}.agent-caption span{font-size:9.5px}
+  .agent-foot{display:none}
+  .drop{padding:20px 12px}
+}
+@media(max-width:340px){.agent-topline{padding-left:78px}.agent-live{display:none}}
+
+/* ===== Aliran kode & laba-laba keluar area kerja ===== */
+.code-feed{position:relative;height:clamp(104px,16vh,140px);border-top:1px solid #1c1c21;background:#07070a;overflow:hidden;font:500 10.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#6f7885}
+.code-feed:before{content:"";position:absolute;left:0;right:0;top:0;height:34px;background:linear-gradient(#07070a,rgba(7,7,10,0));z-index:1;pointer-events:none}
+.code-track{position:absolute;left:0;right:0;bottom:0;padding:0 14px 8px}
+.code-track div{white-space:pre;overflow:hidden}
+.code-track i{font-style:normal}
+.code-track .k{color:#ff6fa6}.code-track .n{color:#6ee7f9}.code-track .s{color:#86efac}.code-track .c{color:#555e6b}
+.agent-stage[data-state="working"] .code-feed{color:#aeb8c4}
+.spider-pointed{outline:2px solid #ff3d8b!important;outline-offset:3px;animation:spPoint .7s ease-in-out infinite alternate}
+@keyframes spPoint{from{box-shadow:0 0 0 0 rgba(255,61,139,0)}to{box-shadow:0 0 20px 2px rgba(255,61,139,.45)}}
+@media(max-width:919px){.code-feed{height:80px;font-size:9px;line-height:1.5}.code-track{padding:0 12px 6px}}
+</style>
+</head>
+<body>
+<script>
+(function(){
+  var ua = navigator.userAgent || '';
+  if (/TikTok|BytedanceWebview|musical_ly|FBAN|FBAV|Instagram|Line\//i.test(ua) && !sessionStorage.getItem('inappDismissed')) {
+    document.documentElement.classList.add('inapp');
+    document.addEventListener('DOMContentLoaded', function(){
+      var w = document.getElementById('inappWarn'), a = document.getElementById('inappArrow'), c = document.getElementById('inappClose');
+      w.hidden = false; a.hidden = false; c.hidden = false;
+      c.onclick = function(){
+        w.hidden = true; a.hidden = true; c.hidden = true;
+        document.documentElement.classList.remove('inapp');
+        try { sessionStorage.setItem('inappDismissed', '1'); } catch (e) {}
+      };
+    });
+  }
+})();
+</script>
+<div id="inappWarn" hidden>Kamu membuka halaman ini di dalam aplikasi (TikTok/Instagram, dll). Supaya login &amp; download video lancar, ketuk <b>titik tiga (⋮)</b> di pojok kanan atas, lalu pilih <b>"Buka di Browser"</b>.</div>
+<div id="inappArrow" hidden>↗</div>
+<button id="inappClose" type="button" aria-label="Tutup peringatan" hidden>✕</button>
+<button id="adminBtn" type="button" aria-label="Menu admin" title="">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>
+</button>
+<button id="langBtn" type="button" aria-label="Ganti bahasa" title="" style="position:fixed;top:calc(8px + env(safe-area-inset-top));left:8px;z-index:50;width:34px;height:34px;min-height:0;padding:0;border-radius:50%;background:transparent;border:0;font-size:14px;line-height:1">🇮🇩🇲🇾🇬🇧</button>
+<main>
+  <header class="brand">
+    <div class="lockup" role="img" aria-label="Codex Repack">
+      <div class="mark" aria-hidden="true">
+        <span class="shine"></span>
+        <svg viewBox="0 0 36 36" fill="none" stroke="#141414" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path class="chev" d="M10 9l11 9-11 9"/><path class="cur" d="M23 28h6"/></svg>
+      </div>
+      <div class="word"><b>Codex</b><span class="tag">Repack</span></div>
+    </div>
+  </header>
+  <section class="studioIntro" aria-label="Codex Repack Studio">
+    <div class="studioEyebrow"><span class="liveDot"></span> VIDEO WORKSPACE <span class="studioVersion">LOCAL PROCESSING</span></div>
+    <h1>Video processing</h1>
+    <p>Pilih metode, masukkan video, lalu periksa hasil sebelum disimpan.</p>
+  </section>
+
+<div class="workspace">
+  <aside class="stagePane">
+    <section class="agent-stage" id="agentStage" data-state="idle" aria-label="Codex AI processing visualization">
+      <div class="agent-topline"><span class="agent-live"><i></i> CODEX ENGINE</span><span class="agent-state" id="agentState">STANDBY</span></div>
+      <div class="agent-scene"><canvas id="spiderCanvas" class="agent-web" aria-hidden="true"></canvas></div>
+      <div class="agent-progress" id="agentProgress" aria-hidden="true"><i></i></div>
+      <div class="code-feed" id="codeFeed" aria-hidden="true"><div class="code-track" id="codeTrack"></div></div>
+      <div class="agent-foot"><span><b class="agent-dot"></b> Local processing</span><span id="agentTask">Tidak ada tugas aktif</span></div>
+    </section>
+  </aside>
+  <div class="controlPane">
+
+  <section class="cmp" id="cmp" aria-label="Before / After">
+    <div class="cmpHead" id="cmpTitle">Lihat bedanya</div>
+    <div class="cmpBox" id="cmpBox">
+      <video class="cv" id="vAfter" src="demo-after.mp4" poster="demo-poster-after.jpg" muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
+      <video class="cv before" id="vBefore" src="demo-before.mp4" poster="demo-poster-before.jpg" muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback></video>
+      <span class="lab l" id="cmpBefore">TikTok Biasa</span>
+      <span class="lab r" id="cmpAfter">Codex Repack</span>
+      <div class="divider" id="cmpDiv" role="slider" tabindex="0" aria-label="Geser untuk membandingkan" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+        <span class="knob"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/></svg></span>
+      </div>
+      <span class="hint" id="cmpHint">Geser untuk bandingkan</span>
+      <button type="button" class="pp" id="cmpPP" aria-label="Jeda / putar animasi geser"><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button>
+    </div>
+  </section>
+
+
+  <div id="loginBox" class="loginBox" hidden>
+    <button id="loginBtn" class="gbtn" type="button">
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.900 2.400 30.400 0 24 0 14.600 0 6.500 5.400 2.600 13.200l7.900 6.100C12.400 13.600 17.700 9.500 24 9.500z"/><path fill="#4285F4" d="M46.500 24.500c0-1.600-.1-3.100-.4-4.500H24v9h12.700c-.6 3-2.300 5.500-4.800 7.200l7.500 5.800c4.400-4.100 7.100-10.100 7.100-17.500z"/><path fill="#FBBC05" d="M10.500 28.700c-.5-1.400-.8-3-.8-4.700s.3-3.200.8-4.700l-7.900-6.100C.9 16.400 0 20.100 0 24s.9 7.600 2.600 10.800l7.900-6.100z"/><path fill="#34A853" d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.500-5.800c-2.100 1.400-4.900 2.300-8.400 2.300-6.300 0-11.600-4.100-13.500-9.800l-7.900 6.100C6.500 42.600 14.600 48 24 48z"/></svg>
+      <span id="loginBtnText">Masuk dengan Google</span>
+    </button>
+    <small id="loginSmall">Pengguna baru: gratis 3 kali coba</small>
+  </div>
+
+  <div id="quota" class="quota" hidden>
+    <div class="userBar">
+      <img id="uPhoto" alt="" referrerpolicy="no-referrer">
+      <div class="who"><b id="uName"></b><span id="uEmail"></span></div>
+      <button id="logoutBtn" class="ghost small" type="button">Keluar</button>
+    </div>
+    <div class="line"><span id="quotaText"></span><button id="upgradeBtn" class="blue small" type="button" hidden>Akses Penuh</button></div>
+  </div>
+
+  <ol class="steps">
+    <li id="step1">Pilih video</li>
+    <li id="step2">Tunggu proses</li>
+    <li id="step3">Simpan hasil</li>
+  </ol>
+
+  <div class="sectionHead"><span>01</span><div><b>Metode pemrosesan</b><small>Pilih satu mode untuk melanjutkan</small></div></div>
+  <div class="picks" id="modePicks" role="group" aria-label="Pilih fitur">
+    <button type="button" class="pick on" id="modeRepack"><i class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg></i><span>Repack HD</span></button>
+    <button type="button" class="pick" id="modeFps120"><i class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></i><span>Ubah ke 120fps</span></button>
+    <button type="button" class="pick" id="modeHdr"><i class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></i><span>Ubah ke HDR</span></button>
+    <button type="button" class="pick" id="modeRes"><i class="ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></i><span>Ubah resolusi</span></button>
+  </div>
+  <div id="resRow" hidden style="margin:0 0 14px"><select id="resSel" aria-label="Resolusi tujuan" style="width:100%;min-height:50px;border-radius:12px;background:var(--card2);color:var(--txt);border:1px solid var(--line);padding:0 12px;font:700 16px system-ui,sans-serif"><option value="3840">4K (Ultra HD)</option><option value="2560">1440p (2K)</option><option value="1920">1080p (Full HD)</option></select></div>
+
+  <div class="sectionHead uploadHead"><span>02</span><div><b>File video</b><small>MP4, MOV, dan format video yang didukung</small></div></div>
+  <label class="drop" id="drop">
+    <input type="file" id="file" accept="video/*,.mov,.mp4,.m4v" multiple hidden>
+    <span class="up" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 17v2a1 1 0 001 1h14a1 1 0 001-1v-2"/></svg></span>
+    <span class="big">Pilih Video</span>
+    <small>Bisa pilih banyak video sekaligus</small>
+  </label>
+
+  <div id="list"></div>
+
+  <details>
+    <summary id="helpSummary">Bantuan &amp; catatan</summary>
+    <p id="helpP1">1. Mode <b>Repack HD</b>: memakai struktur tiga track (1 video + 2 audio), dengan kedua track audio berbagi paket AAC yang sama tanpa menggandakan data suara, mempertahankan bitstream video tanpa encode ulang bila codec kompatibel (ukuran file dapat sedikit berubah), lalu bisa langsung diunduh & diupload ke TikTok. Mode <b>Ubah ke 120fps</b>: video di-encode ulang menjadi 120 fps (tanpa batas durasi, prosesnya lebih lama dan ukuran file bisa berubah), lalu hasilnya di-repack dengan sistem yang sama seperti Repack HD. Mode <b>Naikkan HDR</b>: khusus video yang sudah HDR. Kecerahan dinaikkan otomatis sampai level maksimal yang aman (diukur dari videonya), lalu hasilnya di-repack dengan sistem yang sama seperti Repack HD. Video non-HDR tidak bisa diproses di mode ini.</p>
+    <p id="helpP2">2. Video diproses lalu diperiksa otomatis. Kalau ada bagian yang belum sesuai, tombol simpan tidak akan muncul supaya hasilnya tetap terjamin.</p>
+    <p id="helpP3">Catatan: hasilnya bergantung pada kebijakan TikTok yang bisa berubah sewaktu-waktu, jadi bisa saja suatu waktu berhenti bekerja. Coba satu video dulu sebelum dipakai untuk klien. Kalau videonya konten AI yang realistis, tetap aktifkan label konten AI di TikTok.</p>
+    <div class="engine">
+      <span id="engineStatus">Mesin video: belum dimuat (dimuat otomatis saat video pertama diproses, ±30 MB sekali saja)</span>
+      <button class="ghost small" id="engineBtn" type="button">Cek mesin</button>
+    </div>
+  </details>
+
+  <a id="waHelpBtn" class="btn ghost" style="width:100%;margin-top:14px" href="#" target="_blank" rel="noopener">Kesulitan? Konsultasi Admin (WA)</a>
+  <button id="tutorialBtn" class="btn ghost" type="button" style="width:100%;margin-top:10px">Tutorial Cara Upload Video HD</button>
+  <a id="tiktokCheckerLink" class="btn ghost" style="width:100%;margin-top:10px;display:block;text-align:center" href="tiktok-check.html" target="_blank" rel="noopener">TikTok Checker (cek info video dari link)</a>
+  </div>
+  </div>
+</main>
+
+
+<div id="admin" class="admin" hidden>
+  <div class="ahead"><b>Menu Admin</b><button id="adminClose" class="ghost small" type="button">Tutup</button></div>
+  <div class="tabs" id="aTabs"></div>
+  <div class="abody" id="aBody"></div>
+</div>
+<div id="modal" class="modal" hidden role="dialog" aria-modal="true">
+  <div class="box"><h2 id="modalTitle"></h2><div id="modalBody"></div><div class="actions" id="modalActions"></div></div>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+// ==CORE-START==
+const Core = (() => {
+  'use strict';
+  const CONTAINERS = new Set(['moov', 'trak', 'mdia', 'minf', 'stbl', 'edts']);
+  const TWO32 = 4294967296;
+  const u32 = (b, o) => ((b[o] << 24) | (b[o + 1] << 16) | (b[o + 2] << 8) | b[o + 3]) >>> 0;
+  const w32 = (b, o, v) => { b[o] = (v >>> 24) & 255; b[o + 1] = (v >>> 16) & 255; b[o + 2] = (v >>> 8) & 255; b[o + 3] = v & 255; };
+  const cc = (b, o) => String.fromCharCode(b[o], b[o + 1], b[o + 2], b[o + 3]);
+  const fcc = s => Uint8Array.from([s.charCodeAt(0), s.charCodeAt(1), s.charCodeAt(2), s.charCodeAt(3)]);
+
+  // ---------- baca / tulis atom ----------
+  function readHeader(buf, pos, end) {
+    if (end - pos < 8) return null;
+    let size = u32(buf, pos), hdr = 8;
+    const type = cc(buf, pos + 4);
+    if (size === 1) {
+      if (end - pos < 16) return null;
+      size = u32(buf, pos + 8) * TWO32 + u32(buf, pos + 12); hdr = 16;
+    } else if (size === 0) size = end - pos;
+    if (size < hdr || pos + size > end) return null;
+    return { type, size, hdr };
+  }
+  function topLevel(buf, tolerant) {
+    const out = []; let pos = 0;
+    while (pos < buf.length) {
+      const h = readHeader(buf, pos, buf.length);
+      if (!h) {
+        if (tolerant && out.some(b => b.type === 'mdat')) break;
+        if (buf.length - pos < 8) break;
+        throw new Error('File video terpotong atau tidak lengkap, biasanya karena file belum selesai diunduh sepenuhnya (misal video kiriman WhatsApp yang belum di-download tuntas) atau rusak saat disalin. Coba: buka dulu videonya sampai selesai diputar di galeri HP, atau simpan ulang/unduh ulang videonya, baru pilih lagi di sini.');
+      }
+      out.push({ type: h.type, start: pos, size: h.size, hdr: h.hdr });
+      pos += h.size;
+    }
+    return out;
+  }
+  function parseBoxes(buf, start, end) {
+    const out = []; let pos = start;
+    while (pos < end) {
+      const h = readHeader(buf, pos, end);
+      if (!h) { if (end - pos < 8) break; throw new Error('Struktur moov tidak valid'); }
+      const bs = pos + h.hdr, be = pos + h.size;
+      if (CONTAINERS.has(h.type)) out.push({ type: h.type, children: parseBoxes(buf, bs, be) });
+      else out.push({ type: h.type, payload: buf.subarray(bs, be) });
+      pos = be;
+    }
+    return out;
+  }
+  function sizeOf(b) {
+    if (b.children) { let s = 8; for (const c of b.children) s += sizeOf(c); return s; }
+    return 8 + b.payload.length;
+  }
+  function writeBox(b, out, pos) {
+    w32(out, pos, sizeOf(b)); out.set(fcc(b.type), pos + 4);
+    let p = pos + 8;
+    if (b.children) { for (const c of b.children) p = writeBox(c, out, p); }
+    else { out.set(b.payload, p); p += b.payload.length; }
+    return p;
+  }
+  const child = (b, t) => (b.children && b.children.find(c => c.type === t)) || null;
+  function path(b, ...ts) { for (const t of ts) { b = b ? child(b, t) : null; } return b || null; }
+  const clone = b => b.children ? { type: b.type, children: b.children.map(clone) } : { type: b.type, payload: b.payload.slice() };
+
+  function parseMoovOf(buf, tolerant) {
+    const tops = topLevel(buf, tolerant);
+    const m = tops.find(t => t.type === 'moov');
+    if (!m) throw new Error('Bukan file MP4/MOV yang valid (atom moov tidak ditemukan)');
+    return { tops, moov: { type: 'moov', children: parseBoxes(buf, m.start + m.hdr, m.start + m.size) } };
+  }
+
+  // ---------- tabel sample ----------
+  function rdStts(p) { const n = u32(p, 4), e = []; for (let i = 0; i < n; i++) e.push([u32(p, 8 + i * 8), u32(p, 12 + i * 8)]); return e; }
+  function wrStts(e) { const o = new Uint8Array(8 + e.length * 8); w32(o, 4, e.length); e.forEach(([c, d], i) => { w32(o, 8 + i * 8, c); w32(o, 12 + i * 8, d); }); return o; }
+  function rdStsc(p) { const n = u32(p, 4), e = []; for (let i = 0; i < n; i++) e.push([u32(p, 8 + i * 12), u32(p, 12 + i * 12), u32(p, 16 + i * 12)]); return e; }
+  function wrStsc(e) { const o = new Uint8Array(8 + e.length * 12); w32(o, 4, e.length); e.forEach(([a, b, c], i) => { w32(o, 8 + i * 12, a); w32(o, 12 + i * 12, b); w32(o, 16 + i * 12, c); }); return o; }
+  function rdStsz(p) {
+    const ss = u32(p, 4), n = u32(p, 8), r = new Uint32Array(n);
+    if (ss) r.fill(ss); else for (let i = 0; i < n; i++) r[i] = u32(p, 12 + i * 4);
+    return r;
+  }
+  function wrStsz(sizes) { const o = new Uint8Array(12 + sizes.length * 4); w32(o, 8, sizes.length); for (let i = 0; i < sizes.length; i++) w32(o, 12 + i * 4, sizes[i]); return o; }
+  function rdStco(p) { const n = u32(p, 4), r = new Array(n); for (let i = 0; i < n; i++) r[i] = u32(p, 8 + i * 4); return r; }
+  function wrStco(offs) {
+    const o = new Uint8Array(8 + offs.length * 4); w32(o, 4, offs.length);
+    for (let i = 0; i < offs.length; i++) { if (offs[i] < 0 || offs[i] >= TWO32) throw new Error('Offset chunk di luar jangkauan 32-bit (file terlalu besar)'); w32(o, 8 + i * 4, offs[i]); }
+    return o;
+  }
+  function rdOffsets(stbl) {
+    const co = child(stbl, 'stco');
+    if (co) return rdStco(co.payload);
+    const c64 = child(stbl, 'co64');
+    if (!c64) throw new Error('Tabel offset chunk (stco/co64) tidak ada');
+    const p = c64.payload, n = u32(p, 4), r = new Array(n);
+    for (let i = 0; i < n; i++) r[i] = u32(p, 8 + i * 8) * TWO32 + u32(p, 12 + i * 8);
+    return r;
+  }
+  function sampleRanges(trak) {
+    const stbl = path(trak, 'mdia', 'minf', 'stbl');
+    const sizes = rdStsz(child(stbl, 'stsz').payload);
+    const stsc = rdStsc(child(stbl, 'stsc').payload);
+    const offs = rdOffsets(stbl);
+    const so = new Float64Array(sizes.length), ss = new Uint32Array(sizes.length);
+    let si = 0, k = 0;
+    for (let c = 1; c <= offs.length; c++) {
+      while (k + 1 < stsc.length && stsc[k + 1][0] <= c) k++;
+      let off = offs[c - 1];
+      for (let j = 0; j < stsc[k][1] && si < sizes.length; j++) { so[si] = off; ss[si] = sizes[si]; off += sizes[si]; si++; }
+    }
+    if (si !== sizes.length) throw new Error('Tabel sample tidak konsisten (' + si + ' dari ' + sizes.length + ')');
+    return { offsets: so, sizes: ss, count: sizes.length };
+  }
+
+  // ---------- info track ----------
+  const handlerOf = t => { const h = path(t, 'mdia', 'hdlr'); return h ? cc(h.payload, 8) : ''; };
+  const trakId = t => { const p = child(t, 'tkhd').payload; return u32(p, p[0] === 0 ? 12 : 20); };
+  function mdhdInfo(t) {
+    const p = path(t, 'mdia', 'mdhd').payload;
+    if (p[0] === 0) return { timescale: u32(p, 12), duration: u32(p, 16) };
+    return { timescale: u32(p, 20), duration: u32(p, 24) * TWO32 + u32(p, 28) };
+  }
+  const sampleEntryType = t => { const s = path(t, 'mdia', 'minf', 'stbl', 'stsd'); return s ? cc(s.payload, 12) : ''; };
+
+  function inspectInput(buf) {
+    const { moov } = parseMoovOf(buf);
+    const traks = moov.children.filter(c => c.type === 'trak');
+    const v = traks.find(t => handlerOf(t) === 'vide'), a = traks.find(t => handlerOf(t) === 'soun');
+    if (!v) throw new Error('File ini tidak punya track video.');
+    if (!a) throw new Error('Video ini tidak punya track audio. Metode ini butuh audio (walau senyap).');
+    const vType = sampleEntryType(v);
+    const hevc = vType === 'hvc1' || vType === 'hev1';
+    const h264 = vType === 'avc1' || vType === 'avc3';
+    if (!hevc && !h264) throw new Error('Codec video "' + vType + '" belum didukung (baru HEVC dan H.264).');
+    const md = mdhdInfo(v), tk = child(v, 'tkhd').payload;
+    // warna: HDR = transfer PQ (16) / HLG (18) pada atom colr, atau ada konfigurasi Dolby Vision
+    const stsdP = path(v, 'mdia', 'minf', 'stbl', 'stsd').payload;
+    let hdr = false, trc = 0, prim = 0, bitDepth = 8;
+    const ci = indexOfBytes(stsdP, strBytes('colr'));
+    if (ci >= 0 && cc(stsdP, ci + 4) === 'nclx') { prim = (stsdP[ci + 8] << 8) | stsdP[ci + 9]; trc = (stsdP[ci + 10] << 8) | stsdP[ci + 11]; }
+    if (trc === 16 || trc === 18) hdr = true;
+    if (indexOfBytes(stsdP, strBytes('dvcC')) >= 0 || indexOfBytes(stsdP, strBytes('dvvC')) >= 0) hdr = true;
+    const hi = indexOfBytes(stsdP, strBytes('hvcC'));
+    if (hi >= 0 && hi + 4 + 17 < stsdP.length) bitDepth = (stsdP[hi + 4 + 17] & 7) + 8;
+    const vr = sampleRanges(v), ar = sampleRanges(a);
+    const duration = md.timescale ? md.duration / md.timescale : 0;
+    const ai = aacInfo(a);
+    return {
+      audioCopyOk: !!(ai && ai.codec === 'mp4a' && ai.channels === 2 && ai.aot === 2 && ai.rate === 48000),
+      codec: hevc ? 'hevc' : 'h264', hevc, hdr, trc, prim, bitDepth, w: u32(tk, tk.length - 8) >>> 16, h: u32(tk, tk.length - 4) >>> 16,
+      duration, fps: duration ? vr.count / duration : 0, videoSamples: vr.count, audioSamples: ar.count
+    };
+  }
+
+  // ---------- verifikasi hasil ----------
+  function indexOfBytes(hay, needle) {
+    outer: for (let i = 0; i <= hay.length - needle.length; i++) {
+      for (let j = 0; j < needle.length; j++) if (hay[i + j] !== needle[j]) continue outer;
+      return i;
+    }
+    return -1;
+  }
+  const strBytes = s => Uint8Array.from([...s].map(c => c.charCodeAt(0)));
+
+  // ---------- langkah utama ----------
+  // Video & audio disalin utuh dari hasil ffmpeg (faststart). postprocess() lalu membuat track audio kedua
+  // (data dipakai bersama), menambah ekor AAC 18 paket di ujung mdat, dan menyamakan metadata dengan metode Nova.
+
+  function readDescLen(p, i) { let len = 0, n = 0, b; do { b = p[i++]; len = (len << 7) | (b & 127); n++; } while ((b & 128) && n < 4); return [len, i]; }
+  function aacInfo(trak) {
+    const st = path(trak, 'mdia', 'minf', 'stbl', 'stsd'); if (!st) return null;
+    const p = st.payload, codec = cc(p, 12);
+    if (codec !== 'mp4a') return { codec };
+    const r = { codec, channels: (p[8 + 24] << 8) | p[8 + 25], rate: u32(p, 8 + 32) >>> 16, aot: 0 };
+    try {
+      const ei = indexOfBytes(p, strBytes('esds')); let i = ei + 8, l;
+      if (ei >= 0 && p[i] === 3) { [l, i] = readDescLen(p, i + 1); i += 3;
+        if (p[i] === 4) { [l, i] = readDescLen(p, i + 1); i += 13;
+          if (p[i] === 5) { [l, i] = readDescLen(p, i + 1); r.aot = p[i] >> 3; } } }
+    } catch (e) { /* aot tetap 0 */ }
+    return r;
+  }
+  // Track audio kedua mengkloning metadata track pertama dan menunjuk ke paket AAC
+  // yang sama. Tidak ada audio yang di-encode ulang atau disalin dua kali.
+  function tkhdDur(t) { const p = child(t, 'tkhd').payload; return p[0] === 0 ? u32(p, 20) : u32(p, 28) * TWO32 + u32(p, 32); }
+  function shiftTrackOffsets(trak, delta) {
+    const stbl = path(trak, 'mdia', 'minf', 'stbl');
+    const stco = child(stbl, 'stco'), co64 = child(stbl, 'co64');
+    if (stco) {
+      const offs = rdStco(stco.payload);
+      for (let i = 0; i < offs.length; i++) {
+        const shifted = offs[i] + delta;
+        if (shifted < 0 || shifted >= TWO32) throw new Error('Offset chunk melewati batas 32-bit; file di atas 4 GB belum didukung.');
+        offs[i] = shifted;
+      }
+      stco.payload = wrStco(offs);
+      return;
+    }
+    if (co64) {
+      const p = co64.payload, n = u32(p, 4);
+      for (let i = 0; i < n; i++) {
+        const at = 8 + i * 8;
+        const value = u32(p, at) * TWO32 + u32(p, at + 4) + delta;
+        if (!Number.isSafeInteger(value) || value < 0) throw new Error('Offset co64 tidak aman untuk diproses.');
+        w32(p, at, Math.floor(value / TWO32));
+        w32(p, at + 4, value % TWO32);
+      }
+      return;
+    }
+    throw new Error('Tabel offset chunk tidak ditemukan.');
+  }
+
+  // ---------- ekor audio & metadata (meniru metode Nova) ----------
+  // Hasil akhir = video disalin utuh + 2 track audio berbagi data AAC yang sama + ekor 18 paket AAC
+  // (1 paket pembuka + 17 paket senyap) di ujung mdat. Track audio pertama punya 2 sample entry
+  // (8 paket terakhir memakai entry ke-2). Edit list diset media_time 0, durasi film mengikuti audio,
+  // dan metadata moov memakai format mdta (te_is_reencode + encoder).
+  const hexBytes = s => Uint8Array.from(s.match(/../g), h => parseInt(h, 16));
+  const AAC_FRAME = 1024, TAIL_COUNT = 18, TAIL_ALT = 8;
+  const TAIL_FIRST = hexBytes('de02004c61766336322e31312e31303000422008c11838');
+  const TAIL_SIL = hexBytes('211004608c1c');
+  const TAIL_SIZES = [TAIL_FIRST.length].concat(new Array(TAIL_COUNT - 1).fill(TAIL_SIL.length));
+  const TAIL_BYTES = (() => {
+    const o = new Uint8Array(TAIL_SIZES.reduce((a, b) => a + b, 0)); let p = 0;
+    o.set(TAIL_FIRST, p); p += TAIL_FIRST.length;
+    for (let i = 1; i < TAIL_COUNT; i++) { o.set(TAIL_SIL, p); p += TAIL_SIL.length; }
+    return o;
+  })();
+  const STSD_ENTRY2 = hexBytes('000000716d703461000000000000000100000000000000000002001000000000bb8000000000003965736473000000000380808028000200048080801a40150000000003f49c0003a9c20580808008118004c0400020000680808001020000001462747274000000000003f49c0003a9c2');
+
+  const ID_FREE = 'Hasil Terverifikasi \u2192 Ffmpeg Video Compressor by @wanx.prstt'; // teks pengenal di atom free
+  const ART_TAG = 'Kau Carilah Sendiri'; // isi tag ©ART (artis)
+  const ID_TAG = 'Kau Carilah Sendiri'; // tanda pengenal (isi tag encoder), ganti sesuai keinginan
+  function buildToolUdta(text) {
+    const enc = new TextEncoder(), u32b = v => { const o = new Uint8Array(4); w32(o, 0, v); return o; };
+    const box = (type, ...parts) => { const len = parts.reduce((a, p) => a + p.length, 0), o = new Uint8Array(8 + len); w32(o, 0, 8 + len); o.set(fcc(type), 4); let q = 8; for (const p of parts) { o.set(p, q); q += p.length; } return o; };
+    const hdlr = box('hdlr', u32b(0), u32b(0), fcc('mdir'), new Uint8Array(12), new Uint8Array(1));
+    const item = (k, v) => box(k, box('data', u32b(1), u32b(0), enc.encode(v)));
+    return box('meta', u32b(0), hdlr, box('ilst', item('\u00a9too', text), item('\u00a9ART', ART_TAG)));
+  }
+  function buildMdtaUdta(pairs) {
+    const enc = new TextEncoder();
+    const u32b = v => { const o = new Uint8Array(4); w32(o, 0, v); return o; };
+    const box = (type, ...parts) => {
+      const len = parts.reduce((a, p) => a + p.length, 0), o = new Uint8Array(8 + len);
+      w32(o, 0, 8 + len); o.set(fcc(type), 4);
+      let q = 8; for (const p of parts) { o.set(p, q); q += p.length; }
+      return o;
+    };
+    const item = (idx, val) => {
+      const d = box('data', u32b(1), u32b(0), enc.encode(val)), o = new Uint8Array(8 + d.length);
+      w32(o, 0, 8 + d.length); w32(o, 4, idx); o.set(d, 8);
+      return o;
+    };
+    const hdlr = box('hdlr', u32b(0), u32b(0), fcc('mdta'), new Uint8Array(12), new Uint8Array(1));
+    const keys = box('keys', u32b(0), u32b(pairs.length), ...pairs.map(([k]) => box('mdta', enc.encode(k))));
+    const ilst = box('ilst', ...pairs.map(([, v], i) => item(i + 1, v)));
+    return box('meta', u32b(0), hdlr, keys, ilst);
+  }
+  // nilai tag encoder bawaan ffmpeg (atom ©too) kalau ada
+  function readToo(udta) {
+    if (!udta || !udta.payload) return null;
+    const p = udta.payload;
+    for (let i = 4; i + 24 < p.length; i++) {
+      if (p[i] === 0xA9 && p[i + 1] === 0x74 && p[i + 2] === 0x6F && p[i + 3] === 0x6F && cc(p, i + 8) === 'data') {
+        try { return new TextDecoder().decode(p.subarray(i + 20, i - 4 + u32(p, i - 4))); } catch (e) { return null; }
+      }
+    }
+    return null;
+  }
+  function setTkhdDur(t, v) { const p = child(t, 'tkhd').payload; if (p[0] === 0) w32(p, 20, v); else { w32(p, 28, Math.floor(v / TWO32)); w32(p, 32, v % TWO32); } }
+  function addMdhdDur(t, add) {
+    const p = path(t, 'mdia', 'mdhd').payload;
+    if (p[0] === 0) w32(p, 16, u32(p, 16) + add);
+    else { const v = u32(p, 24) * TWO32 + u32(p, 28) + add; w32(p, 24, Math.floor(v / TWO32)); w32(p, 28, v % TWO32); }
+  }
+  function setElst(t, segDur) {
+    const e = path(t, 'edts', 'elst'); if (!e) return;
+    const p = e.payload; if (p[0] !== 0 || u32(p, 4) !== 1) return;
+    w32(p, 8, segDur); w32(p, 12, 0);   // media_time 0
+  }
+  // tambahkan 18 paket AAC ke tabel sample track audio (offset diisi belakangan, setelah ukuran moov final)
+  function extendAudioTrack(trak, withAlt) {
+    const stbl = path(trak, 'mdia', 'minf', 'stbl');
+    const stts = child(stbl, 'stts'), stsz = child(stbl, 'stsz'), stco = child(stbl, 'stco'), stsc = child(stbl, 'stsc'), stsd = child(stbl, 'stsd');
+    if (!stts || !stsz || !stco || !stsc || !stsd) throw new Error('Tabel sample audio tidak lengkap (stts/stsz/stco/stsc/stsd).');
+    const e = rdStts(stts.payload); e.push([TAIL_COUNT, AAC_FRAME]); stts.payload = wrStts(e);
+    const sz = rdStsz(stsz.payload), nz = new Uint32Array(sz.length + TAIL_COUNT);
+    nz.set(sz); TAIL_SIZES.forEach((s, i) => { nz[sz.length + i] = s; }); stsz.payload = wrStsz(nz);
+    const offs = rdStco(stco.payload), oldChunks = offs.length;
+    for (let i = 0; i < TAIL_COUNT; i++) offs.push(0); stco.payload = wrStco(offs);
+    const sc = rdStsc(stsc.payload);
+    sc.push([oldChunks + 1, 1, 1]);
+    if (withAlt) sc.push([oldChunks + TAIL_COUNT - TAIL_ALT + 1, 1, 2]);
+    stsc.payload = wrStsc(sc);
+    if (withAlt) {
+      const p = stsd.payload;
+      if (u32(p, 4) !== 1) throw new Error('Sample entry audio tidak sesuai harapan.');
+      const np = new Uint8Array(p.length + STSD_ENTRY2.length); np.set(p); np.set(STSD_ENTRY2, p.length); w32(np, 4, 2); stsd.payload = np;
+    }
+    addMdhdDur(trak, TAIL_COUNT * AAC_FRAME);
+    const sbgp = child(stbl, 'sbgp');
+    if (sbgp) {
+      const p = sbgp.payload, base = p[0] === 1 ? 12 : 8, n = u32(p, base), last = base + 4 + (n - 1) * 8;
+      if (n >= 1 && u32(p, last + 4) > 0) w32(p, last, u32(p, last) + TAIL_COUNT);
+      else { const np = new Uint8Array(p.length + 8); np.set(p); w32(np, base, n + 1); w32(np, p.length, TAIL_COUNT); w32(np, p.length + 4, 1); sbgp.payload = np; }
+    }
+    return oldChunks;
+  }
+  function setTailOffsets(trak, firstTailOffset) {
+    const stco = child(path(trak, 'mdia', 'minf', 'stbl'), 'stco');
+    const offs = rdStco(stco.payload); let pos = firstTailOffset;
+    for (let i = 0; i < TAIL_COUNT; i++) { offs[offs.length - TAIL_COUNT + i] = pos; pos += TAIL_SIZES[i]; }
+    stco.payload = wrStco(offs);
+  }
+
+  function postprocess(buf) {
+    const tops = topLevel(buf);
+    const ftyp = tops.find(t => t.type === 'ftyp'), moovT = tops.find(t => t.type === 'moov');
+    const mdats = tops.filter(t => t.type === 'mdat');
+    if (!ftyp || !moovT || mdats.length !== 1) throw new Error('File dasar harus memiliki ftyp, satu moov, dan satu mdat.');
+    const mdatT = mdats[0];
+    if (moovT.start > mdatT.start) throw new Error('File dasar belum faststart (moov harus berada sebelum mdat).');
+    if (tops[tops.length - 1] !== mdatT) throw new Error('File dasar: atom mdat harus berada paling akhir.');
+
+    const moovCopy = buf.slice(moovT.start, moovT.start + moovT.size);
+    const moov = { type: 'moov', children: parseBoxes(moovCopy, moovT.hdr, moovT.size) };
+    const traks = moov.children.filter(c => c.type === 'trak');
+    const video = traks.filter(t => handlerOf(t) === 'vide');
+    const audio = traks.filter(t => handlerOf(t) === 'soun');
+    if (traks.length !== 2 || video.length !== 1 || audio.length !== 1)
+      throw new Error('File dasar harus berisi tepat 1 track video dan 1 track audio.');
+
+    const ai = aacInfo(audio[0]);
+    if (!ai || ai.codec !== 'mp4a' || ai.channels !== 2 || ai.aot !== 2 || ai.rate !== 48000)
+      throw new Error('Metode ini membutuhkan audio AAC-LC stereo 48 kHz.');
+
+    const mvhd = child(moov, 'mvhd');
+    if (!mvhd) throw new Error('Atom mvhd tidak ditemukan.');
+    const newId = Math.max(...traks.map(trakId)) + 1;
+
+    // 1) track audio kedua = klon track audio pertama (dikloning SEBELUM ekor ditambahkan)
+    const audioClone = clone(audio[0]);
+    const tk = child(audioClone, 'tkhd');
+    w32(tk.payload, tk.payload[0] === 0 ? 12 : 20, newId);
+
+    // 2) ekor audio: track pertama 2 sample entry, klon 1 sample entry
+    extendAudioTrack(audio[0], true);
+    extendAudioTrack(audioClone, false);
+
+    // 3) metadata moov format mdta (te_is_reencode + encoder), diletakkan antara track audio 1 dan 2
+    const oldUdta = child(moov, 'udta');
+    const udta = { type: 'udta', payload: buildToolUdta(ID_TAG) };
+    moov.children = moov.children.filter(c => c.type !== 'udta');
+    const lastTrackIndex = Math.max(...moov.children.map((c, i) => c.type === 'trak' ? i : -1));
+    moov.children.splice(lastTrackIndex + 1, 0, udta, audioClone);
+
+    // 4) durasi & edit list (media_time 0), film mengikuti track audio yang sudah diperpanjang
+    const movTs = mvhd.payload[0] === 0 ? u32(mvhd.payload, 12) : u32(mvhd.payload, 20);
+    const aMd = mdhdInfo(audio[0]);
+    const audioDur = Math.ceil(aMd.duration * movTs / aMd.timescale);
+    setTkhdDur(audio[0], audioDur); setTkhdDur(audioClone, audioDur);
+    setElst(video[0], tkhdDur(video[0]));
+    setElst(audio[0], audioDur); setElst(audioClone, audioDur);
+
+    // 5) ukuran moov final -> geser semua offset chunk, lalu isi offset ekor di ujung mdat baru
+    const newMoovSize = sizeOf(moov);
+    const restAt = moovT.start + moovT.size, hasFree = u32(buf, restAt) === 8 && cc(buf, restAt + 4) === 'free';
+    const FT = new TextEncoder().encode(ID_FREE), extra = hasFree ? FT.length : 8 + FT.length;
+    const delta = newMoovSize - moovT.size + extra;
+    if (delta <= 0) throw new Error('Ukuran metadata track baru tidak valid.');
+    const allTraks = moov.children.filter(c => c.type === 'trak');
+    for (const trak of allTraks) shiftTrackOffsets(trak, delta);
+    const tailStart = buf.length + delta;
+    setTailOffsets(audio[0], tailStart); setTailOffsets(audioClone, tailStart);
+
+    const movieDuration = Math.max(...allTraks.map(tkhdDur));
+    if (mvhd.payload[0] === 0) w32(mvhd.payload, 16, movieDuration);
+    else {
+      w32(mvhd.payload, 24, Math.floor(movieDuration / TWO32));
+      w32(mvhd.payload, 28, movieDuration % TWO32);
+    }
+    w32(mvhd.payload, mvhd.payload.length - 4, newId + 1);
+
+    // 6) tulis hasil: ftyp + moov baru + sisa (free, mdat) + ekor di ujung mdat
+    const out = new Uint8Array(buf.length + delta + TAIL_BYTES.length);
+    out.set(buf.subarray(0, moovT.start), 0);
+    writeBox(moov, out, moovT.start);
+    let q = moovT.start + newMoovSize;
+    w32(out, q, 8 + FT.length); out.set(fcc('free'), q + 4); out.set(FT, q + 8); q += 8 + FT.length;
+    out.set(buf.subarray(restAt + (hasFree ? 8 : 0)), q);
+    const mS = mdatT.start + delta, newMdatSize = mdatT.size + TAIL_BYTES.length;
+    if (mdatT.hdr === 8) {
+      if (newMdatSize >= TWO32) throw new Error('Ukuran mdat melewati batas 32-bit.');
+      w32(out, mS, newMdatSize);
+    } else { w32(out, mS + 8, Math.floor(newMdatSize / TWO32)); w32(out, mS + 12, newMdatSize % TWO32); }
+    out.set(TAIL_BYTES, tailStart);
+    return out;
+  }
+
+  function verify(inp, out, opts) {
+    const skipIdentical = !!(opts && opts.skipIdentical);
+    const checks = [], add = (ok, label, detail) => checks.push({ ok: !!ok, label, detail: detail || '' });
+    let tops, moov;
+    try { ({ tops, moov } = parseMoovOf(out)); }
+    catch (e) { add(false, 'Struktur file hasil bisa dibaca', e.message); return checks; }
+
+    const types = tops.map(t => t.type), mdats = tops.filter(t => t.type === 'mdat');
+    const moovTop = tops.find(t => t.type === 'moov');
+    add(types[0] === 'ftyp' && mdats.length === 1 && moovTop && moovTop.start < mdats[0].start,
+      'Susunan atom faststart', types.join(' > '));
+
+    const traks = moov.children.filter(c => c.type === 'trak'), hs = traks.map(handlerOf);
+    const okTracks = hs.join(',') === 'vide,soun,soun' && new Set(traks.map(trakId)).size === traks.length;
+    add(okTracks, 'Tiga track: 1 video + 2 audio', hs.join(', '));
+    if (!okTracks || mdats.length !== 1) return checks;
+
+    const mvhd = child(moov, 'mvhd').payload;
+    add(u32(mvhd, mvhd.length - 4) === Math.max(...traks.map(trakId)) + 1, 'ID track konsisten');
+
+    let vr, a2, a3;
+    try { vr = sampleRanges(traks[0]); a2 = sampleRanges(traks[1]); a3 = sampleRanges(traks[2]); }
+    catch (e) { add(false, 'Tabel sample bisa dibaca', e.message); return checks; }
+
+    const lo = mdats[0].start + mdats[0].hdr, hi = mdats[0].start + mdats[0].size;
+    let bad = 0;
+    for (const r of [vr, a2, a3]) for (let i = 0; i < r.count; i++)
+      if (r.offsets[i] < lo || r.offsets[i] + r.sizes[i] > hi) bad++;
+    add(bad === 0, 'Semua sample berada di dalam mdat', bad ? bad + ' sample keluar batas' : '');
+    add(hi === out.length, 'mdat berakhir tepat di ujung file', hi === out.length ? '' : (out.length - hi) + ' byte sisa');
+
+    let shared = a2.count > 0 && a3.count === a2.count;
+    for (let i = 0; shared && i < a2.count; i++)
+      if (a3.offsets[i] !== a2.offsets[i] || a3.sizes[i] !== a2.sizes[i]) shared = false;
+    add(shared, 'Kedua track audio memakai data AAC yang sama', a2.count + ' paket audio per track');
+
+    // ekor audio: 18 paket di ujung data, isi persis sama dengan pola Nova
+    let tailOk = a2.count > TAIL_COUNT;
+    for (let k = 0; tailOk && k < TAIL_COUNT; k++) {
+      const i = a2.count - TAIL_COUNT + k, want = k === 0 ? TAIL_FIRST : TAIL_SIL;
+      if (a2.sizes[i] !== want.length) { tailOk = false; break; }
+      for (let j = 0; j < want.length; j++) if (out[a2.offsets[i] + j] !== want[j]) { tailOk = false; break; }
+    }
+    add(tailOk, 'Ekor audio ' + TAIL_COUNT + ' paket terpasang');
+
+    // tabel waktu audio harus cocok dengan durasi track, sample entry & edit list sesuai pola Nova
+    let timeOk = true, entryOk = true, elstOk = true, elstDetail = '';
+    [1, 2].forEach(ti => {
+      const t = traks[ti], stbl = path(t, 'mdia', 'minf', 'stbl');
+      const st = rdStts(child(stbl, 'stts').payload), total = st.reduce((s, [c, d]) => s + c * d, 0);
+      if (total !== mdhdInfo(t).duration) timeOk = false;
+      const nEntries = u32(child(stbl, 'stsd').payload, 4), sc = rdStsc(child(stbl, 'stsc').payload);
+      if (nEntries !== (ti === 1 ? 2 : 1) || sc.some(e => e[2] < 1 || e[2] > nEntries)) entryOk = false;
+    });
+    traks.forEach(t => {
+      const e = path(t, 'edts', 'elst');
+      if (!e || u32(e.payload, 12) !== 0) { elstOk = false; elstDetail = 'media_time bukan 0'; }
+    });
+    add(timeOk, 'Tabel waktu audio cocok dengan durasi track');
+    add(entryOk, 'Sample entry audio (2 untuk track 1, 1 untuk track 2) valid');
+    add(elstOk, 'Edit list media_time 0 di semua track', elstDetail);
+    const udtaB = child(moov, 'udta');
+    add(udtaB && udtaB.payload && indexOfBytes(udtaB.payload, new TextEncoder().encode(ID_TAG)) >= 0, 'Tanda pengenal moov terpasang');
+
+    if (skipIdentical) add(vr.count > 0, 'Video berisi sample', vr.count + ' frame');
+    else try {
+      const { moov: im } = parseMoovOf(inp);
+      const ir = sampleRanges(im.children.filter(c => c.type === 'trak').find(t => handlerOf(t) === 'vide'));
+      let same = ir.count === vr.count, firstDiff = -1;
+      for (let i = 0; same && i < ir.count; i++) {
+        if (ir.sizes[i] !== vr.sizes[i]) { same = false; firstDiff = i; break; }
+        const a = ir.offsets[i], b = vr.offsets[i], len = ir.sizes[i];
+        for (let j = 0; j < len; j++) if (inp[a + j] !== out[b + j]) { same = false; firstDiff = i; break; }
+      }
+      add(same, 'Video identik byte demi byte dengan aslinya', same ? ir.count + ' frame' : 'beda di frame ' + firstDiff);
+    } catch (e) { add(false, 'Video identik dengan aslinya', e.message); }
+
+    const dv = mdhdInfo(traks[0]), da = mdhdInfo(traks[1]), da2 = mdhdInfo(traks[2]);
+    const diff1 = Math.abs(dv.duration / dv.timescale - da.duration / da.timescale);
+    const diff2 = Math.abs(da.duration / da.timescale - da2.duration / da2.timescale);
+    add(diff1 < 1 && diff2 < 0.001, 'Durasi video dan dua track audio selaras',
+      'video/audio ' + diff1.toFixed(3) + ' dtk; audio/audio ' + diff2.toFixed(3) + ' dtk');
+    return checks;
+  }
+
+  return { inspectInput, postprocess, verify, _internal: { topLevel, parseMoovOf, sampleRanges } };
+})();
+// ==CORE-END==// ==CORE-END==
+
+</script>
+
+<script>
+(() => {
+  'use strict';
+  const $ = s => document.querySelector(s);
+  const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+  const fmtSize = n => n >= 1e9 ? (n / 1e9).toFixed(2) + ' GB' : n >= 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB';
+  const tick = () => new Promise(r => setTimeout(r, 30));
+  const agentStage = document.getElementById('agentStage');
+
+  (function initCodexSpider(){
+    const cv=document.getElementById('spiderCanvas'); if(!cv||!agentStage) return;
+    const ctx=cv.getContext('2d'), reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    // kanvas penuh layar: tempat laba-laba berjalan keluar dari area kerja
+    const ov=document.createElement('canvas'); ov.id='roamCanvas'; ov.setAttribute('aria-hidden','true');
+    ov.style.cssText='position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:30';
+    document.body.appendChild(ov); const oc=ov.getContext('2d');
+    const ACC='#ff3d8b', TAB='#7f7fd8';
+    // Alur kerja nyata: INPUT > METADATA > (HDR | 120FPS) > SALIN + AUDIO > MUX > TRACK > VERIFIKASI > SIMPAN
+    const N=[['INPUT',.10,.22,'#d8d8dc'],['METADATA',.10,.64,'#d8d8dc'],['HDR GAIN',.31,.16,'#e8d34a'],['120 FPS',.31,.48,'#e8d34a'],['AUDIO',.31,.82,'#d8d8dc'],['SALIN',.53,.30,'#4ad07a'],['MUX',.53,.68,'#4ad07a'],['TRACK',.74,.20,'#d8d8dc'],['VERIFIKASI',.74,.62,'#d8d8dc'],['SIMPAN',.92,.42,'#4ad07a']];
+    const RK=[0,1,2,2,3,3,4,5,6,7];
+    const E=[[0,1],[1,2],[1,3],[1,4],[1,5],[2,5],[3,5],[4,6],[5,6],[6,7],[7,8],[8,9]];
+    const adj=N.map(()=>[]); E.forEach(([a,b])=>{adj[a].push(b);adj[b].push(a);});
+    const REST=[[96,0],[68,30],[40,52],[14,62]];
+    let W=300,H=200,S=1,Sout=1,sc=1,ext=1,nw=40,nh=18,T=0,wait=0,cur=2,prev=-1,working=false,inited=false,tgt={x:0,y:0};
+    let mode='home',plan=[],cs=null,idleT=0,tourCount=0,run=false,dpr=1,R={left:0,top:0},O={x:0,y:0},B={w:300,h:200};
+    const bub={txt:'',a:0,on:false};
+    const wk={ids:[],pts:[],i:0,hold:0,carry:false,pace:1};
+    const nodes=N.map(()=>({x:0,y:0,act:0,done:false})), edges=E.map(([a,b])=>({a,b,t:Math.random(),p:[]}));
+    const sp={x:0,y:0,vx:0,vy:0,z:0,crouch:0,fa:1,jmp:null}, legs=[]; const stg=new Set(), vis=new Set(); let stageText='', jumped=false;
+    for(let i=0;i<8;i++) legs.push({side:i<4?-1:1,r:REST[i%4],fx:0,fy:0,ox:0,oy:0,tx:0,ty:0,t:0,st:false,fl:0,pt:null});
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    const neigh=i=>{const r=[(i+4)%8]; if(i%4>0)r.push(i-1); if(i%4<3)r.push(i+1); return r;};
+
+    function fitOv(){
+      dpr=Math.min(2,devicePixelRatio||1);
+      ov.width=Math.round(innerWidth*dpr); ov.height=Math.round(innerHeight*dpr);
+      Sout=clamp(innerWidth/520,.8,1.05);
+    }
+    function layout(){
+      const r=cv.getBoundingClientRect();
+      W=Math.max(200,r.width); H=Math.max(100,r.height);
+      cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+      S=clamp(Math.min(H/290,W/600),.45,1);
+      nw=Math.round(46*clamp(W/540,.8,1)); nh=Math.round(nw*.44);
+      N.forEach((n,i)=>{nodes[i].x=n[1]*W; nodes[i].y=n[2]*H;});
+      edges.forEach(e=>{
+        let A=nodes[e.a],Bn=nodes[e.b];
+        if(Math.abs(A.x-Bn.x)<nw*.6){ if(A.y>Bn.y)[A,Bn]=[Bn,A]; const y0=A.y+nh/2,y3=Bn.y-nh/2,m=(y0+y3)/2; e.p=[A.x,y0,A.x,m,Bn.x,m,Bn.x,y3]; return; }
+        if(A.x>Bn.x)[A,Bn]=[Bn,A];
+        const x0=A.x+nw/2,x3=Bn.x-nw/2,dx=(x3-x0)*.5;
+        e.p=[x0,A.y,x0+dx,A.y,x3-dx,Bn.y,x3,Bn.y];
+      });
+      buildWork(wk.ids);
+      if(mode==='home') B={w:W,h:H};
+      if(!inited){
+        const s=nodes[cur]; sp.x=s.x; sp.y=s.y+44*S; sc=S; tgt=bodyTarget(cur);
+        legs.forEach(l=>{const p=ideal(l); l.fx=p.x; l.fy=p.y;}); inited=true;
+      } else if(mode==='home'){ sp.x=clamp(sp.x,20,W-20); sp.y=clamp(sp.y,10,H-10); tgt=bodyTarget(cur); }
+    }
+    function bodyTarget(i){const n=nodes[i]; return {x:clamp(n.x,36,W-36),y:clamp(n.y+44*S,24*S+8,H-68*S)};}
+
+    // ---- PEKERJAAN DI TEMPAT KERJA: laba-laba berjalan sesuai tahap yang sedang diproses ----
+    // Tiap tahap punya rute sendiri (titik jalan). h = berhenti sebentar & bekerja, c = mulai/berhenti membawa paket, j = melompat ke titik ini.
+    const wc=(x,y)=>({x:clamp(x,24,W-24),y:clamp(y,22,H-30)});
+    function buildWork(ids){
+      wk.ids=(ids||[]).slice(); wk.i=0; wk.hold=0; wk.carry=false; wk.pace=1;
+      const at=(i,ox,oy,o)=>Object.assign(wc(nodes[i].x+ox*S,nodes[i].y+oy*S),o||{});
+      const mid=(a,b,t,ox,oy,o)=>Object.assign(wc(nodes[a].x+(nodes[b].x-nodes[a].x)*t+(ox||0)*S,nodes[a].y+(nodes[b].y-nodes[a].y)*t+(oy||0)*S),o||{});
+      const a=wk.ids[0], hasAudio=wk.ids.includes(4); let p=[];
+      if(a===0){ // INPUT: ambil file lalu antar ke METADATA
+        p=[at(0,-30,40,{h:.4,c:true}),mid(0,1,.5,-22,0),at(1,-30,-36,{h:.3,c:false}),mid(0,1,.5,24,0),at(0,30,40,{h:.2})]; wk.pace=.9;
+      } else if(a===1){ // METADATA: memindai kotak data, sisi demi sisi
+        p=[at(1,-38,-34,{h:.14}),at(1,38,-34,{h:.14}),at(1,38,40,{h:.14}),at(1,-38,40,{h:.14})]; wk.pace=.85;
+      } else if(a===2){ // HDR: mengitari node sambil mengukur kecerahan
+        for(let k=0;k<8;k++){const g=k/8*Math.PI*2; p.push(at(2,Math.cos(g)*46,Math.sin(g)*40));} wk.pace=1.15;
+      } else if(a===3){ // 120 FPS: berlari dan melompat kiri-kanan
+        p=[at(3,-54,40,{h:.1,j:true}),at(3,54,40,{h:.1,j:true}),at(3,54,-34,{h:.05}),at(3,-54,-34,{h:.1,j:true})]; wk.pace=1.5;
+      } else if(a===5||hasAudio){ // SALIN + AUDIO: mengangkut paket video lalu audio bolak-balik
+        p=[at(5,-30,40,{h:.25,c:true}),mid(5,4,.5,26,0),at(4,34,-32,{h:.3,c:false}),mid(4,5,.5,-26,0)]; wk.pace=1.2;
+      } else if(a===6){ // MUX: menenun benang zig-zag antara SALIN dan MUX
+        const T=[0,.25,.5,.75,1,.75,.5,.25]; p=T.map((t,k)=>mid(5,6,t,k%2?38:-38,0,k===0?{c:true,h:.1}:(k===4?{h:.2}:null))); wk.pace=1.1;
+      } else if(a===7){ // TRACK: antar bahan dari MUX lalu mengetuk-ngetuk menyusun track
+        p=[at(6,34,-30,{h:.2,c:true}),mid(6,7,.5,-24,0),at(7,-34,40,{h:.22,c:false}),at(7,34,40,{h:.22}),at(7,34,-34,{h:.22}),at(7,-34,-34,{h:.22})];
+      } else if(a===8){ // VERIFIKASI: memeriksa baris demi baris, berhenti lama saat mengecek
+        p=[at(8,-38,-34,{h:.1}),at(8,38,-34,{h:.1}),at(8,38,40,{h:.1}),at(8,-38,40,{h:.55})]; wk.pace=.9;
+      } else { // belum ada tahap: patroli membawa paket menyusuri seluruh alur
+        const ch=[0,1,3,5,6,7,8]; p=ch.map((n,k)=>at(n,0,40,{h:.3,c:k<ch.length-1})); wk.pace=.9;
+      }
+      wk.pts=p;
+    }
+    function workStep(dt){
+      if(!wk.pts.length) buildWork(wk.ids);
+      const p=wk.pts[wk.i]; tgt={x:p.x,y:p.y};
+      if(!sp.jmp&&Math.hypot(sp.x-p.x,sp.y-p.y)<(p.h?8:18)*sc){
+        if(p.c!==undefined) wk.carry=p.c;
+        wk.hold+=dt;
+        if(wk.hold>=(p.h||0)){
+          wk.hold=0; wk.i=(wk.i+1)%wk.pts.length; const q=wk.pts[wk.i];
+          if(q.j&&!reduce&&Math.hypot(sp.x-q.x,sp.y-q.y)>70*sc) sp.jmp={ph:'wind',t:0,x0:0,y0:0,x1:q.x,y1:q.y,dur:.5,h:50};
+        }
+      }
+      return !p.h; // titik tanpa jeda: berjalan terus tanpa melambat
+    }
+    function ideal(l,lead){const k=lead||0, ey=1+(ext-1)*.65; return {x:clamp(sp.x+l.side*l.r[0]*sc*ext+sp.vx*(.28+k),8,B.w-8),y:clamp(sp.y+l.r[1]*sc*ey+sp.vy*(.28+k),8,B.h-8)};}
+    function pick(){
+      const o=adj[cur].filter(j=>j!==prev), nx=(o.length?o:adj[cur])[Math.floor(Math.random()*(o.length||adj[cur].length))];
+      prev=cur; cur=nx; tgt=bodyTarget(cur);
+    }
+
+    // ---- pindah antara koordinat kanvas kerja (home) dan koordinat halaman (out) ----
+    function shift(dx,dy){ trail.forEach(p=>{p.x+=dx;p.y+=dy;}); sp.x+=dx; sp.y+=dy; legs.forEach(l=>{l.fx+=dx;l.fy+=dy;l.ox+=dx;l.oy+=dy;l.tx+=dx;l.ty+=dy;}); }
+    function toOut(){ const r=cv.getBoundingClientRect(); shift(r.left+scrollX,r.top+scrollY); mode='out'; tgt={x:sp.x,y:sp.y}; }
+    function toHome(){ const r=cv.getBoundingClientRect(); shift(-(r.left+scrollX),-(r.top+scrollY)); mode='home'; B={w:W,h:H}; tgt=bodyTarget(cur); }
+    const pg=(x,y)=>({x:x+scrollX,y:y+scrollY});
+    function visibleTop(){ if(innerWidth<920){const p=document.querySelector('.stagePane'); if(p) return p.getBoundingClientRect().bottom+6;} return 8; }
+    function elInView(el){ const r=el.getBoundingClientRect(), top=visibleTop(); return r.width>0&&r.top>top+54*sc&&r.bottom<innerHeight-8; }
+    function clearPoint(){
+      legs.forEach(l=>l.pt=null);
+      document.querySelectorAll('.spider-pointed').forEach(e=>e.classList.remove('spider-pointed'));
+    }
+    function startTour(){
+      tourCount++; toOut(); clearPoint(); jumped=false; trail.length=0; trail.push({x:sp.x,y:sp.y,a:0});
+      plan=[{k:'point',id:'modeRepack',label:'1 · Pilih Repack HD',dur:2.6},
+            {k:'point',id:'drop',label:'2 · Masukkan video di sini',dur:3.1},
+            {k:'wander',n:3+Math.floor(Math.random()*3)},
+            {k:'home'}];
+      cs=null; idleT=0;
+    }
+    function startReturn(){
+      if(mode==='home') return;
+      clearPoint(); plan=[{k:'home'}]; cs=null; run=true;
+    }
+
+    function runPlan(dt){
+      if(!cs){
+        cs=plan.shift()||{k:'home'}; cs.t=0; cs.ph=0; cs.hold=0;
+        if(cs.k==='point'){ cs.el=document.getElementById(cs.id); if(!cs.el||!elInView(cs.el)){cs=null; return;} }
+      }
+      cs.t+=dt;
+      if(cs.k==='point'){
+        const r=cs.el.getBoundingClientRect();
+        if(!elInView(cs.el)||cs.t>10){clearPoint(); cs=null; return;}
+        const cx=r.left+r.width/2;
+        if(cs.side===undefined) cs.side=(sp.x-scrollX<cx)?-1:1;
+        const bx=clamp(cx+cs.side*60*sc,30,innerWidth-30), by=r.top-46*sc;
+        tgt=pg(bx,by);
+        const li=cx>bx?4:0, tip=pg(cx,r.top+Math.min(r.height*.4,30));
+        if(cs.ph===0&&Math.hypot(sp.x-tgt.x,sp.y-tgt.y)<10*sc) cs.ph=1;
+        if(cs.ph===1){
+          legs[li].pt=tip; cs.el.classList.add('spider-pointed');
+          bub.on=true; bub.txt=cs.label; cs.hold+=dt;
+          if(cs.hold>cs.dur){clearPoint(); cs=null;}
+        }
+      } else if(cs.k==='wander'){
+        if(sp.jmp) return;
+        if(!cs.p){
+          if(cs.n<=0){cs=null; return;} cs.n--;
+          const top=visibleTop(); let q,g=0;
+          do{ q=pg(30+Math.random()*(innerWidth-60),top+40+Math.random()*Math.max(60,innerHeight-top-80)); g++; }while(g<6&&Math.hypot(q.x-sp.x,q.y-sp.y)<130);
+          cs.p=q; cs.w=0; cs.wt=.3+Math.random()*.6;
+          const dd=Math.hypot(q.x-sp.x,q.y-sp.y), must=(cs.n===0&&!jumped);
+          if(!reduce&&((dd>90&&dd<380&&Math.random()<.5)||(must&&dd>50))){ sp.jmp={ph:'wind',t:0,x0:0,y0:0,x1:q.x,y1:q.y,dur:.5,h:50}; jumped=true; }
+        }
+        tgt=cs.p;
+        if(!sp.jmp&&Math.hypot(sp.x-cs.p.x,sp.y-cs.p.y)<12*sc){ cs.w+=dt; if(cs.w>cs.wt) cs.p=null; }
+      } else { // kembali ke tempat kerja
+        const lt=bodyTarget(cur); tgt={x:lt.x+R.left+scrollX,y:lt.y+R.top+scrollY};
+        if(Math.hypot(sp.x-tgt.x,sp.y-tgt.y)<10*sc||cs.t>14){ toHome(); cs=null; plan=[]; run=false; wait=.15; idleT=0; }
+      }
+    }
+
+    function jumpStep(J,dt){
+      J.t+=dt;
+      if(J.ph==='wind'){
+        sp.vx*=.8; sp.vy*=.8; sp.crouch=Math.min(1,J.t/.2);
+        if(J.t>=.2){ J.ph='air'; J.t=0; J.x0=sp.x; J.y0=sp.y; const d=Math.hypot(J.x1-J.x0,J.y1-J.y0); J.dur=.4+d/1000; J.h=34+Math.min(60,d*.22); }
+      } else if(J.ph==='air'){
+        const u=Math.min(1,J.t/J.dur), e=u<.5?u:u; sp.x=J.x0+(J.x1-J.x0)*e; sp.y=J.y0+(J.y1-J.y0)*e; sp.z=4*J.h*sc*u*(1-u);
+        sp.vx=(J.x1-J.x0)/J.dur; sp.vy=(J.y1-J.y0)/J.dur; sp.crouch=Math.max(0,sp.crouch-dt*8);
+        if(u>=1){ J.ph='land'; J.t=0; sp.z=0; sp.vx=sp.vy=0; sp.crouch=1; }
+      } else { sp.crouch=1-Math.min(1,J.t/.2); if(J.t>=.2){ sp.jmp=null; sp.crouch=0; } }
+    }
+    function step(dt){
+      T+=dt; R=cv.getBoundingClientRect(); bub.on=false;
+      O=mode==='home'?{x:R.left,y:R.top}:{x:-scrollX,y:-scrollY};
+      B=mode==='home'?{w:W,h:H}:{w:Math.max(document.documentElement.scrollWidth,innerWidth),h:Math.max(document.documentElement.scrollHeight,innerHeight)};
+      const sm=working?3.4:1; ext+=((working?1.8:1)-ext)*Math.min(1,dt*5);
+      sc+=((mode==='home'?S:Sout)-sc)*Math.min(1,dt*4);
+      let base, cruise=false;
+      if(mode==='home'){
+        if(working){ idleT=0; wait=0; cruise=workStep(dt); }
+        else { if(wait>0){wait-=dt; if(wait<=0)pick();} if(!reduce){ idleT+=dt; if(idleT>(tourCount?10:3.5)) startTour(); } }
+        base=64*sc*sm*(working?wk.pace:1);
+      } else { runPlan(dt); base=run?400*sc:(working?150*sc:95*sc); }
+      const J=sp.jmp, dx=tgt.x-sp.x, dy=tgt.y-sp.y, d=Math.hypot(dx,dy)||.001;
+      if(J){ jumpStep(J,dt); }
+      else {
+        sp.z=0; sp.crouch=Math.max(0,sp.crouch-dt*6);
+        let mx=0,my=0; const moving=mode==='out'?d>6*sc:(wait<=0&&d>1);
+        if(moving){const v=base*(cruise?1:Math.min(1,d/(46*sc))); mx=dx/d*v; my=dy/d*v;}
+        const a=Math.min(1,dt*((working||run)?7:3.2)); sp.vx+=(mx-sp.vx)*a; sp.vy+=(my-sp.vy)*a;
+        sp.x+=sp.vx*dt; sp.y+=sp.vy*dt;
+        if(mode==='home'&&!working&&wait<=0&&d<6) wait=.9+Math.random()*.9;
+      }
+      if(mode==='out'){sp.x=clamp(sp.x,10,B.w-10); sp.y=clamp(sp.y,10,B.h-10);}
+      if(mode==='out'){ const Lp=trail[trail.length-1]; if(!Lp||Math.hypot(Lp.x-sp.x,Lp.y-sp.y)>7) trail.push({x:sp.x,y:sp.y,a:0}); }
+      for(let q=0;q<trail.length;q++) trail[q].a+=dt*(mode==='home'?4:1);
+      while(trail.length&&trail[0].a>5) trail.shift();
+      if(mode==='home'&&trail.length&&trail[trail.length-1].a>5) trail.length=0;
+      const fx=Math.abs(sp.vx)>8?Math.sign(sp.vx):(Math.abs(dx)>20?Math.sign(dx):sp.fa);
+      sp.fa+=(fx-sp.fa)*Math.min(1,dt*7);
+      const spd=Math.hypot(sp.vx,sp.vy); let busy=legs.filter(l=>l.st).length;
+      const fast=working||run;
+      legs.forEach((l,i)=>{
+        if(J&&J.ph!=='wind'){ // di udara: kaki dilipat; mendarat: kaki menjejak
+          const f=Math.min(1,dt*(J.ph==='air'?12:20)); l.st=false;
+          const tx=J.ph==='air'?sp.x+l.side*l.r[0]*sc*.62:ideal(l).x, ty=J.ph==='air'?sp.y-sp.z+l.r[1]*sc*.45-6*sc:ideal(l).y;
+          l.fx+=(tx-l.fx)*f; l.fy+=(ty-l.fy)*f; return;
+        }
+        if(J) return;
+        if(l.pt){
+          const px=l.pt.x-sp.x, py=l.pt.y-sp.y, pd=Math.hypot(px,py)||1, k=Math.max(0,Math.sin(T*13))*7;
+          const tx=l.pt.x-px/pd*k, ty=l.pt.y-py/pd*k, f=Math.min(1,dt*14);
+          l.fx+=(tx-l.fx)*f; l.fy+=(ty-l.fy)*f; l.st=false; l.fl=0; return;
+        }
+        if(l.st){
+          l.t+=dt/(fast?.075:.22); const e=ease(Math.min(1,l.t));
+          l.fx=l.ox+(l.tx-l.ox)*e; l.fy=l.oy+(l.ty-l.oy)*e;
+          if(l.t>=1){l.st=false; l.fl=1;}
+        } else {
+          const p=ideal(l), lag=Math.hypot(l.fx-p.x,l.fy-p.y), reach=Math.hypot(l.fx-sp.x,l.fy-sp.y);
+          const thr=fast?(spd>8*sc?10:14)*sc:(spd>8*sc?17:30)*sc, can=busy<(fast?5:3)&&!neigh(i).some(j=>legs[j].st);
+          if((lag>thr&&can)||reach>105*sc*ext){
+            const q=ideal(l,.12); l.ox=l.fx; l.oy=l.fy; l.tx=q.x; l.ty=q.y; l.t=0; l.st=true; busy++;
+          } else if(working&&can&&spd<40*sc&&Math.random()<dt*9){
+            const q=ideal(l,.12); l.ox=l.fx; l.oy=l.fy;
+            l.tx=clamp(q.x+l.side*(8+Math.random()*20)*sc*ext,8,B.w-8); l.ty=clamp(q.y+(Math.random()-.5)*26*sc,8,B.h-8);
+            l.t=0; l.st=true; busy++;
+          }
+        }
+        l.fl=Math.max(0,l.fl-dt*3);
+      });
+      const Lx=sp.x+O.x-R.left, Ly=sp.y+O.y-R.top;
+      nodes.forEach((n,i)=>{
+        const near=mode==='home'&&Math.hypot(Lx-n.x,Ly-n.y)<48*sc, on=working&&stg.has(i);
+        n.act=(near||on)?1:Math.max(0,n.act-dt*.7);
+      });
+      edges.forEach(e=>{e.t=(e.t+dt*(working?1.8:.2))%1;});
+      bub.a+=((bub.on?1:0)-bub.a)*Math.min(1,dt*8);
+    }
+
+    function bez(p,t){const u=1-t; return [u*u*u*p[0]+3*u*u*t*p[2]+3*u*t*t*p[4]+t*t*t*p[6],u*u*u*p[1]+3*u*u*t*p[3]+3*u*t*t*p[5]+t*t*t*p[7]];}
+    function drawStage(){
+      ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H); ctx.setLineDash([]);
+      edges.forEach(e=>{
+        const hot=Math.max(nodes[e.a].act,nodes[e.b].act), p=e.p;
+        ctx.strokeStyle=hot>.2?'rgba(255,61,139,'+(.25+hot*.4)+')':'#2a2a31'; ctx.lineWidth=1;
+        ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.bezierCurveTo(p[2],p[3],p[4],p[5],p[6],p[7]); ctx.stroke();
+        const q=bez(p,e.t); ctx.fillStyle=hot>.2||working?ACC:'#6a4a5a';
+        ctx.beginPath(); ctx.arc(q[0],q[1],1.9,0,7); ctx.fill();
+      });
+      ctx.font='9px ui-monospace,SFMono-Regular,Menlo,monospace'; ctx.textAlign='center';
+      nodes.forEach((n,i)=>{
+        const x=n.x-nw/2, y=n.y-nh/2, a=n.act;
+        ctx.fillStyle='#0d0d10'; ctx.fillRect(x,y,nw,nh);
+        ctx.strokeStyle=a>.05?'rgba(255,61,139,'+(.35+a*.65)+')':(n.done?'#2f8f57':'#34343c'); ctx.lineWidth=1; ctx.strokeRect(x+.5,y+.5,nw-1,nh-1);
+        if(a>.05){ctx.strokeStyle='rgba(255,61,139,'+a*.3+')'; ctx.strokeRect(x-2.5,y-2.5,nw+5,nh+5);}
+        ctx.fillStyle=a>.5?ACC:(n.done?'#4ad07a':TAB); ctx.fillRect(x,y,4,nh);
+        ctx.fillStyle=a>.5?ACC:(n.done?'#4ad07a':N[i][3]); ctx.fillRect(n.x-3+2,n.y-3,6,6);
+        ctx.fillStyle=a>.5?'#ff9fc4':(n.done?'#6fcf97':'#5c5c68'); ctx.fillText((n.done&&a<.5?'✓ ':'')+N[i][0],clamp(n.x,26,W-26),y+nh+11);
+      });
+      if(stageText&&(working||stg.size)){ ctx.font='600 10px ui-monospace,SFMono-Regular,Menlo,monospace'; ctx.textAlign='left'; ctx.fillStyle=working?ACC:'#6fcf97'; ctx.fillText('▸ '+stageText.slice(0,Math.floor((W-20)/6.2)),10,H-7); }
+    }
+    const trail=[];
+    function drawSilk(c,by){
+      if(!trail.length) return;
+      c.save(); c.lineCap='round'; c.lineJoin='round';
+      for(let q=0;q<trail.length-1;q++){
+        const p=trail[q],n=trail[q+1], a=Math.max(0,1-p.a/5)*.75; if(a<=.02) continue;
+        c.strokeStyle='rgba(255,236,246,'+a+')'; c.lineWidth=1.1;
+        c.beginPath(); c.moveTo(p.x,p.y); c.lineTo(n.x,n.y); c.stroke();
+      }
+      const L=trail[trail.length-1], mx=(L.x+sp.x)/2, my=(L.y+by)/2+Math.min(10,Math.hypot(L.x-sp.x,L.y-by)*.12)*sc;
+      c.strokeStyle='rgba(255,236,246,.85)'; c.lineWidth=1.2; c.beginPath(); c.moveTo(L.x,L.y); c.quadraticCurveTo(mx,my,sp.x,by); c.stroke();
+      const F=trail[0], fa=Math.max(0,1-F.a/5); if(fa>.05){ c.fillStyle='rgba(255,61,139,'+fa+')'; c.beginPath(); c.arc(F.x,F.y,2.4,0,7); c.fill(); }
+      c.restore();
+    }
+    function drawSpider(){
+      const c=oc; c.setTransform(1,0,0,1,0,0); c.clearRect(0,0,ov.width,ov.height);
+      c.setTransform(dpr,0,0,dpr,O.x*dpr,O.y*dpr);
+      const fast=working||run;
+      const sf=Math.min(1,Math.hypot(sp.vx,sp.vy)/(60*sc)), by=sp.y-sp.z+sp.crouch*4*sc+Math.sin(T*(fast?20:9))*(fast?1.9:1.1)*Math.max(sf,fast?.6:0);
+      if(sp.z>1){ c.fillStyle='rgba(0,0,0,'+Math.max(.06,.25-sp.z*.003)+')'; c.beginPath(); c.ellipse(sp.x,sp.y+8*sc,10*sc,3.5*sc,0,0,7); c.fill(); }
+      drawSilk(c,by);
+      legs.forEach(l=>{
+        const hx=sp.x+l.side*4*sc, hy=by;
+        c.lineCap='round';
+        if(l.pt){
+          c.setLineDash([]); c.lineWidth=2.8; c.strokeStyle='#fff'; c.shadowColor=ACC; c.shadowBlur=9;
+          c.beginPath(); c.moveTo(hx,hy); c.quadraticCurveTo((hx+l.fx)/2,(hy+l.fy)/2-9*sc,l.fx,l.fy); c.stroke(); c.shadowBlur=0;
+          c.fillStyle=ACC; c.beginPath(); c.arc(l.fx,l.fy,3.4,0,7); c.fill();
+          c.strokeStyle='rgba(255,61,139,'+(.35+.35*Math.sin(T*13))+')'; c.lineWidth=1.2; c.beginPath(); c.arc(l.fx,l.fy,7+3*Math.abs(Math.sin(T*13)),0,7); c.stroke();
+          return;
+        }
+        const dx=Math.abs(l.fx-hx), lift=l.st?Math.sin(Math.PI*Math.min(1,l.t)):0;
+        const cy=Math.min(hy,l.fy)-(24*sc+dx*.55)-lift*16*sc;
+        c.setLineDash(fast?[.1,2.5]:[.1,3.7]); c.lineWidth=fast?2.4:1.8; c.strokeStyle=fast?'rgba(255,214,232,.96)':'rgba(255,255,255,.88)';
+        if(fast){c.shadowColor=ACC; c.shadowBlur=7;}
+        c.beginPath(); c.moveTo(hx,hy); c.quadraticCurveTo((hx+l.fx)/2,cy,l.fx,l.fy); c.stroke();
+        c.shadowBlur=0;
+      });
+      c.setLineDash([]);
+      if(fast){c.strokeStyle='rgba(255,61,139,'+(.25+.2*Math.sin(T*14))+')'; c.lineWidth=1.2; c.beginPath(); c.arc(sp.x,by,(13+Math.sin(T*14)*3)*Math.max(sc,.75),0,7); c.stroke();}
+      legs.forEach(l=>{
+        if(l.pt) return;
+        c.strokeStyle=ACC; c.lineWidth=1.2; c.globalAlpha=l.st?1:.8;
+        c.beginPath(); c.arc(l.fx,l.fy,(l.st?4:3.2)+l.fl*2,0,7); c.stroke();
+        if(l.fl>0){c.fillStyle=ACC; c.globalAlpha=l.fl; c.beginPath(); c.arc(l.fx,l.fy,1.6,0,7); c.fill();}
+        c.globalAlpha=1;
+      });
+      c.save(); c.translate(sp.x,by); c.rotate(Math.PI/4+Math.sin(T*.9)*.05);
+      const s=(fast?11:9)*Math.max(sc,.8); c.fillStyle=fast?'#ff8fbd':'#c997b2'; c.strokeStyle='#ffd3e4'; c.lineWidth=1;
+      c.fillRect(-s/2,-s/2,s,s); c.strokeRect(-s/2+.5,-s/2+.5,s-1,s-1);
+      c.fillStyle='#6f4259'; c.fillRect(-s/5,-s/5,s*.4,s*.4); c.restore();
+      if(wk.carry&&working&&mode==='home'){ // paket data yang sedang dibawa
+        const px=sp.x+sp.fa*13*sc, py=by-10*sc+Math.sin(T*9), ps=5.5*Math.max(sc,.8);
+        c.save(); c.shadowColor=ACC; c.shadowBlur=9; c.fillStyle='#fff'; c.fillRect(px-ps/2,py-ps/2,ps,ps);
+        c.strokeStyle=ACC; c.lineWidth=1; c.strokeRect(px-ps/2-1.5,py-ps/2-1.5,ps+3,ps+3); c.restore();
+      }
+      if(bub.a>.02){
+        c.globalAlpha=bub.a; c.font='600 11px system-ui,-apple-system,"Segoe UI",sans-serif'; c.textAlign='center';
+        const tw=c.measureText(bub.txt).width+20, bh=24; let vx=clamp(sp.x+O.x,tw/2+8,innerWidth-tw/2-8);
+        const bx=vx-O.x-tw/2, yy=by-18*sc-bh-8;
+        c.fillStyle='rgba(10,10,14,.94)'; c.strokeStyle=ACC; c.lineWidth=1;
+        c.beginPath(); (c.roundRect||c.rect).call(c,bx,yy,tw,bh,8); c.fill(); c.stroke();
+        c.fillStyle='#fff'; c.fillText(bub.txt,bx+tw/2,yy+16); c.globalAlpha=1;
+      }
+    }
+
+    let raf=0,last=0;
+    function loop(ts){raf=0; if(document.hidden)return; const dt=Math.min(.05,(ts-(last||ts))/1000); last=ts; step(dt); drawStage(); drawSpider(); raf=requestAnimationFrame(loop);}
+    function kick(){if(!raf&&!reduce&&!document.hidden){last=0;raf=requestAnimationFrame(loop);}}
+    document.addEventListener('visibilitychange',kick);
+    addEventListener('resize',()=>{fitOv();});
+    fitOv();
+    new ResizeObserver(()=>{layout(); if(reduce){step(0);drawStage();drawSpider();} kick();}).observe(cv);
+    const api={
+    setStage(ids,text){
+      if(!ids||!ids.length){ stg.clear(); stageText=''; nodes.forEach(n=>n.done=false); buildWork([]); return; }
+      if(text&&/Membaca file/.test(text)){ vis.clear(); }
+      stg.clear(); ids.forEach(i=>{stg.add(i);vis.add(i);});
+      const rk=RK[ids[0]]; for(let i=0;i<N.length;i++) if(RK[i]<rk&&i!==2&&i!==3) vis.add(i);
+      nodes.forEach((n,i)=>n.done=vis.has(i)&&!stg.has(i));
+      cur=ids[0]; prev=-1; tgt=bodyTarget(cur); stageText=text||''; if(mode==='home') wait=0;
+      if(wk.ids.join()!==ids.join()) buildWork(ids);
+      if(window.CodexCode&&window.CodexCode.stage) window.CodexCode.stage(ids[0]);
+    },
+    promote(){ if(stg.has(5)) api.setStage([6],'Menyusun container MP4 (moov, faststart)…'); },
+    setState(state){
+      const w=state==='working';
+      if(w&&!working){working=true; idleT=0; startReturn(); if(wait>0)wait=Math.min(wait,.2);}
+      else if(!w&&working){working=false; idleT=-4; wk.carry=false;}
+    }};
+    window.CodexSpider=api;
+    const fileInput=document.getElementById('file');
+    if(fileInput) fileInput.addEventListener('change',()=>{
+      if(fileInput.files&&fileInput.files.length){
+        api.setState('working'); // laba-laba langsung berlari pulang
+        setTimeout(()=>{ if(agentStage.dataset.state!=='working') api.setState('idle'); },6000);
+      }
+    });
+  })();
+
+  // ---------- aliran kode pemrosesan video ----------
+  (function initCodeFeed(){
+    const tr=document.getElementById('codeTrack'); if(!tr) return;
+    const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const lines=[]; let frame=1000, acc=0, last=performance.now(), lastTxt='';
+    const rnd=(a,b)=>Math.floor(a+Math.random()*(b-a)), pad=n=>String(n).padStart(2,'0');
+    const hex=n=>{let s='';for(let i=0;i<n;i++)s+='0123456789abcdef'[rnd(0,16)];return s;};
+    const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const RX=/(\/\/.*$)|('[^']*'|"[^"]*")|\b(const|let|await|for|of|if|continue|return|new)\b|(\b0x[0-9a-f]+\b|\b\d[\d.]*\b)/g;
+    function hl(t){ return esc(t).replace(RX,(m,c,s,k,n)=>c?'<i class="c">'+m+'</i>':s?'<i class="s">'+m+'</i>':k?'<i class="k">'+m+'</i>':'<i class="n">'+m+'</i>'); }
+    function modeOf(){ const g=id=>document.getElementById(id); return g('modeFps120')&&g('modeFps120').classList.contains('on')?'fps':g('modeHdr')&&g('modeHdr').classList.contains('on')?'hdr':'repack'; }
+    const common=[
+      ()=>`frame=${frame} fps=${rnd(96,132)} q=-1.0 size=${rnd(900,48000)}kB time=00:00:${pad(rnd(0,59))} speed=${(1+Math.random()*2).toFixed(2)}x`,
+      ()=>`const pkt = await demuxer.read(); // pts=${rnd(10000,900000)}`,
+      ()=>`mux.write(track[${rnd(0,3)}], pkt, { keyframe: ${Math.random()<.2} });`,
+      ()=>`0x${hex(4)}  ${hex(2)} ${hex(2)} ${hex(2)} ${hex(2)} ${hex(2)} ${hex(2)} ${hex(2)} ${hex(2)}`,
+      ()=>`if (!pkt.keyframe) continue; // skip ${rnd(1,8)} packets`,
+      ()=>`probe: avc1 High@4.2 1080x1920 yuv420p ${rnd(24,60)}fps`,
+      ()=>`fs.write('out.mp4', chunk[${rnd(1,400)}], ${rnd(4000,90000)}); // ok`,
+      ()=>`await ff.exec(['-i', 'in.mp4', '-map', '0', '-c', 'copy', 'out.mp4']);`,
+      ()=>`moov.patch(0x${hex(6)}, ${rnd(200,9000)});`
+    ];
+    const extra={
+      repack:[()=>`aac.share(track[1], track[2]); // 0 bytes copied`,()=>`verify: tracks=3 video=1 audio=2 ✓`,()=>`track[2].alias(track[1]); // dual audio`],
+      fps:[()=>`encoder.encode(frame[${frame}], { fps: 120, gop: 240 });`,()=>`interp.blend(f${rnd(1,999)}, f${rnd(1,999)}, 0.5);`,()=>`rate.set('120fps'); // ${rnd(1,99)}%`],
+      hdr:[()=>`hdr.map('bt709', 'bt2020', 'pq'); // ${rnd(1,99)}%`,()=>`tone.curve(${(Math.random()).toFixed(3)}, peak=${rnd(600,1000)});`,()=>`meta.set('colr', 'nclx', 9, 16, 9);`]
+    };
+    let stageIdx=-1;
+    const SL={
+      0:[()=>`bytes = new Uint8Array(await file.arrayBuffer()); // ${rnd(20,900)} MB`,()=>`fs.writeFile('in.mov', bytes.slice());`],
+      1:[()=>`atom = box.read('moov'); // size=${rnd(900,90000)}`,()=>`trak.codec = 'hvc1'; trak.fps = ${rnd(24,60)};`,()=>`meta.hdr = trc == 16 || trc == 18;`,()=>`probe.audio(aac.lc, ch=2, sr=48000);`],
+      2:[()=>`luma.sample(t=${rnd(0,90)}s) // ${rnd(300,1000)} nits`,()=>`gain = target / peak; // x${(1+Math.random()).toFixed(2)}`,()=>`vf.lut3d('hdr_boost'); // ${rnd(1,99)}%`],
+      3:[()=>`vf = 'fps=120'; // interpolate`,()=>`x264.encode(f${rnd(1,9999)}, { gop: 120, bf: 0 });`,()=>`rate.control(bitrate = ${rnd(6,30)}Mbps);`],
+      4:[()=>`aac.check(track[1]); // LC stereo 48kHz`,()=>`audio.map('0:a:0'); // copy`,()=>`track[2].alias(track[1]); // dual audio`],
+      5:[()=>`await ff.exec(['-c:v','copy','-c:a','copy']);`,()=>`pkt = demux.read(); out.write(pkt); // pts=${rnd(1e4,9e5)}`,()=>`copy.stream(video, ${rnd(1,400)}MB); // 0 re-encode`],
+      6:[()=>`mux.write('mdat', chunk[${rnd(1,400)}]);`,()=>`moov.faststart(); // move atom to front`,()=>`mux.flush(); // ${rnd(1,99)}%`],
+      7:[()=>`track.build(video:1, audio:2);`,()=>`stsd.patch(0x${hex(6)}); // sample entry`,()=>`tref.link(track[2], track[1]);`],
+      8:[()=>`verify.video(in, out); // identical frames`,()=>`verify.audio(); // tracks=2 ✓`,()=>`assert(out.tracks.length === 3);`],
+      9:[()=>`blob = new Blob([out], 'video/mp4'); // ready`,()=>`link.download = name + '_repack.mp4';`]
+    };
+    const idle=[()=>`watch('#file'); // waiting for input`,()=>`engine.ready(); // standby`,()=>`poll(queue); // 0 jobs`,()=>`heartbeat(${rnd(8,40)}); // ms`];
+    function gen(w){
+      frame+=rnd(1,6)*(w?3:1);
+      const sl=SL[stageIdx]||[], pool=w?common.concat(extra[modeOf()],sl,sl,sl):idle;
+      return hl(pool[rnd(0,pool.length)]());
+    }
+    function render(){ if(lines.length>14) lines.splice(0,lines.length-14); tr.innerHTML=lines.map(l=>'<div>'+l+'</div>').join(''); }
+    setInterval(()=>{
+      if(document.hidden) return;
+      const now=performance.now(); acc+=now-last; last=now;
+      const w=agentStage.dataset.state==='working', gap=reduce?1200:(w?36:1100); let n=0;
+      while(acc>=gap&&n<4){acc-=gap; lines.push(gen(w)); n++;}
+      if(acc>gap*4) acc=0;
+      if(n) render();
+    },30);
+    window.CodexCode={stage(i){stageIdx=i;},push(t){ if(!t||t===lastTxt) return; lastTxt=t; lines.push(hl('// '+t)); render(); }};
+    lines.push(hl('// codex engine · ready'),hl('watch(\'#file\'); // waiting for input')); render();
+  })();
+  function agentProgress(p) {
+    const w = document.getElementById('agentProgress'); if (!w) return;
+    const i = w.firstElementChild;
+    if (p == null) { w.classList.add('indet'); i.style.width = ''; }
+    else { w.classList.remove('indet'); i.style.width = Math.round(p * 100) + '%'; if (p > .85 && window.CodexSpider) window.CodexSpider.promote(); }
+  }
+  function stageFor(t) {
+    t = t || '';
+    if (/Membaca file/.test(t)) return [0];
+    if (/metadata/i.test(t)) return [1];
+    if (/repack|disalin/i.test(t)) return [5, 4];
+    if (/120 fps/.test(t)) return [3];
+    if (/kecerahan|HDR|encoder/i.test(t)) return [2];
+    if (/Menyusun struktur/.test(t)) return [7];
+    if (/Verifikasi/.test(t)) return [8];
+    return null;
+  }
+  function setAgentState(state, headline, subline, task) {
+    if (!agentStage) return;
+    agentStage.dataset.state = state;
+    const labels = { idle: 'STANDBY', working: 'WORKING', done: 'COMPLETE', error: 'ATTENTION' };
+    const stateEl = document.getElementById('agentState');
+    const headlineEl = document.getElementById('agentHeadline');
+    const sublineEl = document.getElementById('agentSubline');
+    const taskEl = document.getElementById('agentTask');
+    if (stateEl) stateEl.textContent = labels[state] || 'STANDBY';
+    if (headlineEl && headline) headlineEl.textContent = headline;
+    if (sublineEl && subline) sublineEl.textContent = subline;
+    if (taskEl && task) taskEl.textContent = task;
+    if (subline && state === 'working' && window.CodexCode) window.CodexCode.push(subline);
+    if (window.CodexSpider) {
+      if (state === 'working') { const st = stageFor(subline); if (st) window.CodexSpider.setStage(st, subline); }
+      else if (state === 'done') window.CodexSpider.setStage([9], 'Selesai · hasil siap disimpan');
+      else if (state === 'error') window.CodexSpider.setStage([], '');
+      window.CodexSpider.setState(state);
+    }
+  }
+
+
+  // ---------- mesin ffmpeg.wasm (satu-satunya bagian yang butuh jaringan, sekali saja) ----------
+  const FFMPEG_VER = '0.12.10', CORE_VER = '0.12.6';
+  const LIB_SOURCES = [
+    './vendor/ffmpeg.js',
+    'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@' + FFMPEG_VER + '/dist/umd/ffmpeg.js',
+    'https://unpkg.com/@ffmpeg/ffmpeg@' + FFMPEG_VER + '/dist/umd/ffmpeg.js'
+  ];
+  const CORE_BASES = [
+    './vendor',
+    'https://cdn.jsdelivr.net/npm/@ffmpeg/core@' + CORE_VER + '/dist/umd',
+    'https://unpkg.com/@ffmpeg/core@' + CORE_VER + '/dist/umd'
+  ];
+  let engine = null, libBase = '', currentUI = null, engineLoading = null, enc120 = false, encHdr = false, encRes = false;
+  const logBuf = [];
+  const blobCache = new Map();
+
+  const loadScript = src => new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src;
+    s.onload = () => res(); s.onerror = () => rej(new Error('gagal memuat ' + src));
+    document.head.appendChild(s);
+  });
+  async function toBlobURL(url, mime) {
+    if (blobCache.has(url)) return blobCache.get(url);
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' untuk ' + url);
+    const u = URL.createObjectURL(new Blob([await r.blob()], { type: mime }));
+    blobCache.set(url, u); return u;
+  }
+  const setEngine = t => { $('#engineStatus').textContent = 'Mesin video: ' + t; };
+
+  // ==SHIM-START==
+  // Browser melarang membuat Worker dari skrip di CDN (lintas-origin). Pustaka ffmpeg.wasm versi UMD
+  // membuat worker dari alamat CDN itu, jadi kita bungkus dengan worker blob (satu origin dengan halaman)
+  // yang memuat skrip CDN lewat importScripts, yang memang diizinkan.
+  function installWorkerShim() {
+    if (window.__workerShim) return; window.__workerShim = true;
+    const Native = window.Worker;
+    const Shim = function (url, opts) {
+      let u; try { u = new URL(url, location.href); } catch (e) { return new Native(url, opts); }
+      if (u.protocol.indexOf('http') === 0 && u.origin !== location.origin) {
+        const code = (opts && opts.type === 'module') ? 'import ' + JSON.stringify(u.href) + ';' : 'importScripts(' + JSON.stringify(u.href) + ');';
+        return new Native(URL.createObjectURL(new Blob([code], { type: 'text/javascript' })), opts);
+      }
+      return new Native(url, opts);
+    };
+    Shim.prototype = Native.prototype;
+    window.Worker = Shim;
+  }
+  // ==SHIM-END==
+  const shortErr = e => String((e && e.message) || e).replace(/https?:\/\/[^\s'"]+/g, m => { try { return new URL(m).host; } catch (x) { return m; } }).slice(0, 160);
+
+  async function loadEngineOnce(setStatus) {
+    const errors = [];
+    installWorkerShim();
+    if (!window.FFmpegWASM) {
+      for (const src of LIB_SOURCES) {
+        try { setStatus('Memuat mesin…'); await loadScript(src); if (window.FFmpegWASM) { libBase = src.replace(/\/[^\/]*$/, ''); break; } }
+        catch (e) { errors.push(shortErr(e)); }
+      }
+      if (!window.FFmpegWASM) throw new Error('Mesin ffmpeg tidak bisa dimuat (cek koneksi internet). ' + errors.join(' | '));
+    }
+    const { FFmpeg } = window.FFmpegWASM;
+    for (const base of CORE_BASES) {
+      try {
+        setStatus('Memuat mesin… (±30 MB, sekali saja)');
+        const ff = new FFmpeg();
+        ff.on('log', ({ message }) => { logBuf.push(message); if (logBuf.length > 80) logBuf.shift(); });
+        ff.on('progress', ({ progress }) => { if (currentUI && progress >= 0 && progress <= 1) currentUI.progress(progress); });
+        await ff.load({
+          coreURL: await toBlobURL(base + '/ffmpeg-core.js', 'text/javascript'),
+          wasmURL: await toBlobURL(base + '/ffmpeg-core.wasm', 'application/wasm')
+        });
+        engine = ff; setEngine('siap');
+        return ff;
+      } catch (e) { errors.push((base.charAt(0) === '.' ? 'vendor' : new URL(base).host) + ': ' + shortErr(e)); }
+    }
+    throw new Error('Mesin ffmpeg gagal dijalankan. ' + errors.slice(-3).join(' | '));
+  }
+  function loadEngine(setStatus) {
+    if (engine) return Promise.resolve(engine);
+    if (!engineLoading) engineLoading = loadEngineOnce(setStatus).finally(() => { engineLoading = null; });
+    return engineLoading;
+  }
+
+  async function defaultRunBase(input, info, ui) {
+    const ff = await loadEngine(ui.status);
+    currentUI = ui; logBuf.length = 0;
+    const inName = 'in.' + info.ext, outName = 'out.mp4';
+    info.reencoded = false;
+    ui.status('Memproses: video dan audio disalin tanpa encode ulang…'); ui.progress(0);
+    await ff.writeFile(inName, input.slice()); // salinan: writeFile memindahkan buffer
+    const tail = ['-af', 'aresample=async=1:first_pts=0,apad', '-shortest', '-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-ac', '2',
+      '-map_metadata', '-1', '-map_metadata:s:v', '-1', '-map_metadata:s:a', '-1', '-map_chapters', '-1']
+      .concat(['-movflags', '+faststart', outName]);
+    let copyArgs;
+    const useBoost = encHdr && !info.asRepack;
+    if (useBoost) {
+      if (!info.hdr || (info.trc !== 16 && info.trc !== 18)) throw new Error('Mode Naikkan HDR khusus untuk video yang sudah HDR (HLG atau PQ). Video ini bukan HDR, silakan pakai mode lain.');
+      info.reencoded = true;
+      const isPQ = info.trc === 16;
+      const bd = info.bitDepth || 10, k = Math.pow(2, bd - 8);
+      // --- Tahap 0: ukur kecerahan video (cuplik 2 frame/detik, resolusi kecil) ---
+      ui.status('Tahap 1/3: mengukur kecerahan video…'); ui.progress(0);
+      let ys = [];
+      try {
+        const ca = await ff.exec(['-y', '-i', inName, '-an', '-vf', 'fps=2,scale=320:-2,signalstats,metadata=print:key=lavfi.signalstats.YHIGH:file=stats.txt', '-f', 'null', '-']);
+        if (ca === 0) {
+          const txt = await ff.readFile('stats.txt', 'utf8');
+          for (const m of String(txt).matchAll(/YHIGH=(\d+(?:\.\d+)?)/g)) ys.push(+m[1]);
+          try { await ff.deleteFile('stats.txt'); } catch (e) { /* abaikan */ }
+        }
+      } catch (e) { /* pakai nilai bawaan di bawah */ }
+      // sinyal 0..1 (rentang limited) -> cahaya linear, dan sebaliknya
+      const HA = 0.17883277, HB = 0.28466892, HC = 0.55991073;
+      const M1 = 0.1593017578125, M2 = 78.84375, C1 = 0.8359375, C2 = 18.8515625, C3 = 18.6875;
+      const toLin = v => isPQ ? Math.pow(Math.max(Math.pow(v, 1 / M2) - C1, 0) / (C2 - C3 * Math.pow(v, 1 / M2)), 1 / M1)
+        : (v <= 0.5 ? v * v / 3 : (Math.exp((v - HC) / HA) + HB) / 12);
+      const sigOf = y => Math.min(1, Math.max(0, (y - 16 * k) / (219 * k)));
+      let measured = 0.62;                                  // bawaan kalau pengukuran gagal
+      if (ys.length) { ys.sort((x, y) => x - y); measured = sigOf(ys[Math.min(ys.length - 1, Math.floor(ys.length * 0.75))]); }
+      const target = isPQ ? 0.76 : 0.92;                    // PQ ~1000 nits, HLG ~ puncak sinyal
+      let gain = toLin(target) / Math.max(toLin(Math.max(measured, 0.02)), 1e-6);
+      gain = Math.min(4, Math.max(1, gain));
+      info.gain = gain;
+      ui.info(info.summary + '  →  ' + (isPQ ? 'HDR10 (PQ)' : 'HLG') + ' · naik kecerahan ×' + gain.toFixed(2));
+      const midName = 'mid.mp4';
+      const trcName = isPQ ? 'smpte2084' : 'arib-std-b67';
+      const NB = 100, NA = Math.round(NB * gain);
+      let stage1;
+      if (gain < 1.05) {
+        ui.status('Kecerahan sudah mendekati maksimal, kualitas aslinya dipertahankan…');
+        stage1 = null;
+      } else {
+        ui.status('Tahap 2/3: menaikkan kecerahan HDR ×' + gain.toFixed(2) + '… (jangan tutup halaman)'); ui.progress(0);
+        const vf = 'zscale=tin=' + trcName + ':pin=bt2020:min=bt2020nc:rin=limited:t=linear:npl=' + NB + ',format=gbrpf32le,zscale=t=' + trcName + ':p=bt2020:m=bt2020nc:r=limited:npl=' + NA + ':dither=error_diffusion,format=yuv420p10le';
+        const tags = ['-color_primaries', 'bt2020', '-color_trc', trcName, '-colorspace', 'bt2020nc', '-color_range', 'tv'];
+        const audio = info.audioCopyOk ? ['-c:a', 'copy'] : ['-c:a', 'aac', '-b:a', '256k', '-ar', '48000', '-ac', '2'];
+        const base = ['-y', '-i', inName, '-map', '0:v:0', '-map', '0:a:0', '-vf', vf];
+        const tail1 = tags.concat(audio, ['-map_metadata', '-1', '-map_chapters', '-1', '-movflags', '+faststart', midName]);
+        const x265 = ['-c:v', 'libx265', '-preset', 'ultrafast', '-crf', '18', '-pix_fmt', 'yuv420p10le', '-profile:v', 'main10', '-tag:v', 'hvc1',
+          '-x265-params', 'pools=none:frame-threads=1:colorprim=bt2020:transfer=' + trcName + ':colormatrix=bt2020nc:range=limited:repeat-headers=1'];
+        const x265min = ['-c:v', 'libx265', '-preset', 'ultrafast', '-crf', '18', '-pix_fmt', 'yuv420p10le', '-tag:v', 'hvc1'];
+        const x264 = ['-c:v', 'libx264', '-preset', 'ultrafast', '-tune', 'fastdecode', '-crf', '16', '-pix_fmt', 'yuv420p10le', '-profile:v', 'high10'];
+        stage1 = [base.concat(x265, tail1), base.concat(x265min, tail1), base.concat(x264, tail1)];
+      }
+      if (stage1) {
+        let c1 = -1;
+        for (let i = 0; i < stage1.length; i++) {
+          if (i > 0) ui.status('Mencoba jalur encoder alternatif…');
+          try { c1 = await ff.exec(stage1[i]); } catch (e) { c1 = -1; }
+          if (c1 === 0) break;
+        }
+        if (c1 !== 0) throw new Error('Menaikkan kecerahan gagal (kode ' + c1 + '): ' + logBuf.slice(-5).join(' / '));
+        try { info.midData = await ff.readFile(midName); } catch (e) { throw new Error('Hasil HDR tidak ditemukan: ' + logBuf.slice(-5).join(' / ')); }
+      }
+      // Tahap 3: perlakuan sama persis dengan Repack HD
+      ui.status('Tahap 3/3: repack HD…'); ui.progress(0);
+      const srcName = stage1 ? midName : inName;
+      copyArgs = ['-y', '-i', srcName, '-map', '0:v:0', '-map', '0:a:0', '-c:v', 'copy', '-tag:v', 'hvc1']
+        .concat(stage1 || info.audioCopyOk ? ['-c:a', 'copy'] : ['-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-ac', '2'])
+        .concat(['-map_metadata:g', '-1', '-map_metadata:s:v', '-1', '-map_metadata:s:a', '-1', '-map_chapters', '-1', '-movflags', '+faststart', outName]);
+      if (!stage1) info.reencoded = false;
+    } else if (enc120 && !info.asRepack) {
+      info.reencoded = true;
+      // Tahap 1: ubah ke 120 fps (video & audio jadi file perantara, audio AAC-LC stereo 48k)
+      ui.status('Tahap 1/2: encode ulang ke 120 fps… (jangan tutup halaman)');
+      const midName = 'mid.mp4';
+      // Pengaturan meniru hasil metode lain: H.264 High 8-bit, bitrate ~1,1x video asli (batas 6-30 Mbps), tanpa B-frame,
+      // keyframe tiap 1 detik (120 frame), tag warna BT.709 + transfer sRGB (iec61966-2-1) untuk video SDR
+      const srcMbps = info.duration > 0 ? (input.length * 8 / info.duration / 1e6) : 16;
+      const tMbps = Math.round(Math.min(30, Math.max(6, srcMbps * 1.1)) * 10) / 10;
+      const colorArgs = info.hdr ? [] : ['-color_primaries', 'bt709', '-color_trc', 'iec61966-2-1', '-colorspace', 'bt709', '-color_range', 'tv'];
+      const x264p = 'scenecut=0:ref=1' + (info.hdr ? '' : ':colorprim=bt709:transfer=iec61966-2-1:colormatrix=bt709:range=tv');
+      info.fps120Note = 'H.264 High · ' + tMbps + ' Mbps · keyframe 1 dtk' + (info.hdr ? '' : ' · tag sRGB');
+      ui.info(info.summary + '  →  120 fps · ' + info.fps120Note);
+      const stage1 = ['-y', '-i', inName, '-map', '0:v:0', '-map', '0:a:0', '-vf', 'fps=120', '-c:v', 'libx264', '-preset', 'superfast', '-profile:v', 'high', '-pix_fmt', 'yuv420p',
+        '-b:v', tMbps + 'M', '-maxrate', (Math.round(tMbps * 1.15 * 10) / 10) + 'M', '-bufsize', (Math.round(tMbps * 2 * 10) / 10) + 'M', '-g', '120', '-keyint_min', '120', '-bf', '0', '-x264-params', x264p]
+        .concat(colorArgs, ['-af', 'aresample=async=1:first_pts=0', '-c:a', 'aac', '-b:a', '128k', '-ar', '48000', '-ac', '2', '-map_metadata', '-1', '-map_chapters', '-1', '-movflags', '+faststart', midName]);
+      let c1; try { c1 = await ff.exec(stage1); } catch (e) { c1 = -1; }
+      if (c1 !== 0) throw new Error('Encode 120 fps gagal (kode ' + c1 + '): ' + logBuf.slice(-5).join(' / '));
+      try { info.midData = await ff.readFile(midName); } catch (e) { throw new Error('Hasil encode 120 fps tidak ditemukan: ' + logBuf.slice(-5).join(' / ')); }
+      // Tahap 2: perlakuan sama persis dengan Repack HD (video & audio disalin utuh dari file perantara)
+      ui.status('Tahap 2/2: repack HD dari hasil 120 fps…'); ui.progress(0);
+      copyArgs = ['-y', '-i', midName, '-map', '0:v:0', '-map', '0:a:0', '-c:v', 'copy', '-c:a', 'copy']
+        .concat(['-map_metadata:g', '-1', '-map_metadata:s:v', '-1', '-map_metadata:s:a', '-1', '-map_chapters', '-1', '-movflags', '+faststart', outName]);
+    } else {
+      // video & audio disalin utuh (audio hanya di-encode kalau bukan AAC-LC stereo)
+      ui.status('Memproses: video dan audio disalin utuh…');
+      copyArgs = ['-y', '-i', inName, '-map', '0:v:0', '-map', '0:a:0', '-c:v', 'copy'].concat(info.hevc ? ['-tag:v', 'hvc1'] : [])
+        .concat(info.audioCopyOk ? ['-c:a', 'copy'] : ['-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-ac', '2'])
+        .concat(['-map_metadata:g', '-1', '-map_metadata:s:v', '-1', '-map_metadata:s:a', '-1', '-map_chapters', '-1', '-movflags', '+faststart', outName]);
+    }
+    let code, used = null;
+    const tries = [{ args: copyArgs }];
+    for (let i = 0; i < tries.length; i++) {
+      if (i > 0) ui.status(tries[i].msg || 'Mencoba ulang…');
+      try { code = await ff.exec(tries[i].args); } catch (e) { code = -1; }
+      if (code === 0) { used = tries[i]; break; }
+    }
+    if (used && used.note) ui.info(info.summary + '  →  ' + used.note);
+    if (typeof code === 'number' && code !== 0) throw new Error('ffmpeg gagal (kode ' + code + '): ' + logBuf.slice(-5).join(' / '));
+    let data;
+    try { data = await ff.readFile(outName); } catch (e) { throw new Error('Hasil ffmpeg tidak ditemukan: ' + logBuf.slice(-5).join(' / ')); }
+    try { await ff.deleteFile(inName); await ff.deleteFile(outName); if (info.midData) await ff.deleteFile('mid.mp4'); } catch (e) { /* abaikan */ }
+    currentUI = null;
+    return data;
+  }
+
+  // ---------- UI per file ----------
+  function makeItem(file) {
+    const card = el('div', 'card'), row = el('div', 'row');
+    row.append(el('div', 'name', file.name), el('div', 'size', fmtSize(file.size)));
+    const info = el('div', 'info'), status = el('div', 'status', 'Menunggu giliran…');
+    const bar = el('div', 'bar'), fill = el('div', 'fill'); bar.append(fill);
+    const checks = el('ul', 'checks'), actions = el('div', 'actions');
+    card.append(row, info, status, bar, checks, actions);
+    $('#list').prepend(card); agentProgress(0);
+    let url = null;
+    return {
+      info: t => { info.textContent = t; },
+      status: (t, cls) => {
+        status.textContent = t; status.className = 'status ' + (cls || '');
+        setAgentState('working', 'AI worker sedang bekerja', t, file.name);
+      },
+      progress: p => { bar.classList.remove('indet'); fill.style.width = Math.round(p * 100) + '%'; agentProgress(p); },
+      indeterminate: () => { fill.style.width = ''; bar.classList.add('indet'); agentProgress(null); },
+      checks: list => {
+        checks.textContent = '';
+        if (list.length && !list.every(c => c.ok)) {
+          for (const c of list.filter(c => !c.ok)) checks.append(el('li', 'bad', c.label + (c.detail ? ' — ' + c.detail : '')));
+        }
+      },
+      fail: msg => {
+        bar.classList.remove('indet'); fill.style.width = '100%'; fill.style.background = 'var(--bad)';
+        status.textContent = msg; status.className = 'status bad';
+        setAgentState('error', 'Proses perlu diperiksa', 'Ada kendala saat memproses video', file.name);
+      },
+      done: (out, name) => {
+        bar.classList.remove('indet'); fill.style.width = '100%'; agentProgress(1);
+        status.textContent = 'Proses selesai. Simpan videonya, lalu unggah melalui TikTok Web.'; status.className = 'status ok';
+        setAgentState('done', 'Tugas berhasil diselesaikan', 'Hasil sudah lolos pemeriksaan otomatis', file.name);
+        const blob = new Blob([out], { type: 'video/mp4' });
+        url = URL.createObjectURL(blob);
+        const a = el('a', 'btn', 'Simpan Video'); a.href = url; a.download = name;
+        actions.append(a);
+        const f = new File([blob], name, { type: 'video/mp4' });
+        if (navigator.canShare && navigator.canShare({ files: [f] })) {
+          const s = el('button', 'ghost', 'Bagikan / ke Galeri');
+          s.onclick = () => navigator.share({ files: [f] }).catch(() => {});
+          actions.append(s);
+        }
+        const t = el('button', 'blue', 'Upload ke TikTok'); t.onclick = () => window.TikTok.open(); actions.append(t);
+        const x = el('button', 'danger', 'Hapus');
+        x.onclick = () => { if (url) URL.revokeObjectURL(url); card.remove(); };
+        actions.append(x);
+        card.append(el('div', 'muted', 'Upload harus lewat TikTok Web di browser (bukan aplikasi TikTok) supaya kualitas video tetap terjaga.'));
+      }
+    };
+  }
+
+  // ---------- Jalur cepat: encoder hardware (WebCodecs) lewat Mediabunny. Hasilnya langsung masuk ke Repack HD ----------
+  let mbLib = null;
+  async function loadMediabunny() {
+    if (mbLib) return mbLib;
+    let err;
+    for (const u of ['./vendor/mediabunny.mjs', 'https://cdn.jsdelivr.net/npm/mediabunny@1.62.1/dist/bundles/mediabunny.min.mjs', 'https://esm.sh/mediabunny@1.62.1']) {
+      try { mbLib = await import(u); return mbLib; } catch (e) { err = e; }
+    }
+    throw err || new Error('Mediabunny tidak bisa dimuat');
+  }
+  async function fastEncode(file, ui, o) {
+    if (!window.VideoEncoder || !window.OffscreenCanvas) throw new Error('WebCodecs tidak didukung');
+    ui.status('Menyiapkan encoder perangkat…'); ui.progress(0);
+    const M = await loadMediabunny();
+    const get = async (x, p, g) => (typeof x[g] === 'function' ? await x[g]() : x[p]);
+    const input = new M.Input({ source: new M.BlobSource(file), formats: M.ALL_FORMATS });
+    const vTrack = await input.getPrimaryVideoTrack();
+    if (!vTrack) throw new Error('Track video tidak ditemukan');
+    let dur = 0; try { dur = await input.computeDuration(); } catch (e) { /* progres tidak pasti */ }
+    const it = new M.CanvasSink(vTrack).canvases()[Symbol.asyncIterator]();
+    const f0 = await it.next();
+    if (f0.done) throw new Error('Video kosong');
+    const w = f0.value.canvas.width, h = f0.value.canvas.height;
+    const sc = o.long ? o.long / Math.max(w, h) : 1;
+    const W = Math.round(w * sc / 2) * 2, H = Math.round(h * sc / 2) * 2;
+    const mbps = Math.round(Math.min(50, Math.max(6, (dur > 0 ? file.size * 8 / dur / 1e6 * 1.1 : 18) * (W * H) / (w * h))) * 10) / 10;
+    const cv = new OffscreenCanvas(W, H), ctx = cv.getContext('2d');
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    const output = new M.Output({ format: new M.Mp4OutputFormat({ fastStart: 'in-memory' }), target: new M.BufferTarget() });
+    const vSrc = new M.CanvasSource(cv, { codec: 'avc', bitrate: mbps * 1e6, keyFrameInterval: 1 });
+    output.addVideoTrack(vSrc, o.fps120 ? { frameRate: 120 } : undefined);
+    const aTrack = await input.getPrimaryAudioTrack(); let aSrc = null, aCfg = null;
+    if (aTrack) {
+      if ((await get(aTrack, 'codec', 'getCodec')) !== 'aac') throw new Error('Audio bukan AAC');
+      aCfg = await aTrack.getDecoderConfig();
+      aSrc = new M.EncodedAudioPacketSource('aac'); output.addAudioTrack(aSrc);
+    }
+    ui.info(W + '×' + H + (o.fps120 ? ' · 120 fps' : '') + ' · H.264 · ' + mbps + ' Mbps');
+    ui.status(o.fps120 ? 'Mengubah ke 120 fps memakai encoder perangkat…' : 'Mengubah resolusi ke ' + W + '×' + H + '…');
+    await output.start();
+    const copyAudio = async () => {
+      if (!aSrc) return;
+      let first = true;
+      for await (const p of new M.EncodedPacketSink(aTrack).packets()) { await aSrc.add(p, first ? { decoderConfig: aCfg } : undefined); first = false; }
+    };
+    const encodeVideo = async () => {
+      let cur = f0.value, n = Math.round(cur.timestamp * 120);
+      for (;;) {
+        ctx.drawImage(cur.canvas, 0, 0, W, H);
+        const r = await it.next();
+        if (o.fps120) {
+          const until = r.done ? cur.timestamp + (cur.duration || 1 / 60) : r.value.timestamp;
+          while (n / 120 < until - 1e-6) { await vSrc.add(n / 120, 1 / 120); n++; }
+        } else await vSrc.add(cur.timestamp, cur.duration || 1 / 60);
+        if (dur > 0) ui.progress(Math.min(0.99, cur.timestamp / dur));
+        if (r.done) break;
+        cur = r.value;
+      }
+    };
+    await Promise.all([copyAudio(), encodeVideo()]);
+    vSrc.close(); if (aSrc) aSrc.close();
+    await output.finalize();
+    return new Uint8Array(output.target.buffer);
+  }
+
+  async function processFile(file, ui) {
+    try {
+      ui.status('Membaca file…'); ui.progress(0); await tick();
+      if (!window.Gate) throw new Error('Sistem akun belum siap. Periksa internet lalu muat ulang halaman.');
+      if (!(await window.Gate.canProcess())) throw new Error('Tidak bisa diproses: masuk dulu atau percobaan gratis sudah habis.');
+      let input = null, info = null;
+      if (encRes && !window.VideoEncoder) throw new Error('Browser ini belum mendukung ubah resolusi. Pakai Chrome atau Safari terbaru.');
+      if (enc120 || encRes) {
+        try {
+          input = await fastEncode(file, ui, { fps120: enc120, long: encRes ? +document.getElementById('resSel').value : 0 });
+          info = Core.inspectInput(input); info.asRepack = true;
+          ui.status('Repack HD…'); ui.progress(0);
+        } catch (e) {
+          console.warn('fastEncode', e); input = null;
+          if (encRes) throw new Error('Ubah resolusi gagal: ' + ((e && e.message) || e) + '. Coba resolusi lebih rendah.');
+          ui.status('Jalur cepat tidak tersedia, memakai ffmpeg…'); ui.progress(0);
+        }
+      }
+      if (!input) { input = new Uint8Array(await file.arrayBuffer()); info = Core.inspectInput(input); }
+      info.ext = ((file.name.split('.').pop() || 'mov').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5)) || 'mov';
+      info.summary = info.codec.toUpperCase() + ' · ' + info.w + '×' + info.h + ' · ' + Math.round(info.fps) + ' fps · ' + info.duration.toFixed(1) + ' dtk';
+      ui.info(info.summary);
+      const base = await (window.__TEST_RUN_BASE__ || defaultRunBase)(input, info, ui);
+      ui.status('Menyusun struktur track…'); ui.indeterminate(); await tick();
+      const out = Core.postprocess(base);
+      ui.status('Verifikasi hasil…'); await tick();
+      const checks = info.midData ? Core.verify(info.midData, out, { skipIdentical: false }) : Core.verify(input, out, { skipIdentical: info.reencoded !== undefined ? info.reencoded : false });
+      ui.checks(checks);
+      if (checks.some(c => !c.ok)) throw new Error('Video belum lolos pemeriksaan otomatis (rincian di bawah), sehingga file tidak disediakan demi menjaga kualitas hasil. Silakan proses ulang atau gunakan video lain.');
+      await window.Gate.consume();
+      ui.done(out, file.name.replace(/\.[^.]+$/, '') + '_repack.mp4');
+    } catch (e) {
+      currentUI = null;
+      ui.fail((e && e.message) || String(e));
+    }
+  }
+
+  const queue = []; let running = false;
+  async function pump() {
+    if (running) return; running = true;
+    while (queue.length) { const { file, ui } = queue.shift(); await processFile(file, ui); await tick(); }
+    running = false;
+  }
+  function addFiles(files) {
+    for (const f of files) {
+      const ui = makeItem(f);
+      if (f.size > 700e6) ui.info('File besar: di HP bisa gagal karena memori browser');
+      queue.push({ file: f, ui });
+    }
+    pump();
+  }
+
+  const drop = $('#drop'), input = $('#file');
+  input.addEventListener('change', () => { addFiles([...input.files]); input.value = ''; });
+  const modeRepackBtn = document.getElementById('modeRepack'), modeFpsBtn = document.getElementById('modeFps120'), modeHdrBtn = document.getElementById('modeHdr');
+  function setMode(m) {
+    enc120 = m === 'fps'; encHdr = m === 'hdr'; encRes = m === 'res'; document.getElementById('resRow').hidden = !encRes; document.getElementById('modeRes').classList.toggle('on', encRes);
+    modeRepackBtn.classList.toggle('on', m === 'repack'); modeFpsBtn.classList.toggle('on', enc120); modeHdrBtn.classList.toggle('on', encHdr);
+  }
+  modeRepackBtn.addEventListener('click', () => setMode('repack'));
+  modeFpsBtn.addEventListener('click', () => setMode('fps'));
+  modeHdrBtn.addEventListener('click', () => setMode('hdr'));
+  document.getElementById('modeRes').addEventListener('click', () => setMode('res'));
+  ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => addFiles([...e.dataTransfer.files]));
+
+  $('#engineBtn').addEventListener('click', async () => {
+    const btn = $('#engineBtn'); btn.disabled = true;
+    try {
+      const ff = await loadEngine(t => setEngine(t));
+      logBuf.length = 0; await ff.exec(['-version']);
+      const v = logBuf.find(l => /ffmpeg version/i.test(l)) || 'siap';
+      setEngine('siap (' + v.replace(/Copyright.*/, '').trim() + ')');
+    } catch (e) { setEngine('GAGAL: ' + ((e && e.message) || e)); }
+    btn.disabled = false;
+  });
+})();
+</script>
+
+<script type="module">
+/* ============ ISI BAGIAN INI (Firebase Console > Project settings > Your apps > Web app) ============ */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBPm4MaZVY204BbRblI5J1U_SqX09T-h2k",
+  authDomain: "video-hd-73fc4.firebaseapp.com",
+  databaseURL: "https://video-hd-73fc4-default-rtdb.firebaseio.com",
+  projectId: "video-hd-73fc4",
+  storageBucket: "video-hd-73fc4.firebasestorage.app",
+  messagingSenderId: "369595881314",
+  appId: "1:369595881314:web:08f9b5e7c13a535b273e3b"
+};
+const ADMIN_EMAIL = "dwil33140@gmail.com";
+const FREE_LIMIT = 3;
+/* ====================================================================================================== */
+
+const $ = s => document.querySelector(s);
+const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+const configured = !!FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('ISI');
+let toastT;
+const toast = t => { const e = $('#toast'); e.textContent = t; e.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => e.hidden = true, 3500); };
+
+/* ================= BAHASA / MATA UANG ================= */
+const I18N = {
+  id: {
+    login_btn: 'Masuk dengan Google', login_small: 'Pengguna baru: gratis 3 kali coba', logout_btn: 'Keluar',
+    step1: 'Pilih video', step2: 'Tunggu proses', step3: 'Simpan hasil',
+    mode_repack_title: 'Repack HD',
+    mode_fps_title: 'Ubah ke 120fps', cmp_title: 'Lihat bedanya', cmp_before: 'TikTok Biasa', cmp_hint: 'Geser untuk bandingkan',
+    mode_hdr_title: 'Naikkan HDR',
+    drop_title: 'Pilih Video', drop_sub: 'Bisa pilih banyak video sekaligus',
+    help_summary: 'Bantuan & catatan',
+    help_p1: '1. Mode <b>Repack HD</b>: memakai struktur tiga track (1 video + 2 audio), dengan kedua track audio berbagi paket AAC yang sama tanpa menggandakan data suara, mempertahankan bitstream video tanpa encode ulang bila codec kompatibel (ukuran file dapat sedikit berubah), lalu bisa langsung diunduh & diupload ke TikTok. Mode <b>Ubah ke 120fps</b>: video di-encode ulang menjadi 120 fps (tanpa batas durasi, prosesnya lebih lama dan ukuran file bisa berubah), lalu hasilnya di-repack dengan sistem yang sama seperti Repack HD. Mode <b>Naikkan HDR</b>: khusus video yang sudah HDR. Kecerahan dinaikkan otomatis sampai level maksimal yang aman (diukur dari videonya), lalu hasilnya di-repack dengan sistem yang sama seperti Repack HD. Video non-HDR tidak bisa diproses di mode ini.',
+    help_p2: '2. Video diproses lalu diperiksa otomatis. Kalau ada bagian yang belum sesuai, tombol simpan tidak akan muncul supaya hasilnya tetap terjamin.',
+    help_p3: 'Catatan: hasilnya bergantung pada kebijakan TikTok yang bisa berubah sewaktu-waktu, jadi bisa saja suatu waktu berhenti bekerja. Coba satu video dulu sebelum dipakai untuk klien. Kalau videonya konten AI yang realistis, tetap aktifkan label konten AI di TikTok.',
+    engine_default: 'Mesin video: belum dimuat (dimuat otomatis saat video pertama diproses, ±30 MB sekali saja)', engine_btn: 'Cek mesin',
+    wa_help_btn: 'Kesulitan? Konsultasi Admin (WA)', tutorial_btn: 'Tutorial Cara Upload Video HD', tiktok_checker_link: 'TikTok Checker (cek info video dari link)',
+    inapp_warn: 'Kamu membuka halaman ini di dalam aplikasi (TikTok/Instagram, dll). Supaya login &amp; download video lancar, ketuk <b>titik tiga (⋮)</b> di pojok kanan atas, lalu pilih <b>"Buka di Browser"</b>.',
+    q_demo: 'Mode demo', q_demo_sub: 'Firebase belum diisi',
+    q_left: 'Sisa coba gratis: ', q_of: ' dari ', q_zero: 'Coba gratis habis', q_pending: 'Menunggu admin',
+    q_full: 'Akses penuh aktif', q_full_sub: 'Tanpa batas', q_upgrade: 'Akses Penuh', q_view_status: 'Lihat status',
+    toast_login: 'Masuk dengan Google dulu ya', toast_notloaded: 'Data akun belum termuat. Coba lagi.',
+    pw_full_body: 'Akses penuh sudah aktif. Selamat memakai tanpa batas!', pw_full_title: 'Akses penuh aktif ✓', pw_start: 'Mulai pakai',
+    pw_pending_body: 'Terima kasih! Pembayaranmu sedang diperiksa admin. Halaman ini akan aktif otomatis setelah dikonfirmasi.', pw_pending_title: 'Menunggu konfirmasi', pw_close: 'Tutup', pw_sender: 'Pengirim: ',
+    pw_rejected: 'Pembayaran sebelumnya belum ditemukan admin. Pastikan jumlah dan nama pengirim benar, lalu kirim lagi.',
+    pw_trial_over: 'Percobaan gratismu sudah habis. Aktifkan akses penuh supaya bisa memakai sepuasnya.',
+    pw_once: 'Sekali bayar, tanpa batas', pw_currency_toggle: 'Lihat harga RM', pw_currency_toggle_back: 'Lihat harga Rp', pw_currency_loading: 'Memuat kurs…',
+    pw_no_method: 'Metode pembayaran belum tersedia. Silakan hubungi admin.',
+    pw_choose_method: 'Pilih cara bayar:', pw_transfer_to: 'Transfer tepat ', pw_transfer_to2: ' ke:', pw_copy: 'Salin nomor',
+    pw_qris_scan: 'Scan QR di bawah pakai e-wallet atau m-banking:', pw_qris_dl: 'Download QR', pw_qris_show: 'Tampilkan QR', pw_qris_hide: 'Sembunyikan QR',
+    pw_qris_note: 'Nominal transfer tetap dalam Rupiah: ', pw_qris_note2: '. Untuk pelanggan luar Indonesia, cek dulu apakah e-wallet kamu mendukung scan QRIS lintas negara.',
+    pw_sender_label: 'Nama pengirim (nama di rekening/akun kamu)', pw_sender_ph: 'Contoh: Budi Santoso',
+    pw_proof_hint: 'Sudah transfer? Kirim juga bukti bayar (screenshot) ke WA admin supaya lebih cepat diproses.',
+    toast_fillname: 'Isi nama pengirim dulu ya', toast_sent: 'Terkirim. Menunggu konfirmasi admin.', toast_sendfail: 'Gagal mengirim. Coba lagi.',
+    pw_modal_title: 'Aktifkan Akses Penuh', pw_btn_paid: 'Saya Sudah Bayar', pw_btn_consult: 'Konsultasi Admin (WA)', pw_btn_later: 'Nanti saja',
+    wap_body: 'Buka WhatsApp admin, lalu kirim foto/tangkapan layar bukti transfernya di sana.', wap_sender: 'Nama pengirim: ',
+    wap_title: 'Kirim Bukti Bayar ke WA', wap_open: 'Buka WhatsApp Admin', wap_later: 'Nanti saja',
+    tut_body: 'Tonton salah satu video tutorial di bawah ini untuk cara upload video HD ke TikTok:', tut_tiktok: 'Tonton di TikTok', tut_gdrive: 'Tonton di Google Drive', tut_empty: 'Link tutorial belum diisi admin.', tut_title: 'Tutorial Upload Video HD'
+  },
+  my: {
+    login_btn: 'Log Masuk dengan Google', login_small: 'Pengguna baharu: percuma 3 kali cubaan', logout_btn: 'Log Keluar',
+    step1: 'Pilih video', step2: 'Tunggu proses', step3: 'Simpan hasil',
+    mode_repack_title: 'Repack HD',
+    mode_fps_title: 'Ubah ke 120fps', cmp_title: 'Lihat bezanya', cmp_before: 'TikTok Biasa', cmp_hint: 'Seret untuk banding',
+    mode_hdr_title: 'Naikkan HDR',
+    drop_title: 'Pilih Video', drop_sub: 'Boleh pilih banyak video sekali gus',
+    help_summary: 'Bantuan & catatan',
+    help_p1: '1. Mod <b>Repack HD</b>: kualiti gambar video dikekalkan seperti asal (tidak diproses semula, saiz fail sama), boleh terus dimuat turun & dimuat naik ke TikTok. Mod <b>Ubah ke 120fps</b>: video dikod semula menjadi 120 fps (tiada had tempoh, proses lebih lama dan saiz fail boleh berubah). Mod <b>Naikkan HDR</b>: khas untuk video yang sudah HDR. Kecerahan dinaikkan secara automatik sehingga tahap maksimum yang selamat (diukur daripada video), kemudian di-repack dengan sistem sama seperti Repack HD. Video bukan HDR tidak boleh diproses dalam mod ini.',
+    help_p2: '2. Video diproses kemudian disemak secara automatik. Jika ada bahagian yang tidak sesuai, butang simpan tidak akan muncul supaya hasilnya tetap terjamin.',
+    help_p3: 'Catatan: hasilnya bergantung pada dasar TikTok yang boleh berubah bila-bila masa, jadi mungkin suatu masa nanti ia berhenti berfungsi. Cuba satu video dahulu sebelum digunakan untuk klien. Jika videonya kandungan AI yang realistik, tetap aktifkan label kandungan AI di TikTok.',
+    engine_default: 'Enjin video: belum dimuatkan (dimuatkan automatik semasa video pertama diproses, ±30 MB sekali sahaja)', engine_btn: 'Semak enjin',
+    wa_help_btn: 'Ada masalah? Hubungi Admin (WA)', tutorial_btn: 'Tutorial Cara Muat Naik Video HD', tiktok_checker_link: 'TikTok Checker (semak maklumat video dari pautan)',
+    inapp_warn: 'Anda membuka halaman ini dalam aplikasi (TikTok/Instagram, dll). Supaya log masuk &amp; muat turun video lancar, ketik <b>tiga titik (⋮)</b> di penjuru kanan atas, kemudian pilih <b>"Buka dalam Pelayar"</b>.',
+    q_demo: 'Mod demo', q_demo_sub: 'Firebase belum diisi',
+    q_left: 'Baki percubaan percuma: ', q_of: ' daripada ', q_zero: 'Percubaan percuma habis', q_pending: 'Menunggu admin',
+    q_full: 'Akses penuh aktif', q_full_sub: 'Tanpa had', q_upgrade: 'Akses Penuh', q_view_status: 'Lihat status',
+    toast_login: 'Sila log masuk dengan Google dahulu', toast_notloaded: 'Data akaun belum dimuatkan. Sila cuba lagi.',
+    pw_full_body: 'Akses penuh sudah aktif. Selamat menggunakan tanpa had!', pw_full_title: 'Akses penuh aktif ✓', pw_start: 'Mula guna',
+    pw_pending_body: 'Terima kasih! Pembayaran anda sedang disemak oleh admin. Halaman ini akan aktif secara automatik selepas disahkan.', pw_pending_title: 'Menunggu pengesahan', pw_close: 'Tutup', pw_sender: 'Penghantar: ',
+    pw_rejected: 'Pembayaran sebelumnya tidak dijumpai oleh admin. Pastikan jumlah dan nama penghantar betul, kemudian hantar semula.',
+    pw_trial_over: 'Percubaan percuma anda sudah habis. Aktifkan akses penuh supaya boleh guna sepuasnya.',
+    pw_once: 'Sekali bayar, tanpa had', pw_currency_toggle: 'Lihat harga Rp', pw_currency_toggle_back: 'Lihat harga RM', pw_currency_loading: 'Memuatkan kadar…',
+    pw_no_method: 'Kaedah pembayaran belum tersedia. Sila hubungi admin.',
+    pw_choose_method: 'Pilih cara bayar:', pw_transfer_to: 'Pindahkan tepat ', pw_transfer_to2: ' ke:', pw_copy: 'Salin nombor',
+    pw_qris_scan: 'Imbas QR di bawah menggunakan e-wallet atau perbankan mudah alih anda:', pw_qris_dl: 'Muat turun QR', pw_qris_show: 'Tunjukkan QR', pw_qris_hide: 'Sembunyikan QR',
+    pw_qris_note: 'Jumlah pindahan kekal dalam Rupiah: ', pw_qris_note2: '. Untuk pelanggan luar Indonesia, sila semak dahulu sama ada e-wallet anda menyokong imbasan QRIS rentas negara.',
+    pw_sender_label: 'Nama penghantar (nama pada akaun/bank anda)', pw_sender_ph: 'Contoh: Ahmad bin Ali',
+    pw_proof_hint: 'Sudah buat pindahan? Hantar juga bukti bayaran (tangkapan skrin) ke WA admin supaya lebih cepat diproses.',
+    toast_fillname: 'Sila isi nama penghantar dahulu', toast_sent: 'Berjaya dihantar. Menunggu pengesahan admin.', toast_sendfail: 'Gagal menghantar. Sila cuba lagi.',
+    pw_modal_title: 'Aktifkan Akses Penuh', pw_btn_paid: 'Saya Sudah Bayar', pw_btn_consult: 'Hubungi Admin (WA)', pw_btn_later: 'Nanti sahaja',
+    wap_body: 'Buka WhatsApp admin, kemudian hantar foto/tangkapan skrin bukti pindahan di sana.', wap_sender: 'Nama penghantar: ',
+    wap_title: 'Hantar Bukti Bayaran ke WA', wap_open: 'Buka WhatsApp Admin', wap_later: 'Nanti sahaja',
+    tut_body: 'Tonton salah satu video tutorial di bawah untuk cara muat naik video HD ke TikTok:', tut_tiktok: 'Tonton di TikTok', tut_gdrive: 'Tonton di Google Drive', tut_empty: 'Pautan tutorial belum diisi oleh admin.', tut_title: 'Tutorial Muat Naik Video HD'
+  },
+  en: {
+    login_btn: 'Sign in with Google', login_small: 'New here: 3 free tries', logout_btn: 'Sign out',
+    step1: 'Pick video', step2: 'Wait for it', step3: 'Save result',
+    mode_repack_title: 'Repack HD',
+    mode_fps_title: 'Change to 120fps', cmp_title: 'See the difference', cmp_before: 'Regular TikTok', cmp_hint: 'Drag to compare',
+    mode_hdr_title: 'Boost HDR',
+    drop_title: 'Choose Video', drop_sub: 'Pick as many videos as you like',
+    help_summary: 'Help & notes',
+    help_p1: '1. <b>Repack HD</b> mode: video image quality stays the same as the original (not re-encoded, same file size), then you can download and upload it to TikTok right away. <b>Change to 120fps</b> mode: the video is re-encoded to 120 fps (no length limit, slower, and the file size may change). <b>Boost HDR</b> mode: only for videos that are already HDR. Brightness is raised automatically up to the safe maximum (measured from the video), then repacked with the same system as Repack HD. Non-HDR videos cannot be processed in this mode.',
+    help_p2: '2. The video is processed and then checked automatically. If any part isn\'t right, the save button won\'t appear, so the result stays reliable.',
+    help_p3: 'Note: results depend on TikTok\'s policies, which can change anytime, so this may stop working at some point. Try one video first before using it for a client. If the video is realistic AI-generated content, still turn on TikTok\'s AI content label.',
+    engine_default: 'Video engine: not loaded yet (loads automatically the first time you process a video, ~30 MB once)', engine_btn: 'Check engine',
+    wa_help_btn: 'Need help? Contact Admin (WA)', tutorial_btn: 'How to Upload HD Video — Tutorial', tiktok_checker_link: 'TikTok Checker (check video info from a link)',
+    inapp_warn: 'You\'re viewing this page inside an app (TikTok/Instagram, etc). For sign-in & downloads to work smoothly, tap the <b>three dots (⋮)</b> in the top-right corner, then choose <b>"Open in Browser"</b>.',
+    q_demo: 'Demo mode', q_demo_sub: 'Firebase not configured yet',
+    q_left: 'Free tries left: ', q_of: ' of ', q_zero: 'Free tries used up', q_pending: 'Waiting for admin',
+    q_full: 'Full access active', q_full_sub: 'Unlimited', q_upgrade: 'Get Full Access', q_view_status: 'View status',
+    toast_login: 'Please sign in with Google first', toast_notloaded: 'Account data not loaded yet. Try again.',
+    pw_full_body: 'Full access is already active. Enjoy unlimited use!', pw_full_title: 'Full access active ✓', pw_start: 'Start using',
+    pw_pending_body: 'Thank you! Your payment is being reviewed by the admin. This page will activate automatically once confirmed.', pw_pending_title: 'Waiting for confirmation', pw_close: 'Close', pw_sender: 'Sender: ',
+    pw_rejected: 'Your previous payment wasn\'t found by the admin. Please make sure the amount and sender name are correct, then send again.',
+    pw_trial_over: 'Your free trial is used up. Activate full access to keep using it as much as you like.',
+    pw_once: 'One-time payment, unlimited use', pw_currency_toggle: 'Show price in RM', pw_currency_toggle_back: 'Show price in Rp', pw_currency_loading: 'Loading rate…',
+    pw_no_method: 'No payment method available yet. Please contact the admin.',
+    pw_choose_method: 'Choose a payment method:', pw_transfer_to: 'Transfer exactly ', pw_transfer_to2: ' to:', pw_copy: 'Copy number',
+    pw_qris_scan: 'Scan the QR below using your e-wallet or mobile banking app:', pw_qris_dl: 'Download QR', pw_qris_show: 'Show QR', pw_qris_hide: 'Hide QR',
+    pw_qris_note: 'The transfer amount stays in Indonesian Rupiah: ', pw_qris_note2: '. If you\'re outside Indonesia, please check first whether your e-wallet supports cross-border QRIS scanning.',
+    pw_sender_label: 'Sender name (the name on your bank/e-wallet account)', pw_sender_ph: 'e.g. John Smith',
+    pw_proof_hint: 'Already transferred? Also send proof of payment (a screenshot) to the admin\'s WhatsApp so it gets processed faster.',
+    toast_fillname: 'Please enter the sender name first', toast_sent: 'Sent. Waiting for admin confirmation.', toast_sendfail: 'Failed to send. Please try again.',
+    pw_modal_title: 'Activate Full Access', pw_btn_paid: 'I\'ve Paid', pw_btn_consult: 'Contact Admin (WA)', pw_btn_later: 'Maybe later',
+    wap_body: 'Open the admin\'s WhatsApp, then send a photo/screenshot of your transfer proof there.', wap_sender: 'Sender name: ',
+    wap_title: 'Send Payment Proof via WA', wap_open: 'Open Admin\'s WhatsApp', wap_later: 'Maybe later',
+    tut_body: 'Watch one of the tutorial videos below to learn how to upload HD video to TikTok:', tut_tiktok: 'Watch on TikTok', tut_gdrive: 'Watch on Google Drive', tut_empty: 'The admin hasn\'t added a tutorial link yet.', tut_title: 'How to Upload HD Video'
+  }
+};
+let lang = ['id', 'my', 'en'].includes(localStorage.getItem('veldor_lang')) ? localStorage.getItem('veldor_lang') : 'id';
+const t = k => (I18N[lang] && I18N[lang][k]) || I18N.id[k] || k;
+function applyStaticI18n() {
+  document.documentElement.lang = lang === 'my' ? 'ms' : (lang === 'en' ? 'en' : 'id');
+  $('#loginBtnText').textContent = t('login_btn'); $('#loginSmall').textContent = t('login_small'); $('#logoutBtn').textContent = t('logout_btn');
+  $('#step1').textContent = t('step1'); $('#step2').textContent = t('step2'); $('#step3').textContent = t('step3');
+  $('#modeRepack span').textContent = t('mode_repack_title');
+  $('#modeFps120 span').textContent = t('mode_fps_title');
+  $('#modeHdr span').textContent = t('mode_hdr_title');
+  [['cmpTitle','cmp_title'],['cmpBefore','cmp_before'],['cmpHint','cmp_hint']].forEach(([id, k]) => { const e = document.getElementById(id); if (e) e.textContent = t(k); });
+  $('#drop .big').textContent = t('drop_title'); $('#drop small').textContent = t('drop_sub');
+  $('#helpSummary').textContent = t('help_summary'); $('#helpP1').innerHTML = t('help_p1'); $('#helpP2').textContent = t('help_p2'); $('#helpP3').textContent = t('help_p3');
+  const es = $('#engineStatus'); if (es && !es.dataset.busy) es.textContent = t('engine_default');
+  $('#engineBtn').textContent = t('engine_btn');
+  $('#waHelpBtn').textContent = t('wa_help_btn'); $('#tutorialBtn').textContent = t('tutorial_btn'); $('#tiktokCheckerLink').textContent = t('tiktok_checker_link');
+  $('#inappWarn').innerHTML = t('inapp_warn');
+  const nextLang = { id: 'Switch to Malay', my: 'Switch to English', en: 'Ganti ke Bahasa Indonesia' }[lang];
+  $('#langBtn').setAttribute('aria-label', nextLang);
+}
+function setLang(l) {
+  lang = l; localStorage.setItem('veldor_lang', l);
+  applyStaticI18n(); render(); if (pwOpen) drawPaywall(true);
+}
+const LANG_CYCLE = ['id', 'my', 'en'];
+const langBtn = $('#langBtn'); if (langBtn) langBtn.onclick = () => setLang(LANG_CYCLE[(LANG_CYCLE.indexOf(lang) + 1) % LANG_CYCLE.length]);
+applyStaticI18n();
+
+let pwOpen = false, pwSig = '';
+const modal = {
+  show(title, bodyHTML, buttons) {
+    $('#modalTitle').textContent = title; const mb = $('#modalBody'); mb.textContent = ''; if (typeof bodyHTML === 'string') mb.innerHTML = bodyHTML; else mb.append(bodyHTML);
+    const a = $('#modalActions'); a.textContent = '';
+    for (const b of buttons) { const x = document.createElement('button'); x.type = 'button'; x.className = b.cls || ''; x.textContent = b.label; x.onclick = b.fn; a.append(x); }
+    $('#modal').hidden = false;
+  },
+  hide() { $('#modal').hidden = true; pwOpen = false; }
+};
+window.Modal = modal;
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') modal.hide(); });
+
+let auth, db, fb, user = null, data = { used: 0, premium: false, payReq: null, tiktok: null }, loaded = false, unsub = null, unsubSet = null;
+const DEFAULT_SETTINGS = {
+  price: 50000, discountPrice: null,
+  methods: {
+    qris: { name: 'QRIS (scan pakai e-wallet/bank apa saja)', type: 'qris', qrImage: '', enabled: true }
+  },
+  tutorial: { tiktok: '', gdrive: '' }
+};
+let settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+const rp = n => 'Rp' + Number(n).toLocaleString('id-ID');
+let ratesCache = null, rateFetchedAt = 0;
+const FALLBACK_IDR_PER_MYR = 4300, FALLBACK_IDR_PER_USD = 16300;
+async function getRates() {
+  if (ratesCache && Date.now() - rateFetchedAt < 3600000) return ratesCache;
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/IDR');
+    const j = await r.json();
+    const myr = j && j.rates && j.rates.MYR, usd = j && j.rates && j.rates.USD;
+    if (myr > 0 && usd > 0) { ratesCache = { idrPerMyr: 1 / myr, idrPerUsd: 1 / usd }; rateFetchedAt = Date.now(); return ratesCache; }
+  } catch (e) {}
+  return ratesCache || { idrPerMyr: FALLBACK_IDR_PER_MYR, idrPerUsd: FALLBACK_IDR_PER_USD };
+}
+const fmtMyr = (idrAmount, idrPerMyr) => 'RM' + (idrAmount / idrPerMyr).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtUsd = (idrAmount, idrPerUsd) => '$' + (idrAmount / idrPerUsd).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const effPrice = () => { const d = settings.discountPrice; return (typeof d === 'number' && d > 0 && d < settings.price) ? d : settings.price; };
+const isAdmin = () => !!user && user.email === ADMIN_EMAIL;
+const left = () => Math.max(0, FREE_LIMIT - (data.used || 0));
+
+function render() { renderMain(); renderTikTok(); }
+function renderMain() {
+  const login = $('#loginBox'), box = $('#quota');
+  if (!configured) { login.hidden = true; box.hidden = false; $('.userBar').hidden = true; $('#quotaText').innerHTML = '<span class="pill">' + t('q_demo') + '</span> ' + t('q_demo_sub'); $('#upgradeBtn').hidden = true; return; }
+  login.hidden = !!user; box.hidden = !user;
+  if (!user) return;
+  $('#uPhoto').src = user.photoURL || ''; $('#uName').textContent = user.displayName || 'Pengguna'; $('#uEmail').textContent = user.email || '';
+  const q = $('#quotaText'), up = $('#upgradeBtn');
+  if (data.premium) { q.innerHTML = '<span class="pill full">' + t('q_full') + '</span> ' + t('q_full_sub'); up.hidden = true; }
+  else {
+    const pend = data.payReq && data.payReq.status === 'pending';
+    q.innerHTML = left() > 0 ? t('q_left') + '<span class="pill">' + left() + t('q_of') + FREE_LIMIT + '</span>' : '<span class="pill zero">' + t('q_zero') + '</span>';
+    if (pend) q.innerHTML += ' <span class="pill">' + t('q_pending') + '</span>';
+    up.hidden = false; up.textContent = pend ? t('q_view_status') : t('q_upgrade');
+  }
+  drawPaywall(false);
+  window.dispatchEvent(new CustomEvent('gate-change'));
+}
+
+function copyText(t) {
+  const fallback = () => { const i = document.createElement('input'); i.value = t; document.body.append(i); i.select(); try { document.execCommand('copy'); toast('Nomor disalin'); } catch (e) { toast('Salin manual ya'); } i.remove(); };
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => toast('Nomor disalin'), fallback); else fallback();
+}
+/* ================= TIKTOK ================= */
+const isDesktop = !/Android|iPhone|iPad|iPod|Mobile|Windows Phone/i.test(navigator.userAgent);
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const TT_URL = 'https://www.tiktok.com/tiktokstudio/upload';
+function openTikTok() {
+  if (isIOS) { showTikTokIOSHelp(); return; }
+  if (!isDesktop) toast('Saat login TikTok nanti, disarankan aktifkan mode Desktop dulu di browser (menu ⋮ → centang "Situs desktop") supaya lebih lancar.');
+  window.open(TT_URL, '_blank', 'noopener');
+}
+function showTikTokIOSHelp() {
+  const root = el('div');
+  root.append(el('p', '', 'Di iPhone, tombol ini kadang malah diarahkan ke App Store kalau dibuka langsung. Cara paling aman: salin link di bawah, lalu tempel manual di kolom alamat Safari (jangan tap link).'));
+  const box = el('div', 'method'); box.append(el('div', 'mnum', TT_URL));
+  const cp = el('button', 'ghost small', 'Salin link'); cp.type = 'button'; cp.onclick = () => copyText(TT_URL); box.append(cp);
+  root.append(box);
+  modal.show('Buka TikTok di iPhone', root, [
+    { label: 'Coba buka otomatis', fn: () => { window.open(TT_URL, '_blank', 'noopener'); modal.hide(); } },
+    { label: 'Tutup', cls: 'ghost', fn: modal.hide }
+  ]);
+}
+window.TikTok = { open: openTikTok };
+function renderTikTok() { /* fitur sambungkan akun TikTok sudah dihapus; tombol upload ada di kartu tiap video */ }
+
+let pwSel = null, pwName = '', pwQrOpen = false;
+const enabledMethods = () => Object.entries(settings.methods).filter(([, m]) => m.enabled !== false && (m.type === 'qris' ? m.qrImage : m.number));
+function paywall() { pwOpen = true; drawPaywall(true); }
+function drawPaywall(force) {
+  if (!pwOpen) return;
+  const pr = data.payReq, price = effPrice(), ems = enabledMethods();
+  if (!ems.some(([k]) => k === pwSel)) pwSel = ems[0] ? ems[0][0] : null;
+  const m = pwSel ? settings.methods[pwSel] : null;
+  const sig = [data.premium, pr && pr.status, price, settings.price, ems.map(([k, x]) => k + x.number + x.holder).join(','), pwSel, left() === 0, lang].join('|');
+  if (!force && sig === pwSig) return; pwSig = sig;
+  const root = el('div');
+  if (data.premium) {
+    root.append(el('p', '', t('pw_full_body')));
+    modal.show(t('pw_full_title'), root, [{ label: t('pw_start'), fn: modal.hide }]); return;
+  }
+  if (pr && pr.status === 'pending') {
+    root.append(el('p', '', t('pw_pending_body')));
+    const box = el('div', 'payinfo'); box.append(el('div', '', pr.method + ' · ' + rp(pr.amount)), el('div', 'muted', t('pw_sender') + (pr.senderName || '-')));
+    root.append(box);
+    modal.show(t('pw_pending_title'), root, [{ label: t('pw_close'), cls: 'ghost', fn: modal.hide }]); return;
+  }
+  if (pr && pr.status === 'rejected') root.append(el('p', 'warnmsg', t('pw_rejected')));
+  if (left() === 0) root.append(el('p', '', t('pw_trial_over')));
+  const pc = el('div', 'price');
+  if (price < settings.price) pc.append(el('span', 'old', rp(settings.price)));
+  const nowSpan = el('span', 'now', rp(price));
+  pc.append(nowSpan, el('div', 'muted', t('pw_once')));
+  root.append(pc);
+  if (lang === 'my' || lang === 'en') {
+    nowSpan.textContent = '…';
+    getRates().then(rates => { nowSpan.textContent = lang === 'my' ? fmtMyr(price, rates.idrPerMyr) : fmtUsd(price, rates.idrPerUsd); });
+  }
+  if (!m) {
+    root.append(el('p', '', t('pw_no_method')));
+    modal.show(t('pw_modal_title'), root, [{ label: t('pw_close'), cls: 'ghost', fn: modal.hide }]); return;
+  }
+  if (ems.length > 1) {
+    root.append(el('p', '', t('pw_choose_method')));
+    const picks = el('div', 'picks');
+    for (const [k, x] of ems) { const b = el('button', 'pick' + (k === pwSel ? ' on' : ''), x.name); b.type = 'button'; b.onclick = () => { pwSel = k; drawPaywall(true); }; picks.append(b); }
+    root.append(picks);
+  }
+  const mc = el('div', 'method');
+  if (m.type === 'qris') {
+    const wrap = el('div'); wrap.hidden = !pwQrOpen;
+    wrap.append(el('p', '', t('pw_qris_scan')));
+    const img = el('img'); img.src = m.qrImage; img.style.maxWidth = '150px'; img.style.maxHeight = '150px'; img.style.display = 'block'; img.style.margin = '0 auto';
+    wrap.append(img);
+    const dl = el('a', 'ghost small', t('pw_qris_dl')); dl.href = m.qrImage; dl.download = 'codex-qris.png'; dl.style.display = 'block'; dl.style.textAlign = 'center'; dl.style.marginTop = '8px';
+    wrap.append(dl);
+    wrap.append(el('p', 'muted', t('pw_qris_note') + rp(price) + t('pw_qris_note2')));
+    const tg = el('button', 'ghost small', pwQrOpen ? t('pw_qris_hide') : t('pw_qris_show')); tg.type = 'button'; tg.style.display = 'block'; tg.style.margin = '0 auto';
+    tg.onclick = () => { pwQrOpen = !pwQrOpen; wrap.hidden = !pwQrOpen; tg.textContent = pwQrOpen ? t('pw_qris_hide') : t('pw_qris_show'); };
+    mc.append(tg, wrap);
+  } else {
+    root.append(el('p', '', t('pw_transfer_to') + rp(price) + t('pw_transfer_to2')));
+    mc.append(el('div', 'mname', m.name), el('div', 'mnum', m.number), el('div', 'muted', 'a/n ' + m.holder));
+    const cp = el('button', 'ghost small', t('pw_copy')); cp.type = 'button'; cp.onclick = () => copyText(m.number); mc.append(cp);
+  }
+  root.append(mc);
+  const lab = el('label', 'lbl', t('pw_sender_label')); const inp = el('input'); inp.type = 'text'; inp.maxLength = 60; inp.placeholder = t('pw_sender_ph'); inp.value = pwName; inp.oninput = () => { pwName = inp.value; }; lab.append(inp);
+  root.append(lab);
+  root.append(el('p', 'muted', t('pw_proof_hint')));
+  const send = async () => {
+    const name = inp.value.trim();
+    if (name.length < 2) { toast(t('toast_fillname')); inp.focus(); return; }
+    try {
+      await fb.db.set(fb.db.ref(db, 'users/' + user.uid + '/payReq'), { status: 'pending', method: m.name, amount: price, senderName: name, at: Date.now() });
+      toast(t('toast_sent'));
+      waProofPrompt(name, m.name, price);
+    }
+    catch (e) { toast(t('toast_sendfail')); }
+  };
+  modal.show(t('pw_modal_title'), root, [{ label: t('pw_btn_paid'), fn: send }, { label: t('pw_btn_consult'), cls: 'ghost', fn: () => openWA('Halo admin, saya mau tanya soal ' + APP_NAME + '.') }, { label: t('pw_btn_later'), cls: 'ghost', fn: modal.hide }]);
+}
+
+/* ================= WHATSAPP ADMIN ================= */
+const APP_NAME = 'Codex Repack';
+const WA_ADMIN = '6285737444357';
+function openWA(text) { window.open('https://wa.me/' + WA_ADMIN + (text ? '?text=' + encodeURIComponent(text) : ''), '_blank', 'noopener'); }
+const waHelpBtn = $('#waHelpBtn');
+if (waHelpBtn) { waHelpBtn.href = 'https://wa.me/' + WA_ADMIN; waHelpBtn.onclick = e => { e.preventDefault(); openWA('Halo admin, saya butuh bantuan pakai ' + APP_NAME + '.'); }; }
+
+/* ================= TUTORIAL ================= */
+function showTutorial() {
+  const root = el('div');
+  root.append(el('p', '', t('tut_body')));
+  const tk = settings.tutorial && settings.tutorial.tiktok, gd = settings.tutorial && settings.tutorial.gdrive;
+  const btns = el('div', 'actions');
+  const bt = el('button', tk ? '' : 'ghost', t('tut_tiktok')); bt.type = 'button'; bt.disabled = !tk;
+  bt.onclick = () => window.open(tk, '_blank', 'noopener'); btns.append(bt);
+  const bg = el('button', gd ? 'blue' : 'ghost', t('tut_gdrive')); bg.type = 'button'; bg.disabled = !gd;
+  bg.onclick = () => window.open(gd, '_blank', 'noopener'); btns.append(bg);
+  root.append(btns);
+  if (!tk && !gd) root.append(el('p', 'muted', t('tut_empty')));
+  modal.show(t('tut_title'), root, [{ label: t('pw_close'), cls: 'ghost', fn: modal.hide }]);
+}
+const tutorialBtn = $('#tutorialBtn');
+if (tutorialBtn) tutorialBtn.onclick = showTutorial;
+function waProofPrompt(name, method, price) {
+  const root = el('div');
+  root.append(el('p', '', t('wap_body')));
+  const box = el('div', 'payinfo'); box.append(el('div', '', method + ' · ' + rp(price)), el('div', 'muted', t('wap_sender') + name));
+  root.append(box);
+  modal.show(t('wap_title'), root, [
+    { label: t('wap_open'), fn: () => { openWA('Halo admin, saya sudah transfer ' + rp(price) + ' via ' + method + ' a/n ' + name + '. Ini bukti bayarnya:'); modal.hide(); } },
+    { label: t('wap_later'), cls: 'ghost', fn: modal.hide }
+  ]);
+}
+
+/* ================= MENU ADMIN ================= */
+const ADMIN_HASH = '4430af27367a4ace441558424db87449b0e642cf3d331bdd945b11f2a7a96ff7';
+let adminOK = false, wantAdmin = false, adminUnsub = null, allUsers = {}, adminTab = 'pay', fails = 0, lockUntil = 0, userQuery = '';
+const sha256 = async t => { if (!(window.crypto && crypto.subtle)) throw new Error('nocrypto'); const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); };
+const fmtTime = t => t ? new Date(t).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-';
+
+function askPassword() {
+  if (adminOK) return openAdmin();
+  const root = el('div'); const lab = el('label', 'lbl', 'Sandi admin'); const inp = el('input'); inp.type = 'password'; inp.autocomplete = 'off'; lab.append(inp); root.append(lab);
+  const go = async () => {
+    if (Date.now() < lockUntil) { toast('Terlalu banyak salah. Coba lagi 1 menit.'); return; }
+    try {
+      const h = await sha256(inp.value);
+      if (h === ADMIN_HASH) { adminOK = true; fails = 0; modal.hide(); openAdmin(); }
+      else { if (++fails >= 5) { lockUntil = Date.now() + 60000; fails = 0; } toast('Sandi salah'); inp.value = ''; }
+    } catch (e) { toast('Buka website lewat alamat https ya'); }
+  };
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+  modal.show('Menu Admin', root, [{ label: 'Masuk', fn: go }, { label: 'Batal', cls: 'ghost', fn: modal.hide }]);
+  setTimeout(() => inp.focus(), 50);
+}
+function openAdmin() {
+  if (!configured) { toast('Firebase belum diisi'); return; }
+  if (!user) {
+    wantAdmin = true;
+    modal.show('Masuk sebagai admin', '<p>Masuk dulu dengan akun Google admin.</p>', [{ label: 'Masuk dengan Google', fn: () => { modal.hide(); login(); } }, { label: 'Batal', cls: 'ghost', fn: () => { wantAdmin = false; modal.hide(); } }]);
+    return;
+  }
+  wantAdmin = false;
+  if (!isAdmin()) { toast('Akun ini bukan akun admin'); return; }
+  $('#admin').hidden = false; document.body.style.overflow = 'hidden';
+  if (!adminUnsub) adminUnsub = fb.db.onValue(fb.db.ref(db, 'users'), snap => { allUsers = snap.val() || {}; drawAdmin(false); }, () => toast('Gagal membaca data. Pastikan aturan database versi terbaru sudah dipasang.'));
+  drawAdmin(true);
+}
+function closeAdmin() { $('#admin').hidden = true; document.body.style.overflow = ''; if (adminUnsub) { adminUnsub(); adminUnsub = null; } }
+$('#adminClose').onclick = closeAdmin;
+$('#adminBtn').onclick = askPassword;
+
+function askYes(title, msg, yesLabel, fn, danger) {
+  modal.show(title, '<p>' + msg + '</p>', [{ label: yesLabel, cls: danger ? 'danger' : '', fn: () => { modal.hide(); fn(); } }, { label: 'Batal', cls: 'ghost', fn: modal.hide }]);
+}
+async function adminUpdate(paths, okMsg) {
+  try { await fb.db.update(fb.db.ref(db), paths); toast(okMsg); }
+  catch (e) { toast('Gagal: ' + (e.code || e.message) + '. Pasang aturan database terbaru.'); }
+}
+const pendingList = () => Object.entries(allUsers).filter(([, u]) => u.payReq && u.payReq.status === 'pending').sort((a, b) => (a[1].payReq.at || 0) - (b[1].payReq.at || 0));
+const who = u => (u.profile && (u.profile.name || u.profile.email)) || 'Tanpa nama';
+const mail = u => (u.profile && u.profile.email) || '';
+
+function drawAdmin(force) {
+  const tabs = [['pay', 'Pembayaran'], ['price', 'Harga'], ['methods', 'Metode'], ['tutorial', 'Tutorial'], ['users', 'Pengguna']];
+  const tb = $('#aTabs'); tb.textContent = '';
+  for (const [k, label] of tabs) {
+    const b = el('button', k === adminTab ? 'on' : '', label); b.type = 'button';
+    if (k === 'pay' && pendingList().length) b.append(el('span', 'badge n', String(pendingList().length)));
+    b.onclick = () => { adminTab = k; drawAdmin(true); }; tb.append(b);
+  }
+  if (!force && (adminTab === 'price' || adminTab === 'methods' || adminTab === 'tutorial')) return;
+  const body = $('#aBody'); body.textContent = '';
+  if (adminTab === 'pay') adminPay(body); else if (adminTab === 'price') adminPrice(body); else if (adminTab === 'methods') adminMethods(body); else if (adminTab === 'tutorial') adminTutorial(body); else adminUsers(body);
+}
+function adminPay(body) {
+  const list = pendingList();
+  if (!list.length) { body.append(el('p', 'muted', 'Belum ada permintaan pembayaran yang menunggu.')); return; }
+  for (const [uid, u] of list) {
+    const r = u.payReq, c = el('div', 'acard');
+    c.append(el('div', 't', who(u)), el('div', 'muted', mail(u)), el('div', 't', rp(r.amount) + ' · ' + r.method), el('div', 'muted', 'Pengirim: ' + (r.senderName || '-') + ' · ' + fmtTime(r.at)));
+    const act = el('div', 'actions');
+    const ok = el('button', '', 'Konfirmasi sudah bayar'); ok.type = 'button';
+    ok.onclick = () => askYes('Konfirmasi pembayaran?', 'Aktifkan akses penuh untuk <b>' + who(u).replace(/</g, '&lt;') + '</b> (' + rp(r.amount) + ')?', 'Ya, aktifkan', () => adminUpdate({ ['users/' + uid + '/premium']: true, ['users/' + uid + '/premiumAt']: Date.now(), ['users/' + uid + '/payReq/status']: 'confirmed' }, 'Akses penuh diaktifkan'));
+    const no = el('button', 'danger', 'Tolak'); no.type = 'button';
+    no.onclick = () => askYes('Tolak pembayaran?', 'Pelanggan akan diminta mengirim ulang.', 'Ya, tolak', () => adminUpdate({ ['users/' + uid + '/payReq/status']: 'rejected' }, 'Ditolak'), true);
+    act.append(ok, no); c.append(act); body.append(c);
+  }
+}
+function adminPrice(body) {
+  const c = el('div', 'acard');
+  const l1 = el('label', 'lbl', 'Harga normal (Rp)'), i1 = el('input'); i1.type = 'number'; i1.inputMode = 'numeric'; i1.value = settings.price; l1.append(i1);
+  const l2 = el('label', 'lbl', 'Harga diskon (Rp), kosongkan kalau tidak ada diskon'), i2 = el('input'); i2.type = 'number'; i2.inputMode = 'numeric'; i2.value = settings.discountPrice || ''; l2.append(i2);
+  const prev = el('p', 'muted'); const upd = () => { const pr = parseInt(i1.value, 10), d = parseInt(i2.value, 10); prev.textContent = (d > 0 && d < pr) ? 'Pelanggan bayar ' + rp(d) + ' (coret ' + rp(pr) + ')' : 'Pelanggan bayar ' + rp(pr || 0); };
+  i1.oninput = i2.oninput = upd; upd();
+  const act = el('div', 'actions'), save = el('button', '', 'Simpan harga'); save.type = 'button';
+  save.onclick = () => {
+    const pr = parseInt(i1.value, 10), d = i2.value.trim() === '' ? null : parseInt(i2.value, 10);
+    if (!(pr >= 1000)) return toast('Harga minimal Rp1.000');
+    if (d !== null && !(d > 0 && d < pr)) return toast('Diskon harus lebih kecil dari harga normal');
+    adminUpdate({ 'settings/price': pr, 'settings/discountPrice': d }, 'Harga disimpan');
+  };
+  act.append(save); c.append(l1, l2, prev, act); body.append(c);
+}
+function adminMethods(body) {
+  body.append(el('p', 'muted', 'Centang metode yang boleh dipilih pelanggan. Nomor bisa diganti kapan saja.'));
+  const fields = {};
+  for (const [k, m] of Object.entries(settings.methods)) {
+    if (m.type === 'qris') {
+      const c = el('div', 'acard'); c.append(el('div', 't', m.name));
+      const ck = el('label', 'chk'), cb = el('input'); cb.type = 'checkbox'; cb.checked = m.enabled === true; ck.append(cb, el('span', '', 'Tampilkan ke pelanggan'));
+      c.append(ck);
+      const prevWrap = el('div'); prevWrap.style.margin = '8px 0';
+      let qrData = m.qrImage || '';
+      const img = el('img'); img.style.maxWidth = '160px'; img.style.display = qrData ? 'block' : 'none'; if (qrData) img.src = qrData;
+      prevWrap.append(img); c.append(prevWrap);
+      const lab = el('label', 'lbl', 'Upload gambar QRIS (PNG/JPG)'); const file = el('input'); file.type = 'file'; file.accept = 'image/*'; lab.append(file); c.append(lab);
+      file.onchange = () => {
+        const f = file.files && file.files[0]; if (!f) return;
+        const reader = new FileReader();
+        reader.onload = () => { qrData = reader.result; img.src = qrData; img.style.display = 'block'; };
+        reader.readAsDataURL(f);
+      };
+      c.append(el('p', 'muted', 'QRIS standar Indonesia. Bisa juga discan pelanggan dari Malaysia lewat e-wallet yang mendukung QRIS-DuitNow (cek dulu dengan penerbit QRIS kamu).'));
+      body.append(c); fields[k] = { m, cb, getQr: () => qrData };
+      continue;
+    }
+    const c = el('div', 'acard'); c.append(el('div', 't', m.name));
+    const ck = el('label', 'chk'), cb = el('input'); cb.type = 'checkbox'; cb.checked = m.enabled !== false; ck.append(cb, el('span', '', 'Tampilkan ke pelanggan'));
+    const l1 = el('label', 'lbl', 'Nomor rekening / HP'), n = el('input'); n.type = 'text'; n.inputMode = 'numeric'; n.value = m.number; l1.append(n);
+    const l2 = el('label', 'lbl', 'Atas nama'), h = el('input'); h.type = 'text'; h.value = m.holder; l2.append(h);
+    c.append(ck, l1, l2); body.append(c); fields[k] = { m, cb, n, h };
+  }
+  const save = el('button', '', 'Simpan metode pembayaran'); save.type = 'button';
+  save.onclick = () => {
+    const paths = {}; let active = 0;
+    for (const [k, f] of Object.entries(fields)) {
+      if (f.m.type === 'qris') {
+        const qr = f.getQr();
+        if (f.cb.checked) { active++; if (!qr) return toast('Upload gambar QRIS dulu'); }
+        paths['settings/methods/' + k] = { name: f.m.name, type: 'qris', qrImage: qr, enabled: f.cb.checked };
+        continue;
+      }
+      const num = f.n.value.trim().replace(/\s+/g, ''), hol = f.h.value.trim();
+      if (f.cb.checked) { active++; if (!num || !hol) return toast('Isi nomor dan nama untuk ' + f.m.name); }
+      paths['settings/methods/' + k] = { name: f.m.name, number: num, holder: hol, enabled: f.cb.checked };
+    }
+    if (!active) return toast('Aktifkan minimal satu metode');
+    adminUpdate(paths, 'Metode pembayaran disimpan');
+  };
+  body.append(save);
+}
+function adminTutorial(body) {
+  body.append(el('p', 'muted', 'Isi link video tutorial cara upload video HD. Boleh isi salah satu saja, atau keduanya.'));
+  const c = el('div', 'acard');
+  const l1 = el('label', 'lbl', 'Link video tutorial di TikTok'), i1 = el('input'); i1.type = 'text'; i1.placeholder = 'https://www.tiktok.com/@...'; i1.value = (settings.tutorial && settings.tutorial.tiktok) || ''; l1.append(i1);
+  const l2 = el('label', 'lbl', 'Link video tutorial di Google Drive'), i2 = el('input'); i2.type = 'text'; i2.placeholder = 'https://drive.google.com/...'; i2.value = (settings.tutorial && settings.tutorial.gdrive) || ''; l2.append(i2);
+  const act = el('div', 'actions'), save2 = el('button', '', 'Simpan link tutorial'); save2.type = 'button';
+  save2.onclick = () => adminUpdate({ 'settings/tutorial/tiktok': i1.value.trim(), 'settings/tutorial/gdrive': i2.value.trim() }, 'Link tutorial disimpan');
+  act.append(save2); c.append(l1, l2, act); body.append(c);
+}
+function adminUsers(body) {
+  const all = Object.entries(allUsers), pro = all.filter(([, u]) => u.premium === true).length;
+  body.append(el('p', 'muted', all.length + ' pengguna · ' + pro + ' akses penuh'));
+  const q = el('input', 'search'); q.type = 'text'; q.placeholder = 'Cari nama atau email'; q.value = userQuery; body.append(q);
+  const secPro = el('div'), secFree = el('div');
+  body.append(el('h3', '', 'Akses Penuh'), secPro, el('h3', '', 'Belum Akses Penuh'), secFree);
+  const renderRow = (uid, u, box) => {
+    const c = el('div', 'acard'); c.append(el('div', 't', who(u)), el('div', 'muted', mail(u)));
+    const st = el('div'); st.style.marginTop = '8px';
+    st.append(u.premium === true ? el('span', 'badge pro', 'Akses penuh') : el('span', 'badge', 'Coba gratis: ' + Math.min(u.used || 0, FREE_LIMIT) + '/' + FREE_LIMIT)); c.append(st);
+    const act = el('div', 'actions'), b = el('button', u.premium === true ? 'danger small' : 'blue small', u.premium === true ? 'Cabut akses' : 'Aktifkan manual'); b.type = 'button';
+    b.onclick = () => u.premium === true
+      ? askYes('Cabut akses penuh?', who(u).replace(/</g, '&lt;') + ' akan kembali ke batas coba gratis.', 'Ya, cabut', () => adminUpdate({ ['users/' + uid + '/premium']: false }, 'Akses dicabut'), true)
+      : askYes('Aktifkan akses penuh?', 'Untuk ' + who(u).replace(/</g, '&lt;') + ' tanpa permintaan pembayaran.', 'Ya, aktifkan', () => adminUpdate({ ['users/' + uid + '/premium']: true, ['users/' + uid + '/premiumAt']: Date.now() }, 'Akses diaktifkan'));
+    act.append(b); c.append(act); box.append(c);
+  };
+  const draw = () => {
+    secPro.textContent = ''; secFree.textContent = ''; userQuery = q.value; const t = q.value.trim().toLowerCase();
+    const filtered = all.filter(([, u]) => !t || (who(u) + ' ' + mail(u)).toLowerCase().includes(t));
+    const proRows = filtered.filter(([, u]) => u.premium === true).sort((a, b) => ((b[1].profile || {}).lastLogin || 0) - ((a[1].profile || {}).lastLogin || 0)).slice(0, 100);
+    const freeRows = filtered.filter(([, u]) => u.premium !== true).sort((a, b) => ((b[1].profile || {}).lastLogin || 0) - ((a[1].profile || {}).lastLogin || 0)).slice(0, 100);
+    if (!proRows.length) secPro.append(el('p', 'muted', 'Belum ada.'));
+    for (const [uid, u] of proRows) renderRow(uid, u, secPro);
+    if (!freeRows.length) secFree.append(el('p', 'muted', 'Belum ada.'));
+    for (const [uid, u] of freeRows) renderRow(uid, u, secFree);
+  };
+  q.oninput = draw; draw();
+}
+
+async function login() {
+  const { GoogleAuthProvider, signInWithPopup, signInWithRedirect } = fb.auth;
+  const prov = new GoogleAuthProvider();
+  try { await signInWithPopup(auth, prov); }
+  catch (e) {
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') { await signInWithRedirect(auth, prov); return; }
+    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
+    if (e.code === 'auth/unauthorized-domain') toast('Domain website belum didaftarkan di Firebase (Authorized domains).');
+    else toast('Gagal masuk: ' + (e.code || e.message));
+  }
+}
+
+window.Gate = {
+  isAdmin, get user() { return user; }, get data() { return data; }, paywall, toast,
+  async canProcess() {
+    if (!configured) return true;
+    if (!user) { toast(t('toast_login')); $('#loginBox').scrollIntoView({ behavior: 'smooth' }); return false; }
+    for (let i = 0; i < 50 && !loaded; i++) await new Promise(r => setTimeout(r, 100));
+    if (!loaded) { toast(t('toast_notloaded')); return false; }
+    if (data.premium) return true;
+    if (left() > 0) return true;
+    paywall(); return false;
+  },
+  async consume() {
+    if (!configured || data.premium) return;
+    const { ref, runTransaction } = fb.db;
+    const r = await runTransaction(ref(db, 'users/' + user.uid + '/used'), cur => { const c = cur || 0; return c >= FREE_LIMIT ? undefined : c + 1; });
+    if (!r.committed) throw new Error('Jatah coba gratis sudah habis.');
+  }
+};
+
+// Blokir dialog pilih file kalau belum boleh
+$('#drop').addEventListener('click', e => {
+  if (!configured) return;
+  if (!user) { e.preventDefault(); e.stopPropagation(); toast(t('toast_login')); $('#loginBox').scrollIntoView({ behavior: 'smooth' }); }
+  else if (loaded && !data.premium && left() === 0) { e.preventDefault(); e.stopPropagation(); paywall(); }
+}, true);
+$('#loginBtn').onclick = () => login();
+$('#upgradeBtn').onclick = () => paywall();
+$('#logoutBtn').onclick = () => fb.auth.signOut(auth);
+
+render();
+if (configured) {
+  try {
+    const V = '10.12.2', B = 'https://www.gstatic.com/firebasejs/' + V + '/';
+    const [app, au, dbm] = await Promise.all([import(B + 'firebase-app.js'), import(B + 'firebase-auth.js'), import(B + 'firebase-database.js')]);
+    fb = { auth: au, db: dbm };
+    const a = app.initializeApp(FIREBASE_CONFIG); auth = au.getAuth(a); db = dbm.getDatabase(a);
+    au.getRedirectResult(auth).catch(e => toast('Gagal masuk: ' + (e.code || e.message)));
+    au.onAuthStateChanged(auth, async u => {
+      if (unsub) { unsub(); unsub = null; }
+      if (unsubSet) { unsubSet(); unsubSet = null; }
+      user = u; loaded = false; data = { used: 0, premium: false, payReq: null, tiktok: null }; settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+      if (!u) { adminOK = false; closeAdmin(); } else if (wantAdmin && adminOK) openAdmin();
+      render();
+      if (!u) return;
+      const { ref, set, onValue } = dbm;
+      try { await set(ref(db, 'users/' + u.uid + '/profile'), { name: u.displayName || '', email: u.email || '', photo: u.photoURL || '', lastLogin: Date.now() }); } catch (e) { console.warn(e); }
+      unsubSet = onValue(ref(db, 'settings'), snap => {
+        const v = snap.val() || {};
+        const mm = {}; for (const k of Object.keys(DEFAULT_SETTINGS.methods)) mm[k] = { ...DEFAULT_SETTINGS.methods[k], ...((v.methods || {})[k] || {}) };
+        const tt = { ...DEFAULT_SETTINGS.tutorial, ...(v.tutorial || {}) };
+        settings = { ...DEFAULT_SETTINGS, ...v, methods: mm, tutorial: tt };
+        render(); if (!$('#admin').hidden && adminTab === 'price') { /* form harga dibiarkan */ }
+      }, () => {});
+      unsub = onValue(ref(db, 'users/' + u.uid), snap => {
+        const v = snap.val() || {}; data = { used: v.used || 0, premium: v.premium === true, payReq: v.payReq || null, tiktok: v.tiktok || null }; loaded = true; render();
+      }, e => { toast(e.code === 'PERMISSION_DENIED' || /permission/i.test(e.message) ? 'Aturan database belum dipasang. Lihat panduan.' : 'Gagal membaca data akun.'); });
+    });
+  } catch (e) { console.error(e); toast('Gagal memuat Firebase. Periksa internet.'); }
+}
+</script>
+<script>
+// Before / After: dua video disinkronkan, garis pemisah bisa digeser atau bergerak sendiri
+(function () {
+  var box = document.getElementById('cmpBox'); if (!box) return;
+  var vA = document.getElementById('vAfter'), vB = document.getElementById('vBefore');
+  var div = document.getElementById('cmpDiv'), pp = document.getElementById('cmpPP');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var p = 50, sweeping = !reduce, dragging = false, visible = true, phase = 0, last = 0;
+  function setP(v) {
+    p = Math.max(0, Math.min(100, v));
+    box.style.setProperty('--p', p + '%');
+    div.setAttribute('aria-valuenow', Math.round(p));
+    box.classList.toggle('hideL', p < 37); box.classList.toggle('hideR', p > 63);
+  }
+  function setSweep(on) { sweeping = on; box.classList.toggle('paused', !on); if (on) { phase = Math.asin(Math.max(-1, Math.min(1, (p - 50) / 42))); last = 0; } }
+  function touch() { box.classList.add('touched'); }
+  function fromEvent(e) { var r = box.getBoundingClientRect(); setP((e.clientX - r.left) / r.width * 100); }
+  function playBoth() { [vA, vB].forEach(function (v) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }); }
+  function pauseBoth() { vA.pause(); vB.pause(); }
+
+  box.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('#cmpPP')) return;
+    dragging = true; box.classList.add('drag'); touch(); setSweep(false);
+    try { box.setPointerCapture(e.pointerId); } catch (x) {}
+    fromEvent(e); if (vA.paused && visible) playBoth();
+  });
+  box.addEventListener('pointermove', function (e) { if (dragging) fromEvent(e); });
+  function end() { dragging = false; box.classList.remove('drag'); }
+  box.addEventListener('pointerup', end); box.addEventListener('pointercancel', end);
+  div.addEventListener('keydown', function (e) {
+    var d = e.key === 'ArrowLeft' ? -5 : e.key === 'ArrowRight' ? 5 : e.key === 'Home' ? -100 : e.key === 'End' ? 100 : 0;
+    if (!d) return; e.preventDefault(); touch(); setSweep(false); setP(p + d);
+  });
+  pp.addEventListener('click', function () { setSweep(!sweeping); if (sweeping) touch(); });
+
+  // gerak otomatis (menarik perhatian sampai pengguna menyentuh)
+  function tick(ts) {
+    if (sweeping && !dragging && visible) {
+      if (last) phase += (ts - last) / 1000 * (Math.PI * 2 / 7);
+      last = ts; setP(50 + 42 * Math.sin(phase));
+    } else last = 0;
+    // sinkron waktu video "sebelum" mengikuti "sesudah"
+    if (!vA.paused && Math.abs(vB.currentTime - vA.currentTime) > 0.12) { try { vB.currentTime = vA.currentTime; } catch (x) {} }
+    requestAnimationFrame(tick);
+  }
+
+  // hanya diputar saat terlihat (hemat baterai)
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (en) {
+      visible = en[0].isIntersecting;
+      if (visible && !reduce) playBoth(); else if (!visible) pauseBoth();
+    }, { threshold: 0.25 }).observe(box);
+  } else if (!reduce) playBoth();
+
+  setP(50); box.classList.toggle('paused', !sweeping);
+  requestAnimationFrame(tick);
+})();
+</script>
+
+</body>
+</html>
